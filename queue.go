@@ -13,15 +13,15 @@ type Queue struct{
 type drawF func (dest *ebiten.Image)
 
 type reqOrder struct {
-	Layer int
-	GroupTag string
+	layer    float32
+	groupTag string
 }
 
 func (r reqOrder) less(s reqOrder) bool{
-	if r.Layer!=s.Layer{
-		return r.Layer<s.Layer
+	if r.layer !=s.layer {
+		return r.layer <s.layer
 	} else {
-		return r.GroupTag<s.GroupTag
+		return r.groupTag <s.groupTag
 	}
 }
 
