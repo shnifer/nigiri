@@ -4,6 +4,9 @@ import (
 	"testing"
 	"math/rand"
 	"sort"
+	"log"
+	"unsafe"
+	"github.com/hajimehoshi/ebiten"
 )
 
 func Benchmark_SortInt(b *testing.B) {
@@ -29,5 +32,46 @@ func Benchmark_Sortfloat(b *testing.B) {
 		}
 		b.StartTimer()
 		sort.Float64s(x)
+	}
+}
+
+type doer interface {
+	Do()
+}
+type doerUpdater interface {
+	Updater
+	doer
+}
+
+type x struct{}
+func (x) Update(dt float64){}
+func (x) Do(){}
+
+type y struct{}
+func (y) Do(){}
+
+func Benchmark_EmptyUpdater(b *testing.B){
+	var V doerUpdater = x{}
+	for i:=0;i<b.N;i++{
+		V.Update(0.1)
+	}
+}
+
+func Benchmark_CheckUpdate(b *testing.B){
+	var V doer = x{}
+	for i:=0;i<b.N;i++{
+		if u,ok:=V.(Updater);ok {
+			u.Update(0.1)
+		}
+	}
+}
+
+func Benchmark_CheckNoUpdate(b *testing.B){
+	var V doer = y{}
+	o:=ebiten.DrawImageOptions{}
+	for i:=0;i<b.N;i++{
+		if u,ok:=V.(Updater);ok {
+			u.Update(0.1)
+		}
 	}
 }

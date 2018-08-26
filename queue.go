@@ -40,24 +40,24 @@ func NewQueue(cam *Camera) *Queue {
 		cam: cam,
 	}
 }
+
 func (Q *Queue) Run(dest *ebiten.Image){
 	sort.SliceStable(Q.reqs, Q.less)
 	for _,req:=range Q.reqs{
 		req.f(dest)
 	}
 }
+
 func (Q *Queue) Clear(){
 	Q.reqs = Q.reqs[:0]
 }
+
 func (Q *Queue) SetCam(cam *Camera) {
 	Q.cam = cam
 }
+
 func (Q *Queue) Cam() *Camera{
 	return Q.cam
-}
-
-type DrawRequester interface {
-	DrawReqs(Q *Queue)
 }
 
 //for use from outside package
@@ -66,9 +66,6 @@ func (Q *Queue) Add(d DrawRequester){
 }
 
 //for use from primitives, sprites and texts
-func (Q *Queue) add(f drawF ,order reqOrder){
-	Q.reqs = append(Q.reqs, drawReq{
-		f:f,
-		reqOrder: order,
-	})
+func (Q *Queue) add(drawReq drawReq){
+	Q.reqs = append(Q.reqs, drawReq)
 }
