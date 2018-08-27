@@ -83,10 +83,18 @@ func (r *rect) String() string{
 	return fmt.Sprintf("rect:[center:%v, Size:%v, %v]", r.center, r.width, r.height)
 }
 
-func (r *rect) corners() (res [4]v2.V2){
-	res[0] = r.center.Add(v2.V2{X:r.width/2,Y:r.height/2}.Rotate(r.ang))
-	res[1] = r.center.Add(v2.V2{X:-r.width/2,Y:r.height/2}.Rotate(r.ang))
-	res[2] = r.center.Add(v2.V2{X:-r.width/2,Y:-r.height/2}.Rotate(r.ang))
-	res[3] = r.center.Add(v2.V2{X:r.width/2,Y:-r.height/2}.Rotate(r.ang))
+func (r *rect) corners(cam *Camera, o GOpts) (res [4]v2.V2){
+	ang:=r.ang
+	if !o.denyRotation{
+		ang+=cam.ang
+	}
+	scale:=1.0
+	if !o.denyScale{
+		scale = cam.scale
+	}
+	res[0] = r.center.Add(v2.V2{X:r.width/2,Y:r.height/2}.Mul(scale).Rotate(ang))
+	res[1] = r.center.Add(v2.V2{X:-r.width/2,Y:r.height/2}.Mul(scale).Rotate(ang))
+	res[2] = r.center.Add(v2.V2{X:-r.width/2,Y:-r.height/2}.Mul(scale).Rotate(ang))
+	res[3] = r.center.Add(v2.V2{X:r.width/2,Y:-r.height/2}.Mul(scale).Rotate(ang))
 	return res
 }

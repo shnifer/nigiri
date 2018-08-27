@@ -36,12 +36,31 @@ func (c *Camera) inClipRect(v v2.V2) bool{
 	return image.Pt(int(x), int(y)).In(c.clipRect)
 }
 
-func (c *Camera) isClipped(r rect, o GOpts) bool{
+func (c *Camera) isClipped(rect rect, o GOpts) bool{
 	if c.clipRect==image.ZR{
 		return false
 	}
-	if c.inClipRect(r.pos){
+	if c.inClipRect(rect.pos){
 		return false
 	}
-	corners:=r.corners(r, o)
+	corners:= rect.corners(c, o)
+	var l,r,t,b bool
+	var x,y int
+	for i:=0; i<4; i++{
+		x=int(corners[i].X)
+		y=int(corners[i].Y)
+		if x>0 {
+			l = true
+		}
+		if x<c.clipRect.Max.X{
+			r = true
+		}
+		if y>0{
+			t = true
+		}
+		if y<c.clipRect.Max.Y{
+			b = true
+		}
+	}
+	return !(l&&r&&t&&b)
 }
