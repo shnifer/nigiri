@@ -11,6 +11,9 @@ type StaticSrc struct {
 	tag string
 }
 
+func (s StaticSrc) Update(dt float64) {
+}
+
 func NewStatic(img *ebiten.Image, rect *image.Rectangle, tag string) StaticSrc {
 	if rect==nil{
 		rect = new(image.Rectangle)

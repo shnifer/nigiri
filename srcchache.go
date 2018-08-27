@@ -46,7 +46,7 @@ func (tc *TexCache) GetTex(name string) (tex *ebiten.Image, err error){
 	}
 	img, err = tc.loader(name)
 	if err!=nil{
-		return nil, errors.Wrap(err, "can't load text \""+name+"\n with loader")
+		return nil, errors.Wrap(err, "can't load tex \""+name+"\" with loader")
 	}
 	tc.cache[name] = img
 	return img, nil

@@ -4,9 +4,6 @@ import (
 	"testing"
 	"math/rand"
 	"sort"
-	"log"
-	"unsafe"
-	"github.com/hajimehoshi/ebiten"
 )
 
 func Benchmark_SortInt(b *testing.B) {

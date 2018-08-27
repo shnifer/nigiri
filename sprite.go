@@ -21,8 +21,8 @@ type Sprite struct{
 }
 
 type GOpts struct{
-	denyRotation bool
-	denyScale bool
+	DenyRotation bool
+	DenyScale    bool
 }
 
 func NewSprite(src SpriteSrcer, rectScaler RectScaler) *Sprite{
@@ -105,13 +105,13 @@ func (s *Sprite) DrawReqs(Q *Queue){
 	if w==0 || h==0{
 		return
 	}
-
 	if s.RectScaler==nil{
 		s.rect.setSize(float64(w), float64(h))
 	} else {
 		s.rect.setSize(s.RectScale(w, h))
 	}
-	if Q.cam.isClipped(s.rect, s.GOpts){
+
+	if Q.cam!=nil && Q.cam.isClipped(s.rect, s.GOpts){
 		return
 	}
 
@@ -139,10 +139,10 @@ func (s *Sprite) geom(srcW,srcH float64,cam *Camera, gOpt GOpts) ebiten.GeoM {
 	scale := 1.0
 	if cam!=nil {
 		pos = cam.applyV2(s.rect.pos)
-		if !gOpt.denyRotation {
+		if !gOpt.DenyRotation {
 			rot += cam.ang
 		}
-		if !gOpt.denyScale {
+		if !gOpt.DenyScale {
 			scale = cam.scale
 		}
 	}

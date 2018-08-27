@@ -6,6 +6,9 @@ import (
 	"path"
 	"image"
 	"bytes"
+	_"image/jpeg"
+	_"image/png"
+	_"image/gif"
 )
 
 func FileTexLoader(pathStr string) TexLoaderF{

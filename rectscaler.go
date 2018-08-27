@@ -15,7 +15,7 @@ type Scaler struct {
 
 
 func (r Scaler) RectScale(inW,inH int) (outW,outH float64) {
-	if r.UseFixed {
+	if !r.UseFixed {
 		return float64(inW)*r.ScaleFactor, float64(inH)*r.ScaleFactor
 	}
 	if !r.FitProportion{
@@ -85,11 +85,11 @@ func (r *rect) String() string{
 
 func (r *rect) corners(cam *Camera, o GOpts) (res [4]v2.V2){
 	ang:=r.ang
-	if !o.denyRotation{
+	if !o.DenyRotation {
 		ang+=cam.ang
 	}
 	scale:=1.0
-	if !o.denyScale{
+	if !o.DenyScale {
 		scale = cam.scale
 	}
 	res[0] = r.center.Add(v2.V2{X:r.width/2,Y:r.height/2}.Mul(scale).Rotate(ang))
