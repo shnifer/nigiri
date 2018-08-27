@@ -1,4 +1,4 @@
-package main
+package nigiri
 
 import (
 	"testing"
@@ -68,7 +68,6 @@ func Benchmark_CheckUpdate(b *testing.B){
 
 func Benchmark_CheckNoUpdate(b *testing.B){
 	var V doer = y{}
-	o:=ebiten.DrawImageOptions{}
 	for i:=0;i<b.N;i++{
 		if u,ok:=V.(Updater);ok {
 			u.Update(0.1)
