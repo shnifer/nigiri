@@ -14,7 +14,7 @@ type DrawRequester interface {
 }
 
 type RectScaler interface {
-	RectScale(inW,inH int) (outW,outH float64)
+	RectScale(inW,inH int) (sx,sy float64)
 }
 
 type SpriteSrcer interface{

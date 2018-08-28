@@ -6,7 +6,7 @@ import (
 
 type Scaler struct {
 	UseFixed bool
-	ScaleFactor float64
+	Sx, Sy float64
 	FitProportion bool
 	FixedW, FixedH float64
 }
@@ -14,15 +14,15 @@ type Scaler struct {
 
 func (r Scaler) RectScale(inW,inH int) (outW,outH float64) {
 	if !r.UseFixed {
-		return float64(inW)*r.ScaleFactor, float64(inH)*r.ScaleFactor
-	}
-	if !r.FitProportion{
-		return r.FixedW, r.FixedH
+		return r.Sx, r.Sy
 	}
 	if inW<=0 || inH<=0{
-		return 0,0
+		return 1,1
 	}
 	w,h:=float64(inW), float64(inH)
+	if !r.FitProportion{
+		return r.FixedW/w, r.FixedH/h
+	}
 	scale:=math.Min(r.FixedH/h, r.FixedW/w)
-	return w*scale, h*scale
+	return scale, scale
 }

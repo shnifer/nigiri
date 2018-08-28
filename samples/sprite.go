@@ -26,7 +26,7 @@ func main(){
 		panic(err)
 	}
 	src:=nigiri.NewStatic(tex, nil, "tag")
-	S = nigiri.NewSprite(src, nigiri.Scaler{ScaleFactor:1})
+	S = nigiri.NewSprite(src, nigiri.Scaler{Sx:1, Sy:1})
 	S.SetSmooth(true)
-	ebiten.Run(mainLoop, 400,400,1,"TEST")
+	ebiten.Run(mainLoop, 600,600,1,"TEST")
 }

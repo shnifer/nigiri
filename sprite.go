@@ -10,13 +10,17 @@ type Sprite struct{
 	Src           SpriteSrcer
 	CompositeMode ebiten.CompositeMode
 	Layer float32
-	GOpts GOpts
 	RectScaler
 	filter ebiten.Filter
+
+	transform
+
+	//color
 	color color.Color
 	alpha float64
 	colorM ebiten.ColorM
-	rect
+
+	//tagSuffix depends on color and filter
 	tagSuffix string
 }
 
@@ -31,9 +35,6 @@ func NewSprite(src SpriteSrcer, rectScaler RectScaler) *Sprite{
 		RectScaler: rectScaler,
 		color: color.White,
 		alpha: 1,
-		rect: rect{
-			pivotRel:v2.V2{X:0.5, Y:0.5},
-		},
 	}
 	res.calcTagSuffix()
 	return res

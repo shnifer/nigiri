@@ -4,6 +4,7 @@ import (
 	"testing"
 	"math/rand"
 	"sort"
+	"github.com/hajimehoshi/ebiten"
 )
 
 func Benchmark_SortInt(b *testing.B) {
@@ -69,5 +70,37 @@ func Benchmark_CheckNoUpdate(b *testing.B){
 		if u,ok:=V.(Updater);ok {
 			u.Update(0.1)
 		}
+	}
+}
+
+func Benchmark_Geom_Scale(b *testing.B){
+	G:=ebiten.GeoM{}
+	for i:=0;i<b.N;i++{
+		G.Scale(1.1, 1.2)
+	}
+}
+
+func Benchmark_Geom_Rotate(b *testing.B){
+	G:=ebiten.GeoM{}
+	for i:=0;i<b.N;i++{
+		G.Rotate(0.1)
+	}
+}
+
+func Benchmark_Geom_Translate(b *testing.B){
+	G:=ebiten.GeoM{}
+	for i:=0;i<b.N;i++{
+		G.Translate(0.1, 0.2)
+	}
+}
+
+func Benchmark_Geom_Concat(b *testing.B){
+	G:=ebiten.GeoM{}
+	H:=ebiten.GeoM{}
+	H.Translate(0.1, 0.2)
+	H.Rotate(0.1)
+	H.Scale(1.1, 1.2)
+	for i:=0;i<b.N;i++{
+		G.Concat(H)
 	}
 }
