@@ -82,7 +82,7 @@ func (c *Camera) phys(rect Rect) Rect {
 	rect.Width *= c.scale
 	rect.Height *= c.scale
 	rect.Ang += c.ang
-	rect.Pos = c.applyV2(rect.Pos)
+	rect.Position = c.applyV2(rect.Position)
 	if c.ClippedRect(rect) {
 		rect = ZR
 	}
@@ -96,7 +96,7 @@ func (c *Camera) Phys() Transformer {
 func (c *Camera) noRot(rect Rect) Rect {
 	rect.Width *= c.scale
 	rect.Height *= c.scale
-	rect.Pos = c.applyV2(rect.Pos)
+	rect.Position = c.applyV2(rect.Position)
 	if c.ClippedRect(rect) {
 		rect = ZR
 	}
@@ -109,7 +109,7 @@ func (c *Camera) NoRot() Transformer {
 
 func (c *Camera) noScale(rect Rect) Rect {
 	rect.Ang += c.ang
-	rect.Pos = c.applyV2(rect.Pos)
+	rect.Position = c.applyV2(rect.Position)
 	if c.ClippedRect(rect) {
 		rect = ZR
 	}
@@ -121,7 +121,7 @@ func (c *Camera) NoScale() Transformer {
 }
 
 func (c *Camera) mark(rect Rect) Rect {
-	rect.Pos = c.applyV2(rect.Pos)
+	rect.Position = c.applyV2(rect.Position)
 	if c.ClippedRect(rect) {
 		rect = ZR
 	}
@@ -164,11 +164,11 @@ func (c *Camera) ClippedRect(rect Rect) bool {
 	if c.clipRect == image.ZR {
 		return false
 	}
-	if c.inClipRect(rect.Pos) {
+	if c.inClipRect(rect.Position) {
 		return false
 	}
 	dr := int(rect.Height + rect.Width)
-	x, y := int(rect.Pos.X), int(rect.Pos.Y)
+	x, y := int(rect.Position.X), int(rect.Position.Y)
 	cr := image.Rect(x-dr, y-dr, y+dr, y+dr)
 	return cr.Intersect(c.clipRect).Empty()
 }

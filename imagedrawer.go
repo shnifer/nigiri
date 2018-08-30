@@ -9,7 +9,7 @@ import (
 type ImageDrawer struct {
 	Src           TexSrcer
 	CompositeMode ebiten.CompositeMode
-	Layer         float32
+	Layer         Layer
 	Transform     Transformer
 	pivot         v2.V2
 
@@ -134,7 +134,7 @@ func (id *ImageDrawer) geom(w, h float64) (G ebiten.GeoM) {
 	G.Translate(-w*id.pivot.X, -h*id.pivot.Y)
 	G.Scale(id.r.Width/w, id.r.Height/h)
 	G.Rotate(id.r.Ang * v2.Deg2Rad)
-	G.Translate(id.r.Pos.X, id.r.Pos.Y)
+	G.Translate(id.r.Position.X, id.r.Position.Y)
 	return G
 }
 

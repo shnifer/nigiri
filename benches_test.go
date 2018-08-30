@@ -110,7 +110,7 @@ func Benchmark_Geom_Concat(b *testing.B) {
 
 func Benchmark_Rect_Corners(b *testing.B) {
 	r := NewRect(100, 200, v2.V2{0.3, 0.5})
-	r.Pos = v2.V2{10, 20}
+	r.Position = v2.V2{10, 20}
 	r.Ang = 40
 	for i := 0; i < b.N; i++ {
 		_ = r.Corners()

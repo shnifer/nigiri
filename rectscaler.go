@@ -6,9 +6,21 @@ import (
 
 type Scaler struct {
 	UseFixed       bool
-	Sx, Sy         float64
 	FitProportion  bool
+	Sx, Sy         float64
 	FixedW, FixedH float64
+}
+
+func NewScaler(scale float64) Scaler {
+	return Scaler{Sx: scale, Sy: scale}
+}
+
+func NewFixedScaler(w, h float64) Scaler {
+	return Scaler{UseFixed: true, FixedH: h, FixedW: w}
+}
+
+func NewFitScaler(w, h float64) Scaler {
+	return Scaler{UseFixed: true, FitProportion: true, FixedH: h, FixedW: w}
 }
 
 func (s Scaler) TransformRect(rect Rect) Rect {

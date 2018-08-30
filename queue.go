@@ -11,8 +11,10 @@ type Queue struct {
 
 type drawF func(dest *ebiten.Image)
 
+type Layer float32
+
 type reqOrder struct {
-	layer    float32
+	layer    Layer
 	groupTag string
 }
 
