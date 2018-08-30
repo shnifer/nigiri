@@ -26,11 +26,66 @@ func NewCamera() *Camera {
 	return res
 }
 
+func (c *Camera) Center() v2.V2 {
+	return c.center
+}
+func (c *Camera) Pos() v2.V2 {
+	return c.pos
+}
+func (c *Camera) Scale() float64 {
+	return c.scale
+}
+func (c *Camera) Angle() float64 {
+	return c.ang
+}
+func (c *Camera) ClipRect() image.Rectangle {
+	return c.clipRect
+}
+
+func (c *Camera) SetCenter(v v2.V2) {
+	if v == c.center {
+		return
+	}
+	c.center = v
+	c.dirty = true
+}
+
+func (c *Camera) SetPos(v v2.V2) {
+	if v == c.pos {
+		return
+	}
+	c.pos = v
+	c.dirty = true
+}
+
+func (c *Camera) SetScale(v float64) {
+	if v == c.scale {
+		return
+	}
+	c.scale = v
+	c.dirty = true
+}
+
+func (c *Camera) SetAng(v float64) {
+	if v == c.ang {
+		return
+	}
+	c.ang = v
+	c.dirty = true
+}
+
+func (c *Camera) SetClipRect(rect image.Rectangle) {
+	c.clipRect = rect
+}
+
 func (c *Camera) phys(rect Rect) Rect {
 	rect.Width *= c.scale
 	rect.Height *= c.scale
 	rect.Ang += c.ang
 	rect.Pos = c.applyV2(rect.Pos)
+	if c.ClippedRect(rect) {
+		rect = ZR
+	}
 	return rect
 }
 
@@ -42,6 +97,9 @@ func (c *Camera) noRot(rect Rect) Rect {
 	rect.Width *= c.scale
 	rect.Height *= c.scale
 	rect.Pos = c.applyV2(rect.Pos)
+	if c.ClippedRect(rect) {
+		rect = ZR
+	}
 	return rect
 }
 
@@ -52,6 +110,9 @@ func (c *Camera) NoRot() Transformer {
 func (c *Camera) noScale(rect Rect) Rect {
 	rect.Ang += c.ang
 	rect.Pos = c.applyV2(rect.Pos)
+	if c.ClippedRect(rect) {
+		rect = ZR
+	}
 	return rect
 }
 
@@ -61,6 +122,9 @@ func (c *Camera) NoScale() Transformer {
 
 func (c *Camera) mark(rect Rect) Rect {
 	rect.Pos = c.applyV2(rect.Pos)
+	if c.ClippedRect(rect) {
+		rect = ZR
+	}
 	return rect
 }
 
@@ -96,7 +160,7 @@ func (c *Camera) inClipRect(v v2.V2) bool {
 	return image.Pt(int(x), int(y)).In(c.clipRect)
 }
 
-func (c *Camera) ClipRect(rect Rect) bool {
+func (c *Camera) ClippedRect(rect Rect) bool {
 	if c.clipRect == image.ZR {
 		return false
 	}

@@ -25,7 +25,3 @@ type TransformerF func(Rect) Rect
 func (f TransformerF) TransformRect(rect Rect) Rect {
 	return f(rect)
 }
-
-type Clipper interface {
-	ClipRect(rect Rect) bool
-}

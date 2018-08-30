@@ -11,17 +11,25 @@ type Scaler struct {
 	FixedW, FixedH float64
 }
 
-func (r Scaler) RectScale(inW, inH int) (outW, outH float64) {
-	if !r.UseFixed {
-		return r.Sx, r.Sy
+func (s Scaler) TransformRect(rect Rect) Rect {
+	if rect.Width <= 0 || rect.Height <= 0 {
+		return ZR
 	}
-	if inW <= 0 || inH <= 0 {
-		return 1, 1
+
+	if !s.UseFixed {
+		rect.Width *= s.Sx
+		rect.Height *= s.Sy
+		return rect
 	}
-	w, h := float64(inW), float64(inH)
-	if !r.FitProportion {
-		return r.FixedW / w, r.FixedH / h
+
+	if !s.FitProportion {
+		rect.Width = s.FixedW
+		rect.Height = s.FixedH
+		return rect
 	}
-	scale := math.Min(r.FixedH/h, r.FixedW/w)
-	return scale, scale
+
+	scale := math.Min(s.FixedH/rect.Height, s.FixedW/rect.Width)
+	rect.Width *= scale
+	rect.Height *= scale
+	return rect
 }

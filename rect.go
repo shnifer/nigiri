@@ -4,6 +4,8 @@ import (
 	"github.com/Shnifer/nigiri/v2"
 )
 
+var ZR Rect
+
 type Rect struct {
 	//position of pivot point in world coordinates
 	Pos v2.V2
@@ -22,6 +24,10 @@ func NewRect(w, h float64, pivotRel v2.V2) Rect {
 		Width:    w,
 		Height:   h,
 	}
+}
+
+func (r Rect) Empty() bool {
+	return r == ZR
 }
 
 func (r Rect) Corners() (res [4]v2.V2) {

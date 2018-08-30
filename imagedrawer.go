@@ -11,7 +11,6 @@ type ImageDrawer struct {
 	CompositeMode ebiten.CompositeMode
 	Layer         float32
 	Transform     Transformer
-	Clipper       Clipper
 	pivot         v2.V2
 
 	//color
@@ -109,11 +108,8 @@ func (id *ImageDrawer) DrawReqs(Q *Queue) {
 	if id.Transform != nil {
 		id.r = id.Transform.TransformRect(id.r)
 	}
-
-	if id.Clipper != nil {
-		if id.Clipper.ClipRect(id.r) {
-			return
-		}
+	if id.r.Empty() {
+		return
 	}
 
 	order := reqOrder{
