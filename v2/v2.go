@@ -1,10 +1,10 @@
 package v2
 
 import (
-	"math"
-	"math/rand"
 	"fmt"
 	"github.com/Shnifer/magellan/v2"
+	"math"
+	"math/rand"
 )
 
 //float64 vector2
@@ -20,6 +20,7 @@ const Rad2Deg = 180 / math.Pi
 
 //zero vector
 var ZV V2
+
 //Corners relative vectors
 var TopLeft V2
 var TopMid V2
@@ -31,16 +32,16 @@ var BotLeft V2
 var BotMid V2
 var BotRight V2
 
-func init(){
-	TopLeft = V2{X:0, Y:0}
-	TopMid = V2{X:0.5, Y:0}
-	TopRight = V2{X:1, Y:0}
-	MidLeft = V2{X:0, Y: 0.5}
-	Center = V2{X:0.5, Y:0.5}
-	MidRight = V2{X:1, Y: 0.5}
-	BotLeft = V2{X:0, Y:1}
-	BotMid = V2{X:0.5, Y:1}
-	BotRight = V2{X:1, Y:1}
+func init() {
+	TopLeft = V2{X: 0, Y: 0}
+	TopMid = V2{X: 0.5, Y: 0}
+	TopRight = V2{X: 1, Y: 0}
+	MidLeft = V2{X: 0, Y: 0.5}
+	Center = V2{X: 0.5, Y: 0.5}
+	MidRight = V2{X: 1, Y: 0.5}
+	BotLeft = V2{X: 0, Y: 1}
+	BotMid = V2{X: 0.5, Y: 1}
+	BotRight = V2{X: 1, Y: 1}
 }
 
 //RandomOrt returns a random vector with len = 1
@@ -79,7 +80,7 @@ func AddMul(a, b V2, t float64) V2 {
 
 //Rotate returns a new vector equal to V rotated by angle degrees
 func Rotate(V V2, angle float64) V2 {
-	if angle==0{
+	if angle == 0 {
 		return V
 	}
 	a := angle * Deg2Rad
@@ -214,8 +215,8 @@ func (a V2) Dir() float64 {
 	return Dir(a)
 }
 
-func (a V2) String() string{
-	return fmt.Sprintf("[%v, %v]",a.X,a.Y)
+func (a V2) String() string {
+	return fmt.Sprintf("[%v, %v]", a.X, a.Y)
 }
 
 func RotateF(ang float64) func(V2) V2 {

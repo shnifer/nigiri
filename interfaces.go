@@ -5,7 +5,7 @@ import (
 	"image"
 )
 
-type Updater interface{
+type Updater interface {
 	Update(dt float64)
 }
 
@@ -13,11 +13,19 @@ type DrawRequester interface {
 	DrawReqs(Q *Queue)
 }
 
-type RectScaler interface {
-	RectScale(inW,inH int) (sx,sy float64)
+type TexSrcer interface {
+	GetTexSrc() (srcImage *ebiten.Image, srcRect *image.Rectangle, tag string)
 }
 
-type SpriteSrcer interface{
-	Updater
-	GetSpriteSrc() (srcImage *ebiten.Image, srcRect *image.Rectangle, tag string)
+type Transformer interface {
+	TransformRect(rect Rect) Rect
+}
+type TransformerF func(Rect) Rect
+
+func (f TransformerF) TransformRect(rect Rect) Rect {
+	return f(rect)
+}
+
+type Clipper interface {
+	ClipRect(rect Rect) bool
 }

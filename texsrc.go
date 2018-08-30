@@ -6,26 +6,23 @@ import (
 )
 
 type StaticSrc struct {
-	img *ebiten.Image
+	img  *ebiten.Image
 	rect *image.Rectangle
-	tag string
-}
-
-func (s StaticSrc) Update(dt float64) {
+	tag  string
 }
 
 func NewStatic(img *ebiten.Image, rect *image.Rectangle, tag string) StaticSrc {
-	if rect==nil{
+	if rect == nil {
 		rect = new(image.Rectangle)
 		rect.Max.X, rect.Max.Y = img.Size()
 	}
 	return StaticSrc{
-		img:img,
+		img:  img,
 		rect: rect,
-		tag: tag,
+		tag:  tag,
 	}
 }
 
-func (s StaticSrc) GetSpriteSrc() (srcImage *ebiten.Image, srcRect *image.Rectangle, tag string) {
+func (s StaticSrc) GetTexSrc() (srcImage *ebiten.Image, srcRect *image.Rectangle, tag string) {
 	return s.img, s.rect, s.tag
 }

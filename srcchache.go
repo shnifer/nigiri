@@ -13,14 +13,14 @@ type TexCache struct {
 
 func NewTexCache(loader TexLoaderF) *TexCache {
 	return &TexCache{
-		cache: make(map[string]*ebiten.Image),
+		cache:  make(map[string]*ebiten.Image),
 		loader: loader,
 	}
 }
 
 var tCache *TexCache
 
-func init(){
+func init() {
 	tCache = NewTexCache(nil)
 }
 
@@ -28,7 +28,7 @@ func SetTexLoader(f TexLoaderF) {
 	tCache.SetTexLoader(f)
 }
 
-func (tc *TexCache) SetTexLoader(f TexLoaderF){
+func (tc *TexCache) SetTexLoader(f TexLoaderF) {
 	tc.loader = f
 }
 
@@ -36,26 +36,26 @@ func GetTex(name string) (tex *ebiten.Image, err error) {
 	return tCache.GetTex(name)
 }
 
-func (tc *TexCache) GetTex(name string) (tex *ebiten.Image, err error){
+func (tc *TexCache) GetTex(name string) (tex *ebiten.Image, err error) {
 	img, ok := tc.cache[name]
-	if ok{
+	if ok {
 		return img, nil
 	}
-	if tc.loader == nil{
-		return nil, errors.New("texture \""+name+"\" not found, loader is nil")
+	if tc.loader == nil {
+		return nil, errors.New("texture \"" + name + "\" not found, loader is nil")
 	}
 	img, err = tc.loader(name)
-	if err!=nil{
+	if err != nil {
 		return nil, errors.Wrap(err, "can't load tex \""+name+"\" with loader")
 	}
 	tc.cache[name] = img
 	return img, nil
 }
 
-func TexCacheReset()  {
+func TexCacheReset() {
 	tCache.Reset()
 }
 
-func (tc *TexCache) Reset(){
+func (tc *TexCache) Reset() {
 	tc.cache = make(map[string]*ebiten.Image)
 }
