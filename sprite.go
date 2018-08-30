@@ -16,6 +16,7 @@ type SpriteOpts struct {
 
 type Sprite struct {
 	imgD         *ImageDrawer
+	rect		  Rect
 	CamTransform Transformer
 	Position     v2.V2
 	Angle        float64
@@ -39,12 +40,16 @@ func NewSprite(opts SpriteOpts) *Sprite {
 	return res
 }
 
+func (s *Sprite) GetRect() Rect{
+	return s.rect
+}
+
 func (s *Sprite) TransformRect(rect Rect) Rect {
-	rect = s.Scaler.TransformRect(rect)
-	rect.Position = s.Position
-	rect.Ang = s.Angle
+	s.rect = s.Scaler.TransformRect(rect)
+	s.rect.Position = s.Position
+	s.rect.Ang = s.Angle
 	if s.CamTransform != nil {
-		rect = s.CamTransform.TransformRect(rect)
+		s.rect = s.CamTransform.TransformRect(s.rect)
 	}
-	return rect
+	return s.rect
 }
