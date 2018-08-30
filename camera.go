@@ -42,6 +42,18 @@ func (c *Camera) ClipRect() image.Rectangle {
 	return c.clipRect
 }
 
+func (c *Camera) Translate(delta v2.V2) {
+	c.SetPos(c.pos.Add(delta))
+}
+
+func (c *Camera) Rotate(ang float64) {
+	c.SetAng(c.ang + ang)
+}
+
+func (c *Camera) MulScale(scaleK float64) {
+	c.SetScale(c.scale * scaleK)
+}
+
 func (c *Camera) SetCenter(v v2.V2) {
 	if v == c.center {
 		return
@@ -140,7 +152,7 @@ func (c *Camera) calcPosG() {
 	c.posG.Reset()
 	c.posG.Translate(-c.pos.X, -c.pos.Y)
 	c.posG.Scale(c.scale, c.scale)
-	c.posG.Rotate(-c.ang)
+	c.posG.Rotate(c.ang * v2.Deg2Rad)
 	c.posG.Translate(c.center.X, c.center.Y)
 }
 

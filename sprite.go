@@ -5,19 +5,20 @@ import (
 	"github.com/hajimehoshi/ebiten"
 )
 
-type SpriteOpts struct{
-	Src TexSrcer
-	CamTransform Transformer
-	Pivot v2.V2
+type SpriteOpts struct {
+	Src           TexSrcer
+	CamTransform  Transformer
+	Pivot         v2.V2
+	Smooth        bool
 	CompositeMode ebiten.CompositeMode
-	Layer Layer
+	Layer         Layer
 }
 
-type Sprite struct{
-	imgD *ImageDrawer
+type Sprite struct {
+	imgD         *ImageDrawer
 	CamTransform Transformer
-	Position v2.V2
-	Angle float64
+	Position     v2.V2
+	Angle        float64
 	Scaler
 }
 
@@ -25,23 +26,24 @@ func (s *Sprite) DrawReqs(Q *Queue) {
 	Q.Add(s.imgD)
 }
 
-func NewSprite(opts SpriteOpts) *Sprite{
-	res:=&Sprite{
-		CamTransform:    opts.CamTransform,
-		Scaler: NewScaler(1),
+func NewSprite(opts SpriteOpts) *Sprite {
+	res := &Sprite{
+		CamTransform: opts.CamTransform,
+		Scaler:       NewScaler(1),
 	}
 	res.imgD = NewImageDrawer(opts.Src, res, opts.Pivot)
 	res.imgD.CompositeMode = opts.CompositeMode
 	res.imgD.Layer = opts.Layer
+	res.imgD.SetSmooth(opts.Smooth)
 
 	return res
 }
 
-func (s *Sprite) TransformRect(rect Rect) Rect{
+func (s *Sprite) TransformRect(rect Rect) Rect {
 	rect = s.Scaler.TransformRect(rect)
 	rect.Position = s.Position
 	rect.Ang = s.Angle
-	if s.CamTransform!=nil {
+	if s.CamTransform != nil {
 		rect = s.CamTransform.TransformRect(rect)
 	}
 	return rect

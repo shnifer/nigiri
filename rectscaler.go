@@ -1,18 +1,19 @@
 package nigiri
 
 import (
+	"github.com/Shnifer/nigiri/v2"
 	"math"
 )
 
 type Scaler struct {
 	UseFixed       bool
 	FitProportion  bool
-	Sx, Sy         float64
+	ScaleFactor    v2.V2
 	FixedW, FixedH float64
 }
 
 func NewScaler(scale float64) Scaler {
-	return Scaler{Sx: scale, Sy: scale}
+	return Scaler{ScaleFactor: v2.V2{X: scale, Y: scale}}
 }
 
 func NewFixedScaler(w, h float64) Scaler {
@@ -29,8 +30,8 @@ func (s Scaler) TransformRect(rect Rect) Rect {
 	}
 
 	if !s.UseFixed {
-		rect.Width *= s.Sx
-		rect.Height *= s.Sy
+		rect.Width *= s.ScaleFactor.X
+		rect.Height *= s.ScaleFactor.Y
 		return rect
 	}
 

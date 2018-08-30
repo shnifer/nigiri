@@ -66,7 +66,7 @@ func RandomInCircle(R float64) V2 {
 func InDir(angle float64) V2 {
 	a := angle * Deg2Rad
 	s, c := math.Sincos(a)
-	return V2{X: -s, Y: c}
+	return V2{X: -s, Y: -c}
 }
 
 //Operations
@@ -94,8 +94,8 @@ func Rotate(V V2, angle float64) V2 {
 //Rotate returns a new vector equal to V rotated by 90 degrees
 func Rotate90(a V2) V2 {
 	return V2{
-		X: -a.Y,
-		Y: +a.X,
+		X: a.Y,
+		Y: -a.X,
 	}
 }
 
@@ -147,8 +147,8 @@ func Dir(v V2) float64 {
 	if v == ZV {
 		return 0
 	}
-	a := math.Atan(-v.X/v.Y) * Rad2Deg
-	if v.Y < 0 {
+	a := math.Atan(-v.X/-v.Y) * Rad2Deg
+	if v.Y > 0 {
 		a += 180
 	}
 	if a < 0 {
