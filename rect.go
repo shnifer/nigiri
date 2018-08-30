@@ -4,23 +4,32 @@ import (
 	"github.com/Shnifer/nigiri/v2"
 )
 
-type rect struct{
+type Rect struct{
 	//position of pivot point in world coordinates
-	pos v2.V2
+	Pos v2.V2
 	//relative position of pivotRel-point
 	pivotRel v2.V2
 	//size of rect
-	width  float64
-	height float64
+	Width  float64
+	Height float64
 	//Rotation of rect in Degrees, counter clockwise
-	ang float64
+	Ang float64
 }
 
-//do not actually move rect, only change rotation point so pos is also changes
-func (r *rect) movePivotRel(v v2.V2)  {
-	if r.pivotRel == v{
-		return
+func NewRect(w,h float64, pivotRel v2.V2) Rect{
+	return Rect{
+		pivotRel: pivotRel,
+		Width: w,
+		Height: h,
 	}
+}
 
-	r.pivotRel = v
+func (r Rect) Corners() (res [4]v2.V2){
+	rF:=v2.RotateF(r.Ang)
+	p:=v2.V2{X: r.Width*r.pivotRel.X, Y:r.Height*r.pivotRel.Y}
+	res[0] = r.Pos.Add(rF(v2.V2{X: 0,Y: 0}.Sub(p)))
+	res[1] = r.Pos.Add(rF(v2.V2{X: r.Width,Y: 0}.Sub(p)))
+	res[2] = r.Pos.Add(rF(v2.V2{X: r.Width,Y: r.Height}.Sub(p)))
+	res[3] = r.Pos.Add(rF(v2.V2{X: 0,Y: r.Height}.Sub(p)))
+	return res
 }

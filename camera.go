@@ -36,7 +36,7 @@ func (c *Camera) inClipRect(v v2.V2) bool{
 	return image.Pt(int(x), int(y)).In(c.clipRect)
 }
 
-func (c *Camera) isClipped(rect rect, o GOpts) bool{
+/*func (c *Camera) isClipped(rect rect, o GOpts) bool{
 	if c.clipRect==image.ZR{
 		return false
 	}
@@ -63,4 +63,4 @@ func (c *Camera) isClipped(rect rect, o GOpts) bool{
 		}
 	}
 	return !(l&&r&&t&&b)
-}
+}*/

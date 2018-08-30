@@ -4,6 +4,7 @@ import (
 	"math"
 	"math/rand"
 	"fmt"
+	"github.com/Shnifer/magellan/v2"
 )
 
 //float64 vector2
@@ -19,6 +20,28 @@ const Rad2Deg = 180 / math.Pi
 
 //zero vector
 var ZV V2
+//Corners relative vectors
+var TopLeft V2
+var TopMid V2
+var TopRight V2
+var MidLeft V2
+var Center V2
+var MidRight V2
+var BotLeft V2
+var BotMid V2
+var BotRight V2
+
+func init(){
+	TopLeft = V2{X:0, Y:0}
+	TopMid = V2{X:0.5, Y:0}
+	TopRight = V2{X:1, Y:0}
+	MidLeft = V2{X:0, Y: 0.5}
+	Center = V2{X:0.5, Y:0.5}
+	MidRight = V2{X:1, Y: 0.5}
+	BotLeft = V2{X:0, Y:1}
+	BotMid = V2{X:0.5, Y:1}
+	BotRight = V2{X:1, Y:1}
+}
 
 //RandomOrt returns a random vector with len = 1
 func RandomOrt() V2 {
@@ -56,6 +79,9 @@ func AddMul(a, b V2, t float64) V2 {
 
 //Rotate returns a new vector equal to V rotated by angle degrees
 func Rotate(V V2, angle float64) V2 {
+	if angle==0{
+		return V
+	}
 	a := angle * Deg2Rad
 	sin, cos := math.Sincos(a)
 	return V2{
@@ -190,4 +216,14 @@ func (a V2) Dir() float64 {
 
 func (a V2) String() string{
 	return fmt.Sprintf("[%v, %v]",a.X,a.Y)
+}
+
+func RotateF(ang float64) func(V2) V2 {
+	sin, cos := math.Sincos(ang * v2.Deg2Rad)
+	return func(v V2) V2 {
+		return V2{
+			X: v.X*cos - v.Y*sin,
+			Y: v.Y*cos + v.X*sin,
+		}
+	}
 }

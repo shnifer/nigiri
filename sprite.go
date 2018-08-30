@@ -3,7 +3,6 @@ package nigiri
 import (
 	"github.com/hajimehoshi/ebiten"
 	"image/color"
-	"github.com/Shnifer/nigiri/v2"
 )
 
 type Sprite struct{
@@ -12,8 +11,6 @@ type Sprite struct{
 	Layer float32
 	RectScaler
 	filter ebiten.Filter
-
-	transform
 
 	//color
 	color color.Color
@@ -95,7 +92,7 @@ func (s *Sprite) Update(dt float64){
 		s.Src.Update(dt)
 	}
 }
-
+/*
 func (s *Sprite) DrawReqs(Q *Queue){
 	if s.Src==nil{
 		return
@@ -159,4 +156,4 @@ func ebiDrawF(img *ebiten.Image, do *ebiten.DrawImageOptions) drawF{
 	return func(dest *ebiten.Image) {
 		dest.DrawImage(img, do)
 	}
-}
+}*/
