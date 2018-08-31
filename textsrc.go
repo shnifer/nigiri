@@ -49,8 +49,10 @@ func newTextString(str string, face font.Face, color color.Color, align Align, i
 type TextSrc struct {
 	strs []textString
 
-	dirty bool
-	offs  []image.Point
+	dirty   bool
+	offs    []image.Point
+	tempTex *ebiten.Image
+	rect    image.Rectangle
 
 	InterLineK float64
 	Layer      Layer
@@ -62,17 +64,15 @@ func (ts *TextSrc) GetTexSrc() (srcImage *ebiten.Image, srcRect *image.Rectangle
 		ts.recalcOffsets()
 	}
 
-	var rect image.Rectangle
-	for i, s := range ts.strs {
-		rect = rect.Union(s.bound.Add(ts.offs[i]))
+	w, h := ts.rect.Dx(), ts.rect.Dy()
+	if w == 0 || h == 0 {
+		return nil, nil, "", nil
 	}
-
-	w, h := rect.Dx(), rect.Dy()
 	srcR := image.Rect(0, 0, w, h)
 	tempImage := GetTempTex(w, h)
 	for i, s := range ts.strs {
 		text.Draw(tempImage, s.str, s.face,
-			ts.offs[i].X, ts.offs[i].Y, s.color)
+			ts.offs[i].X-ts.rect.Min.X, ts.offs[i].Y-ts.rect.Min.Y, s.color)
 	}
 	return tempImage, &srcR, "", PutTempTex
 }
@@ -103,6 +103,11 @@ func (ts *TextSrc) recalcOffsets() {
 		ts.offs = append(ts.offs, image.Pt(HOff, VOff))
 		VOff += str.strH
 	}
+
+	ts.rect = image.ZR
+	for i, s := range ts.strs {
+		ts.rect = ts.rect.Union(s.bound.Add(ts.offs[i]))
+	}
 }
 
 func NewTextSrc(InterLineK float64, layer Layer) *TextSrc {
@@ -130,11 +135,6 @@ func (ts *TextSrc) AddText(text string, face font.Face, align Align, clr color.C
 	strs := strings.Split(text, "\n")
 
 	for _, str := range strs {
-		ts.strs = append(ts.strs, textString{
-			str:   str,
-			face:  face,
-			color: clr,
-			align: align,
-		})
+		ts.strs = append(ts.strs, newTextString(str, face, clr, align, ts.InterLineK))
 	}
 }

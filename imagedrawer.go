@@ -96,10 +96,12 @@ func (id *ImageDrawer) DrawReqs(Q *Queue) {
 	tex, srcRect, tag, afterDrawCb := id.Src.GetTexSrc()
 
 	if tex == nil {
+		afterDrawCb(tex)
 		return
 	}
 	w, h := float64(srcRect.Dx()), float64(srcRect.Dy())
 	if w <= 0 || h <= 0 {
+		afterDrawCb(tex)
 		return
 	}
 
@@ -109,6 +111,7 @@ func (id *ImageDrawer) DrawReqs(Q *Queue) {
 		id.r = id.Transform.TransformRect(id.r)
 	}
 	if id.r.Empty() {
+		afterDrawCb(tex)
 		return
 	}
 

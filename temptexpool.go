@@ -37,7 +37,7 @@ func newTempTexPool() *tempTexPool {
 func (pool *tempTexPool) checkLast() {
 	pool.Lock()
 	defer pool.Unlock()
-
+	l := len(pool.p)
 	now := time.Now().Unix()
 
 	for i := 0; i < len(pool.p); {
@@ -46,6 +46,10 @@ func (pool *tempTexPool) checkLast() {
 			continue
 		}
 		pool.p = append(pool.p[:i], pool.p[i+1:]...)
+	}
+	//@@@
+	if len(pool.p) < l {
+		log.Println("temp pool shrink to len: ", len(pool.p))
 	}
 }
 
@@ -99,7 +103,7 @@ func (pool *tempTexPool) GetTex(w, h int) *ebiten.Image {
 	copy(pool.p[i+1:], pool.p[i:])
 	pool.p[i] = v
 	//@@@
-	log.Println("temp pool len: ", len(pool.p))
+	log.Println("temp pool extended to len: ", len(pool.p))
 	return tex
 }
 

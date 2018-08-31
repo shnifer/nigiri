@@ -1,4 +1,4 @@
-package main
+package sprite
 
 import (
 	"github.com/Shnifer/nigiri"
