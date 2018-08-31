@@ -57,8 +57,8 @@ func mainLoop(win *ebiten.Image) error {
 }
 
 func main() {
-	nigiri.StartProfile("cam")
-	defer nigiri.StopProfile("cam")
+	nigiri.StartProfile("text")
+	defer nigiri.StopProfile("text")
 
 	Q = nigiri.NewQueue()
 
