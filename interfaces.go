@@ -16,7 +16,8 @@ type DrawRequester interface {
 type ActImage func(srcImage *ebiten.Image)
 
 type TexSrcer interface {
-	GetTexSrc() (srcImage *ebiten.Image, srcRect *image.Rectangle, tag string, afterDraw ActImage)
+	GetSrcRect() (srcRect *image.Rectangle)
+	GetSrcTex() (srcImage *ebiten.Image, tag string)
 }
 
 type Transformer interface {

@@ -3,6 +3,7 @@ package nigiri
 import (
 	"github.com/Shnifer/nigiri/v2"
 	"github.com/hajimehoshi/ebiten"
+	"image/color"
 )
 
 type SpriteOpts struct {
@@ -56,4 +57,15 @@ func (s *Sprite) TransformRect(rect Rect) Rect {
 		s.rect = s.CamTransform.TransformRect(s.rect)
 	}
 	return s.rect
+}
+
+func (s *Sprite) SetColor(clr color.Color) {
+	s.imgD.SetColor(clr)
+}
+func (s *Sprite) SetAlpha(v float64) {
+	s.imgD.SetAlpha(v)
+}
+
+func (s *Sprite) ColorAlpha() (color.Color, float64) {
+	return s.imgD.color, s.imgD.alpha
 }

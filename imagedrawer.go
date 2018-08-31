@@ -93,25 +93,23 @@ func (id *ImageDrawer) DrawReqs(Q *Queue) {
 	if id.Src == nil {
 		return
 	}
-	tex, srcRect, tag, afterDrawCb := id.Src.GetTexSrc()
 
-	if tex == nil {
-		afterDrawCb(tex)
-		return
-	}
+	srcRect := id.Src.GetSrcRect()
 	w, h := float64(srcRect.Dx()), float64(srcRect.Dy())
 	if w <= 0 || h <= 0 {
-		afterDrawCb(tex)
 		return
 	}
-
 	id.r = NewRect(w, h, id.pivot)
-
 	if id.Transform != nil {
 		id.r = id.Transform.TransformRect(id.r)
 	}
 	if id.r.Empty() {
-		afterDrawCb(tex)
+		return
+	}
+
+	tex, tag := id.Src.GetSrcTex()
+
+	if tex == nil {
 		return
 	}
 
@@ -128,7 +126,7 @@ func (id *ImageDrawer) DrawReqs(Q *Queue) {
 		GeoM:          id.geom(w, h),
 	}
 	Q.add(drawReq{
-		f:        ebiDrawF(tex, do, afterDrawCb),
+		f:        ebiDrawF(tex, do),
 		reqOrder: order,
 	})
 }
@@ -141,11 +139,9 @@ func (id *ImageDrawer) geom(w, h float64) (G ebiten.GeoM) {
 	return G
 }
 
-func ebiDrawF(img *ebiten.Image, do *ebiten.DrawImageOptions, afterDrawCb ActImage) drawF {
+func ebiDrawF(img *ebiten.Image, do *ebiten.DrawImageOptions) drawF {
 	return func(dest *ebiten.Image) {
 		dest.DrawImage(img, do)
-		if afterDrawCb != nil {
-			afterDrawCb(img)
-		}
+		PutTempTex(img)
 	}
 }

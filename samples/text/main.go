@@ -18,16 +18,16 @@ var Q *nigiri.Queue
 
 func mainLoop(win *ebiten.Image) error {
 	if ebiten.IsKeyPressed(ebiten.KeyA) {
-		C.Translate(v2.InDir(C.Angle()).Rotate90().Mul(1))
+		C.Translate(v2.InDir(C.Angle()).Rotate90().Mul(1 / C.Scale()))
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyD) {
-		C.Translate(v2.InDir(C.Angle()).Rotate90().Mul(-1))
+		C.Translate(v2.InDir(C.Angle()).Rotate90().Mul(-1 / C.Scale()))
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyW) {
-		C.Translate(v2.InDir(C.Angle()).Mul(1))
+		C.Translate(v2.InDir(C.Angle()).Mul(1 / C.Scale()))
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyS) {
-		C.Translate(v2.InDir(C.Angle()).Mul(-1))
+		C.Translate(v2.InDir(C.Angle()).Mul(-1 / C.Scale()))
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyQ) {
 		C.Rotate(1)
@@ -45,12 +45,7 @@ func mainLoop(win *ebiten.Image) error {
 
 	Q.Clear()
 	Q.Add(TD)
-	for i := 0; i < 10; i++ {
-		S.ScaleFactor = v2.V(1, 1).Mul(float64((i % 2) + 1))
-		S.Angle = float64(10 * i)
-		S.Position = v2.V(100, 100).Mul(float64(i))
-		Q.Add(S)
-	}
+	Q.Add(S)
 	Q.Run(win)
 	ebitenutil.DebugPrint(win, fmt.Sprintf("FPS: %v\nDraws: %v", ebiten.CurrentFPS(), Q.Len()))
 	return nil
@@ -64,13 +59,12 @@ func main() {
 
 	C = nigiri.NewCamera()
 	C.SetCenter(v2.V2{X: 500, Y: 500})
-	C.SetScale(5)
-	C.SetClipRect(image.Rect(300, 300, 700, 700))
+	C.SetClipRect(image.Rect(0, 0, 1000, 1000))
 
 	nigiri.SetFaceLoader(nigiri.FileFaceLoader("samples"))
 
-	TS = nigiri.NewTextSrc(1.2, 1)
 	face, err := nigiri.GetFace("furore.ttf", 20)
+	bigFace, err := nigiri.GetFace("furore.ttf", 30)
 	if err != nil {
 		panic(err)
 	}
@@ -78,14 +72,19 @@ func main() {
 	TD = nigiri.NewTextDrawer(face, 2)
 	TD.Position = v2.V(100, 100)
 	TD.Color = colornames.Brown
-	TD.Text = "just simple textdrawer"
+	TD.Text = "just simple textdrawer\nsecond line"
 
-	TS.SetText("text source sample\n multi line text", face, nigiri.AlignLeft, colornames.Green)
+	TS = nigiri.NewTextSrc(1.2, 1)
+	TS.AddText("text source sample", face, 0, colornames.White)
+	TS.AddText("multi-line", face, 0, colornames.White)
+	TS.AddText("colored and sized", bigFace, 0, colornames.Greenyellow)
+	TS.AddText("center or", face, 1, colornames.White)
+	TS.AddText("right aligned", face, 2, colornames.White)
 
 	S = nigiri.SpriteOpts{
 		Src:          TS,
 		Pivot:        v2.Center,
-		Smooth:       false,
+		Smooth:       true,
 		CamTransform: C.Phys(),
 	}.New()
 

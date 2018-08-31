@@ -58,26 +58,33 @@ type TextSrc struct {
 	Layer      Layer
 }
 
-func (ts *TextSrc) GetTexSrc() (srcImage *ebiten.Image, srcRect *image.Rectangle, tag string, cb ActImage) {
-	if ts.dirty {
-		ts.dirty = false
-		ts.recalcOffsets()
-	}
+func (ts *TextSrc) GetSrcRect() (srcRect *image.Rectangle) {
+	ts.recalc()
+	srcR := image.Rect(0, 0, ts.rect.Dx(), ts.rect.Dy())
+	return &srcR
+}
+
+func (ts *TextSrc) GetSrcTex() (srcImage *ebiten.Image, tag string) {
+	ts.recalc()
 
 	w, h := ts.rect.Dx(), ts.rect.Dy()
 	if w == 0 || h == 0 {
-		return nil, nil, "", nil
+		return nil, ""
 	}
-	srcR := image.Rect(0, 0, w, h)
 	tempImage := GetTempTex(w, h)
 	for i, s := range ts.strs {
 		text.Draw(tempImage, s.str, s.face,
 			ts.offs[i].X-ts.rect.Min.X, ts.offs[i].Y-ts.rect.Min.Y, s.color)
 	}
-	return tempImage, &srcR, "", PutTempTex
+	return tempImage, ""
 }
 
-func (ts *TextSrc) recalcOffsets() {
+func (ts *TextSrc) recalc() {
+	if !ts.dirty {
+		return
+	}
+
+	ts.dirty = false
 	var maxA int
 	for _, str := range ts.strs {
 		if str.advance > maxA {
