@@ -4,6 +4,7 @@ import (
 	"github.com/Shnifer/nigiri/v2"
 	"github.com/hajimehoshi/ebiten"
 	"image"
+	"math"
 )
 
 type Camera struct {
@@ -132,6 +133,17 @@ func (c *Camera) NoScale() Transformer {
 	return TransformerF(c.noScale)
 }
 
+func (c *Camera) local(rect Rect) Rect {
+	if c.ClippedRect(rect) {
+		rect = ZR
+	}
+	return rect
+}
+
+func (c *Camera) Local() Transformer {
+	return TransformerF(c.local)
+}
+
 func (c *Camera) mark(rect Rect) Rect {
 	rect.Position = c.applyV2(rect.Position)
 	if c.ClippedRect(rect) {
@@ -179,8 +191,10 @@ func (c *Camera) ClippedRect(rect Rect) bool {
 	if c.inClipRect(rect.Position) {
 		return false
 	}
-	dr := int(rect.Height + rect.Width)
+	px := math.Max(rect.pivotRel.X, 1-rect.pivotRel.X) * rect.Width
+	py := math.Max(rect.pivotRel.Y, 1-rect.pivotRel.Y) * rect.Height
+	dr := int(v2.V2{X: px, Y: py}.Len())
 	x, y := int(rect.Position.X), int(rect.Position.Y)
-	cr := image.Rect(x-dr, y-dr, y+dr, y+dr)
+	cr := image.Rect(x-dr, y-dr, x+dr, y+dr)
 	return cr.Intersect(c.clipRect).Empty()
 }

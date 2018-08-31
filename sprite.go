@@ -14,9 +14,13 @@ type SpriteOpts struct {
 	Layer         Layer
 }
 
+func (so SpriteOpts) New() *Sprite {
+	return NewSprite(so)
+}
+
 type Sprite struct {
 	imgD         *ImageDrawer
-	rect		  Rect
+	rect         Rect
 	CamTransform Transformer
 	Position     v2.V2
 	Angle        float64
@@ -40,7 +44,7 @@ func NewSprite(opts SpriteOpts) *Sprite {
 	return res
 }
 
-func (s *Sprite) GetRect() Rect{
+func (s *Sprite) GetRect() Rect {
 	return s.rect
 }
 

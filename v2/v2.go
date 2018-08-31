@@ -228,3 +228,7 @@ func RotateF(ang float64) func(V2) V2 {
 		}
 	}
 }
+
+func V(x, y float64) V2 {
+	return V2{X: x, Y: y}
+}

@@ -69,3 +69,7 @@ func (Q *Queue) Add(d DrawRequester) {
 func (Q *Queue) add(drawReq drawReq) {
 	Q.reqs = append(Q.reqs, drawReq)
 }
+
+func (Q *Queue) Len() int {
+	return len(Q.reqs)
+}

@@ -93,7 +93,7 @@ func (id *ImageDrawer) DrawReqs(Q *Queue) {
 	if id.Src == nil {
 		return
 	}
-	tex, srcRect, tag := id.Src.GetTexSrc()
+	tex, srcRect, tag, afterDrawCb := id.Src.GetTexSrc()
 
 	if tex == nil {
 		return
@@ -125,7 +125,7 @@ func (id *ImageDrawer) DrawReqs(Q *Queue) {
 		GeoM:          id.geom(w, h),
 	}
 	Q.add(drawReq{
-		f:        ebiDrawF(tex, do),
+		f:        ebiDrawF(tex, do, afterDrawCb),
 		reqOrder: order,
 	})
 }
@@ -138,8 +138,11 @@ func (id *ImageDrawer) geom(w, h float64) (G ebiten.GeoM) {
 	return G
 }
 
-func ebiDrawF(img *ebiten.Image, do *ebiten.DrawImageOptions) drawF {
+func ebiDrawF(img *ebiten.Image, do *ebiten.DrawImageOptions, afterDrawCb ActImage) drawF {
 	return func(dest *ebiten.Image) {
 		dest.DrawImage(img, do)
+		if afterDrawCb != nil {
+			afterDrawCb(img)
+		}
 	}
 }

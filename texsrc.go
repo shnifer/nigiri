@@ -23,6 +23,6 @@ func NewStatic(img *ebiten.Image, rect *image.Rectangle, tag string) StaticSrc {
 	}
 }
 
-func (s StaticSrc) GetTexSrc() (srcImage *ebiten.Image, srcRect *image.Rectangle, tag string) {
-	return s.img, s.rect, s.tag
+func (s StaticSrc) GetTexSrc() (srcImage *ebiten.Image, srcRect *image.Rectangle, tag string, cb ActImage) {
+	return s.img, s.rect, s.tag, nil
 }

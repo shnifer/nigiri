@@ -2,6 +2,7 @@ package nigiri
 
 import (
 	"github.com/hajimehoshi/ebiten"
+	"log"
 	"sync"
 	"time"
 )
@@ -97,6 +98,8 @@ func (pool *tempTexPool) GetTex(w, h int) *ebiten.Image {
 	pool.p = append(pool.p, tempTex{})
 	copy(pool.p[i+1:], pool.p[i:])
 	pool.p[i] = v
+	//@@@
+	log.Println("temp pool len: ", len(pool.p))
 	return tex
 }
 
