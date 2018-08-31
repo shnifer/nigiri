@@ -11,6 +11,7 @@ type ImageDrawer struct {
 	CompositeMode ebiten.CompositeMode
 	Layer         Layer
 	Transform     Transformer
+	ChangeableTex bool
 	pivot         v2.V2
 
 	//color
@@ -94,7 +95,7 @@ func (id *ImageDrawer) DrawReqs(Q *Queue) {
 		return
 	}
 
-	srcRect := id.Src.GetSrcRect()
+	srcRect, tag := id.Src.GetSrcRect()
 	w, h := float64(srcRect.Dx()), float64(srcRect.Dy())
 	if w <= 0 || h <= 0 {
 		return
@@ -104,12 +105,6 @@ func (id *ImageDrawer) DrawReqs(Q *Queue) {
 		id.r = id.Transform.TransformRect(id.r)
 	}
 	if id.r.Empty() {
-		return
-	}
-
-	tex, tag := id.Src.GetSrcTex()
-
-	if tex == nil {
 		return
 	}
 
@@ -125,10 +120,21 @@ func (id *ImageDrawer) DrawReqs(Q *Queue) {
 		SourceRect:    srcRect,
 		GeoM:          id.geom(w, h),
 	}
-	Q.add(drawReq{
-		f:        ebiDrawF(tex, do),
-		reqOrder: order,
-	})
+	if id.ChangeableTex {
+		tex := id.Src.GetSrcTex()
+		if tex == nil {
+			return
+		}
+		Q.add(drawReq{
+			f:        texDrawF(tex, do),
+			reqOrder: order,
+		})
+	} else {
+		Q.add(drawReq{
+			f:        srcDrawF(id.Src, do),
+			reqOrder: order,
+		})
+	}
 }
 
 func (id *ImageDrawer) geom(w, h float64) (G ebiten.GeoM) {
@@ -139,9 +145,20 @@ func (id *ImageDrawer) geom(w, h float64) (G ebiten.GeoM) {
 	return G
 }
 
-func ebiDrawF(img *ebiten.Image, do *ebiten.DrawImageOptions) drawF {
+func texDrawF(img *ebiten.Image, do *ebiten.DrawImageOptions) drawF {
 	return func(dest *ebiten.Image) {
 		dest.DrawImage(img, do)
 		PutTempTex(img)
+	}
+}
+
+func srcDrawF(src TexSrcer, do *ebiten.DrawImageOptions) drawF {
+	return func(dest *ebiten.Image) {
+		tex := src.GetSrcTex()
+		if tex == nil {
+			return
+		}
+		dest.DrawImage(tex, do)
+		PutTempTex(tex)
 	}
 }

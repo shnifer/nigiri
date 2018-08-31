@@ -58,25 +58,25 @@ type TextSrc struct {
 	Layer      Layer
 }
 
-func (ts *TextSrc) GetSrcRect() (srcRect *image.Rectangle) {
+func (ts *TextSrc) GetSrcRect() (srcRect *image.Rectangle, tag string) {
 	ts.recalc()
 	srcR := image.Rect(0, 0, ts.rect.Dx(), ts.rect.Dy())
-	return &srcR
+	return &srcR, ""
 }
 
-func (ts *TextSrc) GetSrcTex() (srcImage *ebiten.Image, tag string) {
+func (ts *TextSrc) GetSrcTex() (srcImage *ebiten.Image) {
 	ts.recalc()
 
 	w, h := ts.rect.Dx(), ts.rect.Dy()
 	if w == 0 || h == 0 {
-		return nil, ""
+		return nil
 	}
 	tempImage := GetTempTex(w, h)
 	for i, s := range ts.strs {
 		text.Draw(tempImage, s.str, s.face,
 			ts.offs[i].X-ts.rect.Min.X, ts.offs[i].Y-ts.rect.Min.Y, s.color)
 	}
-	return tempImage, ""
+	return tempImage
 }
 
 func (ts *TextSrc) recalc() {

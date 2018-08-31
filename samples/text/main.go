@@ -45,7 +45,10 @@ func mainLoop(win *ebiten.Image) error {
 
 	Q.Clear()
 	Q.Add(TD)
-	Q.Add(S)
+	for i := 0; i < 5; i++ {
+		S.Position = v2.V(0, 100).Mul(float64(i))
+		Q.Add(S)
+	}
 	Q.Run(win)
 	ebitenutil.DebugPrint(win, fmt.Sprintf("FPS: %v\nDraws: %v", ebiten.CurrentFPS(), Q.Len()))
 	return nil
@@ -75,8 +78,7 @@ func main() {
 	TD.Text = "just simple textdrawer\nsecond line"
 
 	TS = nigiri.NewTextSrc(1.2, 1)
-	TS.AddText("text source sample", face, 0, colornames.White)
-	TS.AddText("multi-line", face, 0, colornames.White)
+	TS.AddText("text source sample\nmulti-line", face, 0, colornames.White)
 	TS.AddText("colored and sized", bigFace, 0, colornames.Greenyellow)
 	TS.AddText("center or", face, 1, colornames.White)
 	TS.AddText("right aligned", face, 2, colornames.White)
