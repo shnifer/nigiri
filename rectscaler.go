@@ -25,7 +25,7 @@ func NewFitScaler(w, h float64) Scaler {
 }
 
 func (s Scaler) TransformRect(rect Rect) Rect {
-	if rect.Width <= 0 || rect.Height <= 0 {
+	if rect.Width == 0 || rect.Height == 0 {
 		return ZR
 	}
 

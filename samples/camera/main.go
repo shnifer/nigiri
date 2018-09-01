@@ -18,16 +18,16 @@ var FR *nigiri.Sprite
 
 func mainLoop(win *ebiten.Image) error {
 	if ebiten.IsKeyPressed(ebiten.KeyA) {
-		C.Translate(v2.InDir(C.Angle()).Rotate90().Mul(1))
+		C.Translate(v2.InDir(C.Angle()).Rotate90().Mul(1 / C.Scale()))
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyD) {
-		C.Translate(v2.InDir(C.Angle()).Rotate90().Mul(-1))
+		C.Translate(v2.InDir(C.Angle()).Rotate90().Mul(-1 / C.Scale()))
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyW) {
-		C.Translate(v2.InDir(C.Angle()).Mul(1))
+		C.Translate(v2.InDir(C.Angle()).Mul(1 / C.Scale()))
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyS) {
-		C.Translate(v2.InDir(C.Angle()).Mul(-1))
+		C.Translate(v2.InDir(C.Angle()).Mul(-1 / C.Scale()))
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyQ) {
 		C.Rotate(1)

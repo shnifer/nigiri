@@ -12,6 +12,7 @@ type ImageDrawer struct {
 	Layer         Layer
 	Transform     Transformer
 	ChangeableTex bool
+	FlipX, FlipY  bool
 	pivot         v2.V2
 
 	//color
@@ -97,7 +98,7 @@ func (id *ImageDrawer) DrawReqs(Q *Queue) {
 
 	srcRect, tag := id.Src.GetSrcRect()
 	w, h := float64(srcRect.Dx()), float64(srcRect.Dy())
-	if w <= 0 || h <= 0 {
+	if w == 0 || h == 0 {
 		return
 	}
 	id.r = NewRect(w, h, id.pivot)

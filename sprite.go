@@ -48,7 +48,12 @@ func NewSprite(opts SpriteOpts) *Sprite {
 }
 
 func (s *Sprite) GetRect() Rect {
-	return s.rect
+	srcRect, _ := s.imgD.Src.GetSrcRect()
+	w, h := float64(srcRect.Dx()), float64(srcRect.Dy())
+	if w <= 0 || h <= 0 {
+		return ZR
+	}
+	return s.TransformRect(NewRect(w, h, s.imgD.pivot))
 }
 
 func (s *Sprite) TransformRect(rect Rect) Rect {
