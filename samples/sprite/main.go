@@ -1,9 +1,11 @@
-package sprite
+package main
 
 import (
 	"github.com/Shnifer/nigiri"
 	"github.com/Shnifer/nigiri/v2"
 	"github.com/hajimehoshi/ebiten"
+	_"image/png"
+	"github.com/hajimehoshi/ebiten/inpututil"
 )
 
 var T *ebiten.Image
@@ -29,6 +31,13 @@ func mainLoop(win *ebiten.Image) error {
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyE) {
 		S.Angle -= 1
+	}
+
+	if inpututil.IsKeyJustPressed(ebiten.Key1) {
+		S.ScaleFactor.X *= -1
+	}
+	if inpututil.IsKeyJustPressed(ebiten.Key2) {
+		S.ScaleFactor.Y *= -1
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyZ) {
