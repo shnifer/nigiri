@@ -61,7 +61,7 @@ func RandomInCircle(R float64) V2 {
 }
 
 //InDir return an ort vector in direction of angle degrees
-//0 angle is up (0,1), positive direction is counterclockwise
+//0 angle is up (0,-1), positive direction is counterclockwise
 //for world coords primary, use for screen coords with caution (because of Y axis)
 func InDir(angle float64) V2 {
 	a := angle * Deg2Rad
@@ -86,8 +86,8 @@ func Rotate(V V2, angle float64) V2 {
 	a := angle * Deg2Rad
 	sin, cos := math.Sincos(a)
 	return V2{
-		X: V.X*cos - V.Y*sin,
-		Y: V.Y*cos + V.X*sin,
+		X: V.X*cos + V.Y*sin,
+		Y: V.Y*cos - V.X*sin,
 	}
 }
 
@@ -147,7 +147,14 @@ func Dir(v V2) float64 {
 	if v == ZV {
 		return 0
 	}
-	a := math.Atan(-v.X/-v.Y) * Rad2Deg
+	if v.Y == 0 {
+		if v.X > 0 {
+			return 270
+		} else {
+			return 90
+		}
+	}
+	a := math.Atan(v.X/v.Y) * Rad2Deg
 	if v.Y > 0 {
 		a += 180
 	}
@@ -231,4 +238,37 @@ func RotateF(ang float64) func(V2) V2 {
 
 func V(x, y float64) V2 {
 	return V2{X: x, Y: y}
+}
+
+//put angle in degs in [0;360) range
+func NormAng(angle float64) float64 {
+	for angle < 0 {
+		angle += 360
+	}
+	for angle >= 360 {
+		angle -= 360
+	}
+	return angle
+}
+
+//normalize start angle in [0;360) and end in [start; start+360)
+//so always end > start. End value itself may be more than 360
+func NormAngRange(start, end float64) (float64, float64) {
+	if start > end {
+		start, end = end, start
+	}
+
+	for start < 0 {
+		start += 360
+	}
+	for start >= 360 {
+		start -= 360
+	}
+	for end < start {
+		end += 360
+	}
+	for end >= start+360 {
+		end -= 360
+	}
+	return start, end
 }

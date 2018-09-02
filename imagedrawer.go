@@ -139,9 +139,9 @@ func (id *ImageDrawer) DrawReqs(Q *Queue) {
 }
 
 func (id *ImageDrawer) geom(w, h float64) (G ebiten.GeoM) {
-	G.Translate(-w*id.pivot.X, -h*id.pivot.Y)
+	G.Translate(-w*id.r.pivot.X, -h*id.r.pivot.Y)
 	G.Scale(id.r.Width/w, id.r.Height/h)
-	G.Rotate(id.r.Ang * v2.Deg2Rad)
+	G.Rotate(-id.r.Ang * v2.Deg2Rad)
 	G.Translate(id.r.Position.X, id.r.Position.Y)
 	return G
 }

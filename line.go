@@ -51,10 +51,12 @@ func (l Line) DrawReqs(Q *Queue) {
 	lineImgDrawer.Layer = l.Layer
 
 	lineRect.Position = l.From
-	v := l.To.Sub(l.From)
+	v := v2.Sub(l.From, l.To)
 	lineRect.Height = v.Len()
 	lineRect.Ang = v.Dir()
-	lineRect = l.CamTransform.TransformRect(lineRect)
+	if l.CamTransform != nil {
+		lineRect = l.CamTransform.TransformRect(lineRect)
+	}
 	lineRect.Width = l.Width
 
 	Q.Add(lineImgDrawer)

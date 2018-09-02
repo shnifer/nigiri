@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"github.com/Shnifer/nigiri"
 	"github.com/Shnifer/nigiri/v2"
 	"github.com/hajimehoshi/ebiten"
-	_"image/png"
+	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"github.com/hajimehoshi/ebiten/inpututil"
+	_ "image/png"
 )
 
 var T *ebiten.Image
@@ -52,6 +54,7 @@ func mainLoop(win *ebiten.Image) error {
 	Q.Clear()
 	Q.Add(S)
 	Q.Run(win)
+	ebitenutil.DebugPrint(win, fmt.Sprintf("Position:%v\nAngle:%v\nScale:%v", S.Position, S.Angle, S.ScaleFactor))
 	return nil
 }
 

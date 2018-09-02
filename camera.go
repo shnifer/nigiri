@@ -185,7 +185,7 @@ func (c *Camera) inClipRect(v v2.V2) bool {
 }
 
 func (c *Camera) ClippedRect(rect Rect) bool {
-	if c.clipRect == image.ZR {
+	if c.clipRect.Empty() {
 		return false
 	}
 	if c.inClipRect(rect.Position) {

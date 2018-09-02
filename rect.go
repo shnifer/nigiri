@@ -31,7 +31,7 @@ func NewRect(w, h float64, pivotRel v2.V2) Rect {
 }
 
 func (r Rect) Empty() bool {
-	return r == ZR
+	return r.Width == 0 || r.Height == 0
 }
 
 func (r Rect) Corners() (res [4]v2.V2) {
