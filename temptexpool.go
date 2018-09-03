@@ -78,8 +78,9 @@ func (pool *tempTexPool) GetTex(w, h int) *ebiten.Image {
 		if sw < w || sh < h {
 			continue
 		}
-		if (sw + sh) > 2*(w+h) {
-			break
+
+		if (sw + sh) < 2*(w+h) {
+			pool.p[i].last = time.Now().Unix()
 		}
 
 		pool.p[i].used = true
@@ -114,7 +115,6 @@ func (pool *tempTexPool) PutTex(tex *ebiten.Image) {
 	for i, v := range pool.p {
 		if v.tex == tex {
 			pool.p[i].used = false
-			pool.p[i].last = time.Now().Unix()
 			break
 		}
 	}

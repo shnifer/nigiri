@@ -12,7 +12,6 @@ type ImageDrawer struct {
 	Layer         Layer
 	Transform     Transformer
 	ChangeableTex bool
-	FlipX, FlipY  bool
 	pivot         v2.V2
 
 	//color
