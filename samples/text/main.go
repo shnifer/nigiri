@@ -9,7 +9,6 @@ import (
 	"golang.org/x/image/colornames"
 	"golang.org/x/image/font"
 	"image"
-	"strconv"
 )
 
 var TD *nigiri.TextDrawer
@@ -55,7 +54,7 @@ func mainLoop(win *ebiten.Image) error {
 		Q.Add(S)
 	}
 	for i := 0; i < 5; i++ {
-		MUsedText.SetText(strconv.Itoa(i), Face, nigiri.AlignLeft, colornames.Red)
+//		MUsedText.SetText(strconv.Itoa(i), Face, nigiri.AlignLeft, colornames.Red)
 		MUsedSprite.Position = v2.V(100, 150).AddMul(v2.V(0, 100), float64(i))
 		Q.Add(MUsedSprite)
 	}
@@ -102,11 +101,13 @@ func main() {
 	}.New()
 
 	MUsedText = nigiri.NewTextSrc(1.2, 3, true)
+	MUsedText.SetText("text", Face, nigiri.AlignLeft, colornames.Red)
 	MUsedSprite = nigiri.SpriteOpts{
 		Src:          MUsedText,
 		Pivot:        v2.Center,
 		Smooth:       true,
 		CamTransform: C.Phys(),
+		ChangeableTex: false,
 	}.New()
 
 	ebiten.SetVsyncEnabled(true)

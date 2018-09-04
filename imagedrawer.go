@@ -11,7 +11,7 @@ type ImageDrawer struct {
 	CompositeMode ebiten.CompositeMode
 	Layer         Layer
 	Transform     Transformer
-	//	ChangeableTex bool
+	ChangeableTex bool
 	pivot v2.V2
 
 	//color
@@ -121,7 +121,7 @@ func (id *ImageDrawer) DrawReqs(Q *Queue) {
 		SourceRect:    srcRect,
 		GeoM:          id.geom(w, h),
 	}
-	//	if id.ChangeableTex {
+		if id.ChangeableTex {
 	tex := id.Src.GetSrcTex()
 	if tex == nil {
 		return
@@ -130,13 +130,13 @@ func (id *ImageDrawer) DrawReqs(Q *Queue) {
 		f:        texDrawF(tex, do),
 		reqOrder: order,
 	})
-	/*	} else {
+		} else {
 			Q.add(drawReq{
 				f:        srcDrawF(id.Src, do),
 				reqOrder: order,
 			})
 		}
-	*/
+
 }
 
 func (id *ImageDrawer) geom(w, h float64) (G ebiten.GeoM) {
@@ -147,21 +147,21 @@ func (id *ImageDrawer) geom(w, h float64) (G ebiten.GeoM) {
 	return G
 }
 
-var doChache []*ebiten.DrawImageOptions
+var doCache []*ebiten.DrawImageOptions
 
 func init() {
-	doChache = make([]*ebiten.DrawImageOptions, 0)
+	doCache = make([]*ebiten.DrawImageOptions, 0)
 }
 func getDo() *ebiten.DrawImageOptions {
-	if len(doChache) == 0 {
+	if len(doCache) == 0 {
 		return new(ebiten.DrawImageOptions)
 	}
-	v := doChache[len(doChache)-1]
-	doChache = doChache[:len(doChache)-1]
+	v := doCache[len(doCache)-1]
+	doCache = doCache[:len(doCache)-1]
 	return v
 }
 func putDo(do *ebiten.DrawImageOptions) {
-	doChache = append(doChache, do)
+	doCache = append(doCache, do)
 }
 
 func texDrawF(img *ebiten.Image, do *ebiten.DrawImageOptions) drawF {
@@ -172,7 +172,7 @@ func texDrawF(img *ebiten.Image, do *ebiten.DrawImageOptions) drawF {
 	}
 }
 
-/*func srcDrawF(src TexSrcer, do *ebiten.DrawImageOptions) drawF {
+func srcDrawF(src TexSrcer, do *ebiten.DrawImageOptions) drawF {
 	return func(dest *ebiten.Image) {
 		tex := src.GetSrcTex()
 		if tex == nil {
@@ -182,4 +182,4 @@ func texDrawF(img *ebiten.Image, do *ebiten.DrawImageOptions) drawF {
 		putDo(do)
 		PutTempTex(tex)
 	}
-}*/
+}
