@@ -164,7 +164,7 @@ func (c *Camera) calcPosG() {
 	c.posG.Reset()
 	c.posG.Translate(-c.pos.X, -c.pos.Y)
 	c.posG.Scale(c.scale, c.scale)
-	c.posG.Rotate(c.ang * v2.Deg2Rad)
+	c.posG.Rotate(-c.ang * v2.Deg2Rad)
 	c.posG.Translate(c.center.X, c.center.Y)
 }
 

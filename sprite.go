@@ -7,10 +7,10 @@ import (
 )
 
 type SpriteOpts struct {
-	Src           TexSrcer
-	CamTransform  Transformer
-	Pivot         v2.V2
-	ChangeableTex bool
+	Src          TexSrcer
+	CamTransform Transformer
+	Pivot        v2.V2
+	//	ChangeableTex bool
 	Smooth        bool
 	CompositeMode ebiten.CompositeMode
 	Layer         Layer
@@ -40,7 +40,7 @@ func NewSprite(opts SpriteOpts) *Sprite {
 	}
 	res.imgD = NewImageDrawer(opts.Src, res, opts.Pivot)
 	res.imgD.CompositeMode = opts.CompositeMode
-	res.imgD.ChangeableTex = opts.ChangeableTex
+	//	res.imgD.ChangeableTex = opts.ChangeableTex
 	res.imgD.Layer = opts.Layer
 	res.imgD.SetSmooth(opts.Smooth)
 

@@ -7,7 +7,9 @@ import (
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"golang.org/x/image/colornames"
+	"golang.org/x/image/font"
 	"image"
+	"strconv"
 )
 
 var TD *nigiri.TextDrawer
@@ -15,6 +17,9 @@ var TS *nigiri.TextSrc
 var C *nigiri.Camera
 var S *nigiri.Sprite
 var Q *nigiri.Queue
+var Face font.Face
+var MUsedText *nigiri.TextSrc
+var MUsedSprite *nigiri.Sprite
 
 func mainLoop(win *ebiten.Image) error {
 	if ebiten.IsKeyPressed(ebiten.KeyA) {
@@ -45,9 +50,14 @@ func mainLoop(win *ebiten.Image) error {
 
 	Q.Clear()
 	Q.Add(TD)
-	for i := 0; i < 5; i++ {
-		S.Position = v2.V(0, 100).Mul(float64(i))
+	for i := 0; i < 3; i++ {
+		S.Position = v2.V(0, 150).Mul(float64(i))
 		Q.Add(S)
+	}
+	for i := 0; i < 5; i++ {
+		MUsedText.SetText(strconv.Itoa(i), Face, nigiri.AlignLeft, colornames.Red)
+		MUsedSprite.Position = v2.V(100, 150).AddMul(v2.V(0, 100), float64(i))
+		Q.Add(MUsedSprite)
 	}
 	Q.Run(win)
 	ebitenutil.DebugPrint(win, fmt.Sprintf("FPS: %v\nDraws: %v", ebiten.CurrentFPS(), Q.Len()))
@@ -71,6 +81,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	Face = bigFace
 
 	TD = nigiri.NewTextDrawer(face, 2)
 	TD.Position = v2.V(100, 100)
@@ -85,6 +96,14 @@ func main() {
 
 	S = nigiri.SpriteOpts{
 		Src:          TS,
+		Pivot:        v2.Center,
+		Smooth:       true,
+		CamTransform: C.Phys(),
+	}.New()
+
+	MUsedText = nigiri.NewTextSrc(1.2, 3, true)
+	MUsedSprite = nigiri.SpriteOpts{
+		Src:          MUsedText,
 		Pivot:        v2.Center,
 		Smooth:       true,
 		CamTransform: C.Phys(),

@@ -11,8 +11,8 @@ type ImageDrawer struct {
 	CompositeMode ebiten.CompositeMode
 	Layer         Layer
 	Transform     Transformer
-	ChangeableTex bool
-	pivot         v2.V2
+	//	ChangeableTex bool
+	pivot v2.V2
 
 	//color
 	color  color.Color
@@ -113,28 +113,30 @@ func (id *ImageDrawer) DrawReqs(Q *Queue) {
 		groupTag: tag + id.tagSuffix,
 	}
 
-	do := &ebiten.DrawImageOptions{
+	do := getDo()
+	*do = ebiten.DrawImageOptions{
 		CompositeMode: id.CompositeMode,
 		Filter:        id.filter,
 		ColorM:        id.colorM,
 		SourceRect:    srcRect,
 		GeoM:          id.geom(w, h),
 	}
-	if id.ChangeableTex {
-		tex := id.Src.GetSrcTex()
-		if tex == nil {
-			return
-		}
-		Q.add(drawReq{
-			f:        texDrawF(tex, do),
-			reqOrder: order,
-		})
-	} else {
-		Q.add(drawReq{
-			f:        srcDrawF(id.Src, do),
-			reqOrder: order,
-		})
+	//	if id.ChangeableTex {
+	tex := id.Src.GetSrcTex()
+	if tex == nil {
+		return
 	}
+	Q.add(drawReq{
+		f:        texDrawF(tex, do),
+		reqOrder: order,
+	})
+	/*	} else {
+			Q.add(drawReq{
+				f:        srcDrawF(id.Src, do),
+				reqOrder: order,
+			})
+		}
+	*/
 }
 
 func (id *ImageDrawer) geom(w, h float64) (G ebiten.GeoM) {
@@ -145,20 +147,39 @@ func (id *ImageDrawer) geom(w, h float64) (G ebiten.GeoM) {
 	return G
 }
 
+var doChache []*ebiten.DrawImageOptions
+
+func init() {
+	doChache = make([]*ebiten.DrawImageOptions, 0)
+}
+func getDo() *ebiten.DrawImageOptions {
+	if len(doChache) == 0 {
+		return new(ebiten.DrawImageOptions)
+	}
+	v := doChache[len(doChache)-1]
+	doChache = doChache[:len(doChache)-1]
+	return v
+}
+func putDo(do *ebiten.DrawImageOptions) {
+	doChache = append(doChache, do)
+}
+
 func texDrawF(img *ebiten.Image, do *ebiten.DrawImageOptions) drawF {
 	return func(dest *ebiten.Image) {
 		dest.DrawImage(img, do)
+		putDo(do)
 		PutTempTex(img)
 	}
 }
 
-func srcDrawF(src TexSrcer, do *ebiten.DrawImageOptions) drawF {
+/*func srcDrawF(src TexSrcer, do *ebiten.DrawImageOptions) drawF {
 	return func(dest *ebiten.Image) {
 		tex := src.GetSrcTex()
 		if tex == nil {
 			return
 		}
 		dest.DrawImage(tex, do)
+		putDo(do)
 		PutTempTex(tex)
 	}
-}
+}*/

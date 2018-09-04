@@ -3,6 +3,8 @@ package nigiri
 import (
 	"github.com/Shnifer/nigiri/v2"
 	"github.com/hajimehoshi/ebiten"
+	"golang.org/x/image/colornames"
+	_ "image/png"
 	"math/rand"
 	"sort"
 	"testing"
@@ -114,5 +116,65 @@ func Benchmark_Rect_Corners(b *testing.B) {
 	r.Ang = 40
 	for i := 0; i < b.N; i++ {
 		_ = r.Corners()
+	}
+}
+
+func BenchmarkSampleQueue(b *testing.B) {
+	Q := NewQueue()
+	SetTexLoader(FileTexLoader("samples"))
+	tex, err := GetTex("HUD_Ship.png")
+	if err != nil {
+		panic(err)
+	}
+	C := NewCamera()
+	C.SetCenter(v2.V2{X: 300, Y: 300})
+
+	Opts := SpriteOpts{
+		Src:          NewStatic(tex, nil, "ship"),
+		Pivot:        v2.TopMid,
+		Smooth:       true,
+		CamTransform: C.Phys(),
+		//		ChangeableTex: true,
+	}
+	S := NewSprite(Opts)
+
+	SetFaceLoader(FileFaceLoader("samples"))
+
+	face, err := GetFace("furore.ttf", 20)
+	if err != nil {
+		panic(err)
+	}
+	TD := NewTextDrawer(face, 2)
+	TD.Position = v2.V(100, 100)
+	TD.Color = colornames.Brown
+	TD.Text = "just simple textdrawer\nsecond line"
+
+	TS := NewTextSrc(1.2, 1, true)
+	TS.AddText("text source sample\nmulti-line", face, 0, colornames.White)
+	TS.AddText("center or", face, 1, colornames.White)
+	TS.AddText("right aligned", face, 2, colornames.White)
+
+	S2 := SpriteOpts{
+		Src:          TS,
+		Pivot:        v2.Center,
+		Smooth:       true,
+		CamTransform: C.Phys(),
+		//		ChangeableTex: true,
+	}.New()
+
+	dest, _ := ebiten.NewImage(1000, 1000, ebiten.FilterDefault)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		Q.Clear()
+		for j := 0; j < 10; j++ {
+			S.Position.DoAddMul(v2.V(1, 1), 1)
+			Q.Add(S)
+		}
+		for j := 0; j < 10; j++ {
+			S.Angle += 1
+			Q.Add(S2)
+		}
+		//	Q.Add(TD)
+		Q.Run(dest)
 	}
 }
