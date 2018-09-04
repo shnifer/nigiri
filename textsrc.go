@@ -49,10 +49,12 @@ func newTextString(str string, face font.Face, color color.Color, align Align, i
 type TextSrc struct {
 	strs []textString
 
-	dirty   bool
-	offs    []image.Point
-	tempTex *ebiten.Image
-	rect    image.Rectangle
+	dirty bool
+	offs  []image.Point
+	rect  image.Rectangle
+
+	permanentTex bool
+	permTex      *ebiten.Image
 
 	InterLineK float64
 	Layer      Layer
@@ -67,24 +69,34 @@ func (ts *TextSrc) GetSrcRect() (srcRect *image.Rectangle, tag string) {
 func (ts *TextSrc) GetSrcTex() (srcImage *ebiten.Image) {
 	ts.recalc()
 
+	if ts.permanentTex {
+		return ts.permTex
+	}
+
 	w, h := ts.rect.Dx(), ts.rect.Dy()
 	if w == 0 || h == 0 {
 		return nil
 	}
 	tempImage := GetTempTex(w, h)
-	for i, s := range ts.strs {
-		text.Draw(tempImage, s.str, s.face,
-			ts.offs[i].X-ts.rect.Min.X, ts.offs[i].Y-ts.rect.Min.Y, s.color)
-	}
+	ts.drawTextInto(tempImage)
 	return tempImage
 }
 
+func (ts *TextSrc) drawTextInto(img *ebiten.Image) {
+	if img == nil {
+		panic("TextSrc.drawTextInto is not supposed to be called with nil ebiten.Image")
+	}
+	for i, s := range ts.strs {
+		text.Draw(img, s.str, s.face,
+			ts.offs[i].X-ts.rect.Min.X, ts.offs[i].Y-ts.rect.Min.Y, s.color)
+	}
+}
 func (ts *TextSrc) recalc() {
 	if !ts.dirty {
 		return
 	}
-
 	ts.dirty = false
+
 	var maxA int
 	for _, str := range ts.strs {
 		if str.advance > maxA {
@@ -115,14 +127,26 @@ func (ts *TextSrc) recalc() {
 	for i, s := range ts.strs {
 		ts.rect = ts.rect.Union(s.bound.Add(ts.offs[i]))
 	}
+
+	if ts.permanentTex {
+		w, h := ts.rect.Dx(), ts.rect.Dy()
+		if w == 0 || h == 0 {
+			ts.permTex = nil
+			return
+		}
+		ts.permTex, _ = ebiten.NewImage(w, h, ebiten.FilterDefault)
+		ts.drawTextInto(ts.permTex)
+	}
 }
 
-func NewTextSrc(InterLineK float64, layer Layer) *TextSrc {
+func NewTextSrc(InterLineK float64, layer Layer, permanentTex bool) *TextSrc {
 	res := &TextSrc{
-		strs:       make([]textString, 0),
-		offs:       make([]image.Point, 0),
-		InterLineK: InterLineK,
-		Layer:      layer,
+		strs:         make([]textString, 0),
+		offs:         make([]image.Point, 0),
+		InterLineK:   InterLineK,
+		Layer:        layer,
+		permanentTex: permanentTex,
+		dirty:        true,
 	}
 	return res
 }

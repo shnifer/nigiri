@@ -2,6 +2,7 @@ package nigiri
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/pkg/errors"
 	"image"
@@ -13,13 +14,24 @@ type TexLoaderF func(name string) (*ebiten.Image, error)
 type TexCache struct {
 	cache  map[string]*ebiten.Image
 	loader TexLoaderF
+	prefix string
 }
 
 func NewTexCache(loader TexLoaderF) *TexCache {
 	return &TexCache{
 		cache:  make(map[string]*ebiten.Image),
 		loader: loader,
+		prefix: newPrefix(),
 	}
+}
+
+var prefixIterator byte
+
+func newPrefix() string {
+	if prefixIterator < 255 {
+		prefixIterator++
+	}
+	return fmt.Sprintf("%02X", prefixIterator)
 }
 
 var tCache *TexCache

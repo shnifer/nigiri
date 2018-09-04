@@ -77,7 +77,7 @@ func main() {
 	TD.Color = colornames.Brown
 	TD.Text = "just simple textdrawer\nsecond line"
 
-	TS = nigiri.NewTextSrc(1.2, 1)
+	TS = nigiri.NewTextSrc(1.2, 1, true)
 	TS.AddText("text source sample\nmulti-line", face, 0, colornames.White)
 	TS.AddText("colored and sized", bigFace, 0, colornames.Greenyellow)
 	TS.AddText("center or", face, 1, colornames.White)
