@@ -165,11 +165,11 @@ func (id *ImageDrawer) geom(w, h float64) (G ebiten.GeoM) {
 	return G
 }
 
-func texDrawF(img *ebiten.Image, do *ebiten.DrawImageOptions) drawF {
+func texDrawF(tex *ebiten.Image, do *ebiten.DrawImageOptions) drawF {
 	return func(dest *ebiten.Image) {
-		dest.DrawImage(img, do)
+		dest.DrawImage(tex, do)
 		putDo(do)
-		PutTempTex(img)
+		PutTempTex(tex)
 	}
 }
 

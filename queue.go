@@ -52,14 +52,6 @@ func (Q *Queue) Clear() {
 	Q.reqs = Q.reqs[:0]
 }
 
-/*func (Q *Queue) SetCam(cam *Camera) {
-	Q.cam = cam
-}
-
-func (Q *Queue) Cam() *Camera{
-	return Q.cam
-}
-*/
 //for use from outside package
 func (Q *Queue) Add(d DrawRequester) {
 	d.DrawReqs(Q)
