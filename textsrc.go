@@ -134,7 +134,10 @@ func (ts *TextSrc) recalc() {
 			ts.permTex = nil
 			return
 		}
-		ts.permTex, _ = ebiten.NewImage(w, h, ebiten.FilterDefault)
+		if ts.permTex != nil {
+			PutPoolTex(ts.permTex)
+		}
+		ts.permTex = GetPoolTex(w, h)
 		ts.drawTextInto(ts.permTex)
 	}
 }

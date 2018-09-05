@@ -7,9 +7,9 @@ import (
 )
 
 type SpriteOpts struct {
-	Src          TexSrcer
-	CamTransform Transformer
-	Pivot        v2.V2
+	Src           TexSrcer
+	CamTransform  Transformer
+	Pivot         v2.V2
 	ChangeableTex bool
 	Smooth        bool
 	CompositeMode ebiten.CompositeMode

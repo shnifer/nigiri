@@ -12,7 +12,7 @@ type ImageDrawer struct {
 	Layer         Layer
 	Transform     Transformer
 	ChangeableTex bool
-	pivot v2.V2
+	pivot         v2.V2
 
 	//color
 	color  color.Color
@@ -139,21 +139,21 @@ func (id *ImageDrawer) DrawReqs(Q *Queue) {
 		SourceRect:    srcRect,
 		GeoM:          id.geom(w, h),
 	}
-		if id.ChangeableTex {
-	tex := id.Src.GetSrcTex()
-	if tex == nil {
-		return
-	}
-	Q.add(drawReq{
-		f:        texDrawF(tex, do),
-		reqOrder: order,
-	})
-		} else {
-			Q.add(drawReq{
-				f:        srcDrawF(id.Src, do),
-				reqOrder: order,
-			})
+	if id.ChangeableTex {
+		tex := id.Src.GetSrcTex()
+		if tex == nil {
+			return
 		}
+		Q.add(drawReq{
+			f:        texDrawF(tex, do),
+			reqOrder: order,
+		})
+	} else {
+		Q.add(drawReq{
+			f:        srcDrawF(id.Src, do),
+			reqOrder: order,
+		})
+	}
 
 }
 
