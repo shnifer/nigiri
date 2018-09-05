@@ -13,16 +13,17 @@ type tempTex struct {
 	used bool
 }
 
-const poolDropTime = 5
+const poolDropTime = 100
 
-type tempTexPool struct {
+type texPool struct {
 	sync.Mutex
 	p       []tempTex
+	updateCounter int
 }
 
-var ttPool *tempTexPool
+var ttPool *texPool
 func init() {
-	ttPool = newTempTexPool()
+	ttPool = newTexPool()
 }
 
 func GetTempTex(w, h int) *ebiten.Image {
@@ -33,8 +34,8 @@ func PutTempTex(tex *ebiten.Image) {
 	ttPool.PutTex(tex)
 }
 
-func newTempTexPool() *tempTexPool {
-	res := &tempTexPool{
+func newTexPool() *texPool {
+	res := &texPool{
 		p:       make([]tempTex, 0),
 	}
 	go func() {
@@ -45,7 +46,7 @@ func newTempTexPool() *tempTexPool {
 	return res
 }
 
-func (pool *tempTexPool) GetTex(w, h int) *ebiten.Image {
+func (pool *texPool) GetTex(w, h int) *ebiten.Image {
 	pool.Lock()
 	defer pool.Unlock()
 
@@ -88,7 +89,7 @@ func (pool *tempTexPool) GetTex(w, h int) *ebiten.Image {
 	return tex
 }
 
-func (pool *tempTexPool) PutTex(tex *ebiten.Image) {
+func (pool *texPool) PutTex(tex *ebiten.Image) {
 	pool.Lock()
 	defer pool.Unlock()
 
@@ -100,7 +101,22 @@ func (pool *tempTexPool) PutTex(tex *ebiten.Image) {
 	}
 }
 
-func (pool *tempTexPool) checkLast() {
+func (pool *texPool) afterLoop(){
+	pool.Lock()
+	defer pool.Unlock()
+
+	for i:=0; i<len(pool.p);i++{
+		pool.p[i].used = false
+	}
+	pool.updateCounter++
+	if pool.updateCounter<poolDropTime {
+		return
+	}
+	pool.updateCounter=0
+	pool.checkLast()
+}
+
+func (pool *texPool) checkLast() {
 	pool.Lock()
 	defer pool.Unlock()
 	l := len(pool.p)
