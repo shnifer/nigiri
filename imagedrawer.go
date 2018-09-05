@@ -28,6 +28,24 @@ type ImageDrawer struct {
 	r Rect
 }
 
+//Chache for DrawImageOptions. 96 bytes each
+var doCache []*ebiten.DrawImageOptions
+
+func init() {
+	doCache = make([]*ebiten.DrawImageOptions, 0)
+}
+func getDo() *ebiten.DrawImageOptions {
+	if len(doCache) == 0 {
+		return new(ebiten.DrawImageOptions)
+	}
+	v := doCache[len(doCache)-1]
+	doCache = doCache[:len(doCache)-1]
+	return v
+}
+func putDo(do *ebiten.DrawImageOptions) {
+	doCache = append(doCache, do)
+}
+
 func NewImageDrawer(src TexSrcer, transform Transformer, pivotRel v2.V2) *ImageDrawer {
 	res := &ImageDrawer{
 		Src:       src,
@@ -145,23 +163,6 @@ func (id *ImageDrawer) geom(w, h float64) (G ebiten.GeoM) {
 	G.Rotate(-id.r.Ang * v2.Deg2Rad)
 	G.Translate(id.r.Position.X, id.r.Position.Y)
 	return G
-}
-
-var doCache []*ebiten.DrawImageOptions
-
-func init() {
-	doCache = make([]*ebiten.DrawImageOptions, 0)
-}
-func getDo() *ebiten.DrawImageOptions {
-	if len(doCache) == 0 {
-		return new(ebiten.DrawImageOptions)
-	}
-	v := doCache[len(doCache)-1]
-	doCache = doCache[:len(doCache)-1]
-	return v
-}
-func putDo(do *ebiten.DrawImageOptions) {
-	doCache = append(doCache, do)
 }
 
 func texDrawF(img *ebiten.Image, do *ebiten.DrawImageOptions) drawF {
