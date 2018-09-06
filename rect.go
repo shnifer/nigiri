@@ -15,7 +15,7 @@ type Rect struct {
 	Width  float64
 	Height float64
 	//Rotation of rect in Degrees, counter clockwise
-	Ang float64
+	Angle float64
 }
 
 func (r Rect) TransformRect(rect Rect) Rect {
@@ -35,7 +35,7 @@ func (r Rect) Empty() bool {
 }
 
 func (r Rect) Corners() (res [4]v2.V2) {
-	rF := v2.RotateF(r.Ang)
+	rF := v2.RotateF(r.Angle)
 	p := v2.V2{X: r.Width * r.pivot.X, Y: r.Height * r.pivot.Y}
 	res[0] = r.Position.Add(rF(v2.V2{X: 0, Y: 0}.Sub(p)))
 	res[1] = r.Position.Add(rF(v2.V2{X: r.Width, Y: 0}.Sub(p)))

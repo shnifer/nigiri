@@ -12,6 +12,7 @@ import (
 
 var T *ebiten.Image
 var C *nigiri.Camera
+var I *nigiri.ImageDrawer
 var S *nigiri.Sprite
 var Q *nigiri.Queue
 
@@ -52,7 +53,7 @@ func mainLoop(win *ebiten.Image) error {
 	}
 
 	Q.Clear()
-	Q.Add(S)
+	Q.Add(I)
 	Q.Run(win)
 	ebitenutil.DebugPrint(win, fmt.Sprintf("Position:%v\nAngle:%v\nScale:%v", S.Position, S.Angle, S.ScaleFactor))
 	return nil
@@ -68,13 +69,18 @@ func main() {
 	C := nigiri.NewCamera()
 	C.SetCenter(v2.V2{X: 300, Y: 300})
 
-	Opts := nigiri.SpriteOpts{
-		Src:          nigiri.NewStatic(tex, nil, "ship"),
-		Pivot:        v2.TopMid,
-		Smooth:       true,
-		CamTransform: C.Phys(),
+	//Opts := nigiri.SpriteOpts{
+	//	Src:          nigiri.NewStatic(tex, nil, "ship"),
+	//	Pivot:        v2.TopMid,
+	//	Smooth:       true,
+	//	CamTransform: C.Phys(),
+	//}
+	//S = nigiri.NewSprite(Opts)
+	S = &nigiri.Sprite{
+		Scaler: nigiri.NewScaler(1),
 	}
-	S = nigiri.NewSprite(Opts)
+	I = nigiri.NewImageDrawer(nigiri.NewStatic(tex, nil, "ship"),
+		nigiri.Transforms{S, C.Phys()}, v2.ZV)
 
 	ebiten.Run(mainLoop, 600, 600, 1, "TEST")
 }

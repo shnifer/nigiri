@@ -14,7 +14,7 @@ func init() {
 	defRectTex, _ = ebiten.NewImage(10, 10, ebiten.FilterDefault)
 	defRectTex.Fill(color.White)
 
-	lineImgDrawer = NewImageDrawer(NewStatic(defRectTex, nil, "!defRectTex"), &lineRect, v2.ZV)
+	lineImgDrawer = NewImageDrawer(NewStatic(defRectTex, nil, "!defRectTex"), &lineRect)
 }
 
 type Line struct {
@@ -53,7 +53,7 @@ func (l Line) DrawReqs(Q *Queue) {
 	lineRect.Position = l.From
 	v := v2.Sub(l.From, l.To)
 	lineRect.Height = v.Len()
-	lineRect.Ang = v.Dir()
+	lineRect.Angle = v.Dir()
 	if l.CamTransform != nil {
 		lineRect = l.CamTransform.TransformRect(lineRect)
 	}

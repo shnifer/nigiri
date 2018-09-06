@@ -13,8 +13,6 @@ type DrawRequester interface {
 	DrawReqs(Q *Queue)
 }
 
-type ActImage func(srcImage *ebiten.Image)
-
 type TexSrcer interface {
 	GetSrcRect() (srcRect *image.Rectangle, tag string)
 	GetSrcTex() (srcImage *ebiten.Image)

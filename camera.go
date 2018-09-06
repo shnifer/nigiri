@@ -94,7 +94,7 @@ func (c *Camera) SetClipRect(rect image.Rectangle) {
 func (c *Camera) phys(rect Rect) Rect {
 	rect.Width *= c.scale
 	rect.Height *= c.scale
-	rect.Ang += c.ang
+	rect.Angle += c.ang
 	rect.Position = c.applyV2(rect.Position)
 	if c.ClippedRect(rect) {
 		rect = ZR
@@ -121,7 +121,7 @@ func (c *Camera) NoRot() Transformer {
 }
 
 func (c *Camera) noScale(rect Rect) Rect {
-	rect.Ang += c.ang
+	rect.Angle += c.ang
 	rect.Position = c.applyV2(rect.Position)
 	if c.ClippedRect(rect) {
 		rect = ZR

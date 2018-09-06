@@ -2,6 +2,7 @@ package nigiri
 
 import (
 	"github.com/hajimehoshi/ebiten"
+
 	"image"
 )
 

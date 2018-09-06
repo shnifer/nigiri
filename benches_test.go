@@ -111,9 +111,9 @@ func Benchmark_Geom_Concat(b *testing.B) {
 }
 
 func Benchmark_Rect_Corners(b *testing.B) {
-	r := NewRect(100, 200, v2.V2{0.3, 0.5})
-	r.Position = v2.V2{10, 20}
-	r.Ang = 40
+	r := NewRect(100, 200, v2.V(0.3, 0.5))
+	r.Position = v2.V(10, 20)
+	r.Angle = 40
 	for i := 0; i < b.N; i++ {
 		_ = r.Corners()
 	}
@@ -129,14 +129,13 @@ func BenchmarkSampleQueue(b *testing.B) {
 	C := NewCamera()
 	C.SetCenter(v2.V2{X: 300, Y: 300})
 
-	Opts := SpriteOpts{
-		Src:          NewStatic(tex, nil, "ship"),
-		Pivot:        v2.TopMid,
-		Smooth:       true,
-		CamTransform: C.Phys(),
-		//		ChangeableTex: true,
+	S := Sprite{
+		Pivot: v2.TopMid,
 	}
-	S := NewSprite(Opts)
+	I := NewImageDrawer(NewStatic(tex, nil, "ship"), Transforms{S, C.Phys()})
+	I.Layer = 1
+	I.ChangeableTex = true
+	I.SetSmooth(true)
 
 	SetFaceLoader(FileFaceLoader("samples"))
 
@@ -149,30 +148,30 @@ func BenchmarkSampleQueue(b *testing.B) {
 	TD.Color = colornames.Brown
 	TD.Text = "just simple textdrawer\nsecond line"
 
-	TS := NewTextSrc(1.2, 1, true)
+	TS := NewTextSrc(1.2, true)
 	TS.AddText("text source sample\nmulti-line", face, 0, colornames.White)
 	TS.AddText("center or", face, 1, colornames.White)
 	TS.AddText("right aligned", face, 2, colornames.White)
 
-	S2 := SpriteOpts{
-		Src:          TS,
-		Pivot:        v2.Center,
-		Smooth:       true,
-		CamTransform: C.Phys(),
-		//		ChangeableTex: true,
-	}.New()
+	S2 := Sprite{
+		Pivot: v2.Center,
+	}
+	I2 := NewImageDrawer(TS, Transforms{S2, C.Phys()})
 
 	dest, _ := ebiten.NewImage(1000, 1000, ebiten.FilterDefault)
+
+	//log.Printf("Sprite object Size = %v\nImageDrawer Size = %v\nTextSrc Size = %v\n",
+	//	unsafe.Sizeof(S), unsafe.Sizeof(*I), unsafe.Sizeof(*TS))
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		Q.Clear()
 		for j := 0; j < 10; j++ {
 			S.Position.DoAddMul(v2.V(1, 1), 1)
-			Q.Add(S)
+			Q.Add(I)
 		}
 		for j := 0; j < 10; j++ {
 			S.Angle += 1
-			Q.Add(S2)
+			Q.Add(I2)
 		}
 		//	Q.Add(TD)
 		Q.Run(dest)

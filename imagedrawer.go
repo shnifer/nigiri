@@ -12,7 +12,6 @@ type ImageDrawer struct {
 	Layer         Layer
 	Transform     Transformer
 	ChangeableTex bool
-	pivot         v2.V2
 
 	//color
 	color  color.Color
@@ -46,13 +45,12 @@ func putDo(do *ebiten.DrawImageOptions) {
 	doCache = append(doCache, do)
 }
 
-func NewImageDrawer(src TexSrcer, transform Transformer, pivotRel v2.V2) *ImageDrawer {
+func NewImageDrawer(src TexSrcer, transform Transformer) *ImageDrawer {
 	res := &ImageDrawer{
 		Src:       src,
 		Transform: transform,
 		color:     color.White,
 		alpha:     1,
-		pivot:     pivotRel,
 	}
 	res.calcTagSuffix()
 	return res
@@ -118,7 +116,7 @@ func (id *ImageDrawer) DrawReqs(Q *Queue) {
 	if w == 0 || h == 0 {
 		return
 	}
-	id.r = NewRect(w, h, id.pivot)
+	id.r = NewRect(w, h, v2.ZV)
 	if id.Transform != nil {
 		id.r = id.Transform.TransformRect(id.r)
 	}
@@ -160,7 +158,7 @@ func (id *ImageDrawer) DrawReqs(Q *Queue) {
 func (id *ImageDrawer) geom(w, h float64) (G ebiten.GeoM) {
 	G.Translate(-w*id.r.pivot.X, -h*id.r.pivot.Y)
 	G.Scale(id.r.Width/w, id.r.Height/h)
-	G.Rotate(-id.r.Ang * v2.Deg2Rad)
+	G.Rotate(-id.r.Angle * v2.Deg2Rad)
 	G.Translate(id.r.Position.X, id.r.Position.Y)
 	return G
 }

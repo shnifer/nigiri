@@ -57,7 +57,6 @@ type TextSrc struct {
 	permTex      *ebiten.Image
 
 	InterLineK float64
-	Layer      Layer
 }
 
 func (ts *TextSrc) GetSrcRect() (srcRect *image.Rectangle, tag string) {
@@ -142,12 +141,11 @@ func (ts *TextSrc) recalc() {
 	}
 }
 
-func NewTextSrc(InterLineK float64, layer Layer, permanentTex bool) *TextSrc {
+func NewTextSrc(InterLineK float64, permanentTex bool) *TextSrc {
 	res := &TextSrc{
 		strs:         make([]textString, 0),
 		offs:         make([]image.Point, 0),
 		InterLineK:   InterLineK,
-		Layer:        layer,
 		permanentTex: permanentTex,
 		dirty:        true,
 	}
