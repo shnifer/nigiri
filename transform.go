@@ -1,6 +1,8 @@
 package nigiri
 
-import "github.com/Shnifer/nigiri/v2"
+import (
+	"github.com/shnifer/nigiri/vec2"
+)
 
 type Transforms []Transformer
 
@@ -18,8 +20,8 @@ func (t Transforms) TransformRect(rect Rect) Rect {
 }
 
 type Sprite struct {
-	Position v2.V2
-	Pivot    v2.V2
+	Position vec2.V2
+	Pivot    vec2.V2
 	Angle    float64
 	Scaler
 }

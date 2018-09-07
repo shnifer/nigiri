@@ -12,7 +12,7 @@ var C *nigiri.Camera
 var Q *nigiri.Queue
 var L nigiri.Line
 
-var from v2.V2
+var from vec2.V2
 var dir float64
 
 func mainLoop(win *ebiten.Image) error {
@@ -37,7 +37,7 @@ func mainLoop(win *ebiten.Image) error {
 
 	Q.Clear()
 	L.From = from
-	L.To = from.AddMul(v2.InDir(dir), 100)
+	L.To = from.AddMul(vec2.InDir(dir), 100)
 	Q.Add(L)
 	Q.Run(win)
 	ebitenutil.DebugPrint(win, fmt.Sprintf("Dir: %v", dir))
@@ -45,11 +45,11 @@ func mainLoop(win *ebiten.Image) error {
 }
 
 func main() {
-	from = v2.V(200, 200)
+	from = vec2.V(200, 200)
 	Q = nigiri.NewQueue()
 
 	C = nigiri.NewCamera()
-	C.SetCenter(v2.V2{X: 300, Y: 300})
+	C.SetCenter(vec2.V2{X: 300, Y: 300})
 
 	L = nigiri.NewLine(nil, 1)
 

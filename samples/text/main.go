@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/Shnifer/nigiri"
-	"github.com/Shnifer/nigiri/v2"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
+	"github.com/shnifer/nigiri/vec2"
 	"golang.org/x/image/colornames"
 	"golang.org/x/image/font"
 	"image"
@@ -23,16 +23,16 @@ var MUsedSprite *nigiri.Sprite
 
 func mainLoop(win *ebiten.Image) error {
 	if ebiten.IsKeyPressed(ebiten.KeyA) {
-		C.Translate(v2.InDir(C.Angle()).Rotate90().Mul(1 / C.Scale()))
+		C.Translate(vec2.InDir(C.Angle()).Rotate90().Mul(1 / C.Scale()))
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyD) {
-		C.Translate(v2.InDir(C.Angle()).Rotate90().Mul(-1 / C.Scale()))
+		C.Translate(vec2.InDir(C.Angle()).Rotate90().Mul(-1 / C.Scale()))
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyW) {
-		C.Translate(v2.InDir(C.Angle()).Mul(1 / C.Scale()))
+		C.Translate(vec2.InDir(C.Angle()).Mul(1 / C.Scale()))
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyS) {
-		C.Translate(v2.InDir(C.Angle()).Mul(-1 / C.Scale()))
+		C.Translate(vec2.InDir(C.Angle()).Mul(-1 / C.Scale()))
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyQ) {
 		C.Rotate(1)
@@ -51,12 +51,12 @@ func mainLoop(win *ebiten.Image) error {
 	Q.Clear()
 	Q.Add(TD)
 	for i := 0; i < 3; i++ {
-		S.Position = v2.V(0, 150).Mul(float64(i))
+		S.Position = vec2.V(0, 150).Mul(float64(i))
 		Q.Add(S)
 	}
 	for i := 0; i < 5; i++ {
 		MUsedText.SetText(strconv.Itoa(i), Face, nigiri.AlignLeft, colornames.Red)
-		MUsedSprite.Position = v2.V(100, 150).AddMul(v2.V(0, 100), float64(i))
+		MUsedSprite.Position = vec2.V(100, 150).AddMul(vec2.V(0, 100), float64(i))
 		Q.Add(MUsedSprite)
 	}
 	Q.Run(win)
@@ -71,7 +71,7 @@ func main() {
 	Q = nigiri.NewQueue()
 
 	C = nigiri.NewCamera()
-	C.SetCenter(v2.V2{X: 500, Y: 500})
+	C.SetCenter(vec2.V2{X: 500, Y: 500})
 	C.SetClipRect(image.Rect(0, 0, 1000, 1000))
 
 	nigiri.SetFaceLoader(nigiri.FileFaceLoader("samples"))
@@ -84,7 +84,7 @@ func main() {
 	Face = bigFace
 
 	TD = nigiri.NewTextDrawer(face, 2)
-	TD.Position = v2.V(100, 100)
+	TD.Position = vec2.V(100, 100)
 	TD.Color = colornames.Brown
 	TD.Text = "just simple textdrawer\nsecond line"
 
@@ -96,7 +96,7 @@ func main() {
 
 	S = nigiri.SpriteOpts{
 		Src:          TS,
-		Pivot:        v2.Center,
+		Pivot:        vec2.Center,
 		Smooth:       true,
 		CamTransform: C.Phys(),
 	}.New()
@@ -105,7 +105,7 @@ func main() {
 	MUsedText.SetText("text", Face, nigiri.AlignLeft, colornames.Red)
 	MUsedSprite = nigiri.SpriteOpts{
 		Src:           MUsedText,
-		Pivot:         v2.Center,
+		Pivot:         vec2.Center,
 		Smooth:        true,
 		CamTransform:  C.Phys(),
 		ChangeableTex: true,

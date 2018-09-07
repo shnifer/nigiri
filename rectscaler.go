@@ -1,19 +1,19 @@
 package nigiri
 
 import (
-	"github.com/Shnifer/nigiri/v2"
+	"github.com/shnifer/nigiri/vec2"
 	"math"
 )
 
 type Scaler struct {
 	UseFixed       bool
 	FitProportion  bool
-	ScaleFactor    v2.V2
+	ScaleFactor    vec2.V2
 	FixedW, FixedH float64
 }
 
 func NewScaler(scale float64) Scaler {
-	return Scaler{ScaleFactor: v2.V2{X: scale, Y: scale}}
+	return Scaler{ScaleFactor: vec2.V2{X: scale, Y: scale}}
 }
 
 func NewFixedScaler(w, h float64) Scaler {

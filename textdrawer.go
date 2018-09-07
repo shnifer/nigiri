@@ -1,9 +1,9 @@
 package nigiri
 
 import (
-	"github.com/Shnifer/nigiri/v2"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/text"
+	"github.com/shnifer/nigiri/vec2"
 	"golang.org/x/image/font"
 	"image/color"
 )
@@ -12,7 +12,7 @@ type TextDrawer struct {
 	Face     font.Face
 	Text     string
 	Layer    Layer
-	Position v2.V2
+	Position vec2.V2
 	Color    color.Color
 }
 

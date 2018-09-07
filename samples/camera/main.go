@@ -18,16 +18,16 @@ var FR *nigiri.Sprite
 
 func mainLoop(win *ebiten.Image) error {
 	if ebiten.IsKeyPressed(ebiten.KeyA) {
-		C.Translate(v2.InDir(C.Angle()).Rotate90().Mul(1 / C.Scale()))
+		C.Translate(vec2.InDir(C.Angle()).Rotate90().Mul(1 / C.Scale()))
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyD) {
-		C.Translate(v2.InDir(C.Angle()).Rotate90().Mul(-1 / C.Scale()))
+		C.Translate(vec2.InDir(C.Angle()).Rotate90().Mul(-1 / C.Scale()))
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyW) {
-		C.Translate(v2.InDir(C.Angle()).Mul(1 / C.Scale()))
+		C.Translate(vec2.InDir(C.Angle()).Mul(1 / C.Scale()))
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyS) {
-		C.Translate(v2.InDir(C.Angle()).Mul(-1 / C.Scale()))
+		C.Translate(vec2.InDir(C.Angle()).Mul(-1 / C.Scale()))
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyQ) {
 		C.Rotate(1)
@@ -46,7 +46,7 @@ func mainLoop(win *ebiten.Image) error {
 	Q.Clear()
 	for x := -100; x <= 100; x += 10 {
 		for y := -100; y <= 100; y += 10 {
-			S.Position = v2.V2{X: float64(x), Y: float64(y)}
+			S.Position = vec2.V2{X: float64(x), Y: float64(y)}
 			Q.Add(S)
 		}
 	}
@@ -67,7 +67,7 @@ func main() {
 		panic(err)
 	}
 	C = nigiri.NewCamera()
-	C.SetCenter(v2.V2{X: 500, Y: 500})
+	C.SetCenter(vec2.V2{X: 500, Y: 500})
 	C.SetScale(5)
 	C.SetClipRect(image.Rect(300, 300, 700, 700))
 
@@ -76,22 +76,22 @@ func main() {
 
 	FR = nigiri.SpriteOpts{
 		Src:          nigiri.NewStatic(tt, nil, "particle"),
-		Pivot:        v2.Center,
+		Pivot:        vec2.Center,
 		Layer:        -1,
 		CamTransform: C.Local(),
 	}.New()
-	FR.Position = v2.V2{500, 500}
+	FR.Position = vec2.V2{500, 500}
 	FR.UseFixed = true
 	FR.FixedH, FR.FixedW = 400, 400
 
 	Opts := nigiri.SpriteOpts{
 		Src:          nigiri.NewStatic(tex, nil, "particle"),
-		Pivot:        v2.Center,
+		Pivot:        vec2.Center,
 		Smooth:       true,
 		CamTransform: C.Phys(),
 	}
 	S = nigiri.NewSprite(Opts)
-	S.ScaleFactor = v2.V2{X: 0.2, Y: 0.2}
+	S.ScaleFactor = vec2.V2{X: 0.2, Y: 0.2}
 	ebiten.SetVsyncEnabled(true)
 	ebiten.Run(mainLoop, 1000, 1000, 1, "TEST")
 }

@@ -1,8 +1,8 @@
 package nigiri
 
 import (
-	"github.com/Shnifer/nigiri/v2"
 	"github.com/hajimehoshi/ebiten"
+	"github.com/shnifer/nigiri/vec2"
 	"image/color"
 )
 
@@ -20,8 +20,8 @@ func init() {
 type Line struct {
 	CamTransform Transformer
 	Layer        Layer
-	From         v2.V2
-	To           v2.V2
+	From         vec2.V2
+	To           vec2.V2
 	Width        float64
 	Color        color.Color
 }
@@ -35,7 +35,7 @@ func NewLine(camTransform Transformer, layer Layer) Line {
 	}
 }
 
-func NewLineExt(camTransform Transformer, layer Layer, from, to v2.V2, width float64, color color.Color) Line {
+func NewLineExt(camTransform Transformer, layer Layer, from, to vec2.V2, width float64, color color.Color) Line {
 	return Line{
 		CamTransform: camTransform,
 		Width:        width,
@@ -51,7 +51,7 @@ func (l Line) DrawReqs(Q *Queue) {
 	lineImgDrawer.Layer = l.Layer
 
 	lineRect.Position = l.From
-	v := v2.Sub(l.From, l.To)
+	v := vec2.Sub(l.From, l.To)
 	lineRect.Height = v.Len()
 	lineRect.Angle = v.Dir()
 	if l.CamTransform != nil {

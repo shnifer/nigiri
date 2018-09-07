@@ -1,8 +1,8 @@
 package nigiri
 
 import (
-	"github.com/Shnifer/nigiri/v2"
 	"github.com/hajimehoshi/ebiten"
+	"github.com/shnifer/nigiri/vec2"
 	"image/color"
 )
 
@@ -116,7 +116,7 @@ func (id *ImageDrawer) DrawReqs(Q *Queue) {
 	if w == 0 || h == 0 {
 		return
 	}
-	id.r = NewRect(w, h, v2.ZV)
+	id.r = NewRect(w, h, vec2.ZV)
 	if id.Transform != nil {
 		id.r = id.Transform.TransformRect(id.r)
 	}
@@ -158,7 +158,7 @@ func (id *ImageDrawer) DrawReqs(Q *Queue) {
 func (id *ImageDrawer) geom(w, h float64) (G ebiten.GeoM) {
 	G.Translate(-w*id.r.pivot.X, -h*id.r.pivot.Y)
 	G.Scale(id.r.Width/w, id.r.Height/h)
-	G.Rotate(-id.r.Angle * v2.Deg2Rad)
+	G.Rotate(-id.r.Angle * vec2.Deg2Rad)
 	G.Translate(id.r.Position.X, id.r.Position.Y)
 	return G
 }

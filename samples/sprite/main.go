@@ -7,6 +7,7 @@ import (
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"github.com/hajimehoshi/ebiten/inpututil"
+	"github.com/shnifer/nigiri/vec2"
 	_ "image/png"
 )
 
@@ -67,7 +68,7 @@ func main() {
 		panic(err)
 	}
 	C := nigiri.NewCamera()
-	C.SetCenter(v2.V2{X: 300, Y: 300})
+	C.SetCenter(vec2.V2{X: 300, Y: 300})
 
 	//Opts := nigiri.SpriteOpts{
 	//	Src:          nigiri.NewStatic(tex, nil, "ship"),
@@ -80,7 +81,7 @@ func main() {
 		Scaler: nigiri.NewScaler(1),
 	}
 	I = nigiri.NewImageDrawer(nigiri.NewStatic(tex, nil, "ship"),
-		nigiri.Transforms{S, C.Phys()}, v2.ZV)
+		nigiri.Transforms{S, C.Phys()}, vec2.ZV)
 
 	ebiten.Run(mainLoop, 600, 600, 1, "TEST")
 }

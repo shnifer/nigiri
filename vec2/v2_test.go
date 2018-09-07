@@ -1,4 +1,4 @@
-package v2
+package vec2
 
 import (
 	"math"

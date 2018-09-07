@@ -1,15 +1,15 @@
 package nigiri
 
 import (
-	"github.com/Shnifer/nigiri/v2"
 	"github.com/hajimehoshi/ebiten"
+	"github.com/shnifer/nigiri/vec2"
 	"image"
 	"math"
 )
 
 type Camera struct {
-	center v2.V2
-	pos    v2.V2
+	center vec2.V2
+	pos    vec2.V2
 	scale  float64
 	ang    float64
 	dirty  bool
@@ -27,10 +27,10 @@ func NewCamera() *Camera {
 	return res
 }
 
-func (c *Camera) Center() v2.V2 {
+func (c *Camera) Center() vec2.V2 {
 	return c.center
 }
-func (c *Camera) Pos() v2.V2 {
+func (c *Camera) Pos() vec2.V2 {
 	return c.pos
 }
 func (c *Camera) Scale() float64 {
@@ -43,7 +43,7 @@ func (c *Camera) ClipRect() image.Rectangle {
 	return c.clipRect
 }
 
-func (c *Camera) Translate(delta v2.V2) {
+func (c *Camera) Translate(delta vec2.V2) {
 	c.SetPos(c.pos.Add(delta))
 }
 
@@ -55,7 +55,7 @@ func (c *Camera) MulScale(scaleK float64) {
 	c.SetScale(c.scale * scaleK)
 }
 
-func (c *Camera) SetCenter(v v2.V2) {
+func (c *Camera) SetCenter(v vec2.V2) {
 	if v == c.center {
 		return
 	}
@@ -63,7 +63,7 @@ func (c *Camera) SetCenter(v v2.V2) {
 	c.dirty = true
 }
 
-func (c *Camera) SetPos(v v2.V2) {
+func (c *Camera) SetPos(v vec2.V2) {
 	if v == c.pos {
 		return
 	}
@@ -164,7 +164,7 @@ func (c *Camera) calcPosG() {
 	c.posG.Reset()
 	c.posG.Translate(-c.pos.X, -c.pos.Y)
 	c.posG.Scale(c.scale, c.scale)
-	c.posG.Rotate(-c.ang * v2.Deg2Rad)
+	c.posG.Rotate(-c.ang * vec2.Deg2Rad)
 	c.posG.Translate(c.center.X, c.center.Y)
 }
 
@@ -173,13 +173,13 @@ func (c *Camera) Apply(x, y float64) (float64, float64) {
 	return c.posG.Apply(x, y)
 }
 
-func (c *Camera) applyV2(v v2.V2) v2.V2 {
+func (c *Camera) applyV2(v vec2.V2) vec2.V2 {
 	c.calcPosG()
 	x, y := c.posG.Apply(v.X, v.Y)
-	return v2.V2{X: x, Y: y}
+	return vec2.V2{X: x, Y: y}
 }
 
-func (c *Camera) inClipRect(v v2.V2) bool {
+func (c *Camera) inClipRect(v vec2.V2) bool {
 	x, y := int(v.X), int(v.Y)
 	return image.Pt(int(x), int(y)).In(c.clipRect)
 }
@@ -193,7 +193,7 @@ func (c *Camera) ClippedRect(rect Rect) bool {
 	}
 	px := math.Max(rect.pivot.X, 1-rect.pivot.X) * rect.Width
 	py := math.Max(rect.pivot.Y, 1-rect.pivot.Y) * rect.Height
-	dr := int(v2.V2{X: px, Y: py}.Len())
+	dr := int(vec2.V2{X: px, Y: py}.Len())
 	x, y := int(rect.Position.X), int(rect.Position.Y)
 	cr := image.Rect(x-dr, y-dr, x+dr, y+dr)
 	return cr.Intersect(c.clipRect).Empty()

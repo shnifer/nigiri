@@ -1,8 +1,8 @@
 package nigiri
 
 import (
-	"github.com/Shnifer/nigiri/v2"
 	"github.com/hajimehoshi/ebiten"
+	"github.com/shnifer/nigiri/vec2"
 	"golang.org/x/image/colornames"
 	_ "image/png"
 	"math/rand"
@@ -111,8 +111,8 @@ func Benchmark_Geom_Concat(b *testing.B) {
 }
 
 func Benchmark_Rect_Corners(b *testing.B) {
-	r := NewRect(100, 200, v2.V(0.3, 0.5))
-	r.Position = v2.V(10, 20)
+	r := NewRect(100, 200, vec2.V(0.3, 0.5))
+	r.Position = vec2.V(10, 20)
 	r.Angle = 40
 	for i := 0; i < b.N; i++ {
 		_ = r.Corners()
@@ -127,10 +127,10 @@ func BenchmarkSampleQueue(b *testing.B) {
 		panic(err)
 	}
 	C := NewCamera()
-	C.SetCenter(v2.V2{X: 300, Y: 300})
+	C.SetCenter(vec2.V2{X: 300, Y: 300})
 
 	S := Sprite{
-		Pivot: v2.TopMid,
+		Pivot: vec2.TopMid,
 	}
 	I := NewImageDrawer(NewStatic(tex, nil, "ship"), Transforms{S, C.Phys()})
 	I.Layer = 1
@@ -144,7 +144,7 @@ func BenchmarkSampleQueue(b *testing.B) {
 		panic(err)
 	}
 	TD := NewTextDrawer(face, 2)
-	TD.Position = v2.V(100, 100)
+	TD.Position = vec2.V(100, 100)
 	TD.Color = colornames.Brown
 	TD.Text = "just simple textdrawer\nsecond line"
 
@@ -154,7 +154,7 @@ func BenchmarkSampleQueue(b *testing.B) {
 	TS.AddText("right aligned", face, 2, colornames.White)
 
 	S2 := Sprite{
-		Pivot: v2.Center,
+		Pivot: vec2.Center,
 	}
 	I2 := NewImageDrawer(TS, Transforms{S2, C.Phys()})
 
@@ -166,7 +166,7 @@ func BenchmarkSampleQueue(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		Q.Clear()
 		for j := 0; j < 10; j++ {
-			S.Position.DoAddMul(v2.V(1, 1), 1)
+			S.Position.DoAddMul(vec2.V(1, 1), 1)
 			Q.Add(I)
 		}
 		for j := 0; j < 10; j++ {
