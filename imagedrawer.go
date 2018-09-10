@@ -111,7 +111,7 @@ func (id *ImageDrawer) DrawReqs(Q *Queue) {
 		return
 	}
 
-	srcRect, tag := id.Src.GetSrcRect()
+	srcRect, uid := id.Src.GetSrcRectUID()
 	w, h := float64(srcRect.Dx()), float64(srcRect.Dy())
 	if w == 0 || h == 0 {
 		return
@@ -126,7 +126,8 @@ func (id *ImageDrawer) DrawReqs(Q *Queue) {
 
 	order := reqOrder{
 		layer:    id.Layer,
-		groupTag: tag + id.tagSuffix,
+		uid: uid,
+
 	}
 
 	do := getDo()

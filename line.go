@@ -6,15 +6,16 @@ import (
 	"image/color"
 )
 
-var defRectTex *ebiten.Image
+var defRectTex Tex
 var lineImgDrawer *ImageDrawer
 var lineRect Rect
 
 func init() {
-	defRectTex, _ = ebiten.NewImage(10, 10, ebiten.FilterDefault)
-	defRectTex.Fill(color.White)
+	img,_ := ebiten.NewImage(10, 10, ebiten.FilterDefault)
+	img.Fill(color.White)
+	defRectTex = newTex(img)
 
-	lineImgDrawer = NewImageDrawer(NewStatic(defRectTex, nil, "!defRectTex"), &lineRect)
+	lineImgDrawer = NewImageDrawer(defRectTex, &lineRect)
 }
 
 type Line struct {

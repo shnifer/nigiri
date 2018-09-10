@@ -1,5 +1,5 @@
 package nigiri
-
+/*
 import (
 	"github.com/hajimehoshi/ebiten"
 
@@ -31,3 +31,4 @@ func (s StaticSrc) GetSrcRect() (srcRect *image.Rectangle, tag string) {
 func (s StaticSrc) GetSrcTex() (srcImage *ebiten.Image) {
 	return s.img
 }
+*/

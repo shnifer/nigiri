@@ -59,6 +59,10 @@ type TextSrc struct {
 	InterLineK float64
 }
 
+func (ts *TextSrc) GetSrcTex() Tex {
+
+}
+
 func (ts *TextSrc) GetSrcRect() (srcRect *image.Rectangle, tag string) {
 	ts.recalc()
 	srcR := image.Rect(0, 0, ts.rect.Dx(), ts.rect.Dy())
@@ -76,8 +80,8 @@ func (ts *TextSrc) GetSrcTex() (srcImage *ebiten.Image) {
 	if w == 0 || h == 0 {
 		return nil
 	}
-	tempImage := GetTempTex(w, h)
-	ts.drawTextInto(tempImage)
+	tempTex := GetTempTex(w, h)
+	ts.drawTextInto(tempTex.image)
 	return tempImage
 }
 

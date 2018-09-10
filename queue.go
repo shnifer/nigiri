@@ -15,14 +15,14 @@ type Layer float32
 
 type reqOrder struct {
 	layer    Layer
-	groupTag string
+	uid uint64
 }
 
 func (r reqOrder) less(s reqOrder) bool {
 	if r.layer != s.layer {
 		return r.layer < s.layer
 	} else {
-		return r.groupTag < s.groupTag
+		return r.uid < s.uid
 	}
 }
 

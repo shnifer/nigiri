@@ -1,8 +1,8 @@
 package nigiri
 
 import (
-	"github.com/hajimehoshi/ebiten"
 	"image"
+	"github.com/hajimehoshi/ebiten"
 )
 
 type Updater interface {
@@ -14,8 +14,8 @@ type DrawRequester interface {
 }
 
 type TexSrcer interface {
-	GetSrcRect() (srcRect *image.Rectangle, tag string)
-	GetSrcTex() (srcImage *ebiten.Image)
+	GetSrcRectUID() (srcRect *image.Rectangle, uid uint64)
+	GetSrcImage() *ebiten.Image
 }
 
 type Transformer interface {

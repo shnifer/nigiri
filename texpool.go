@@ -4,6 +4,7 @@ import (
 	"github.com/hajimehoshi/ebiten"
 	"log"
 	"sync"
+	"github.com/shnifer/nigiri/vec2"
 )
 
 const (
@@ -13,7 +14,7 @@ const (
 )
 
 type tempTex struct {
-	tex         *ebiten.Image
+	tex         Tex
 	used        bool
 	usedInCycle bool
 }
@@ -31,16 +32,16 @@ type texPool struct {
 	maxUsed       int
 }
 
-func GetTempTex(w, h int) *ebiten.Image {
+func GetTempTex(w, h int) Tex {
 	return ttPool.GetTempTex(w, h)
 }
-func PutTempTex(tex *ebiten.Image) {
+func PutTempTex(tex Tex) {
 	ttPool.PutTempTex(tex)
 }
-func GetPoolTex(w, h int) *ebiten.Image {
+func GetPoolTex(w, h int) Tex {
 	return ttPool.GetPoolTex(w, h)
 }
-func PutPoolTex(tex *ebiten.Image) {
+func PutPoolTex(tex Tex) {
 	ttPool.PutPoolTex(tex)
 }
 func SetShrink(shrinkPeriod, shrinkReserve, shrinkLimit int) {
@@ -73,7 +74,7 @@ func (pool *texPool) SetShrink(shrinkPeriod, shrinkReserve, shrinkLimit int) {
 	pool.updateCounter = 0
 }
 
-func (pool *texPool) GetTempTex(w, h int) *ebiten.Image {
+func (pool *texPool) GetTempTex(w, h int) Tex {
 	pool.Lock()
 	defer pool.Unlock()
 
@@ -84,65 +85,67 @@ func (pool *texPool) GetTempTex(w, h int) *ebiten.Image {
 
 	var sw, sh int
 	for i, v := range pool.p {
-		if v.used || v.tex == nil {
+		if v.used || v.tex.image == nil {
 			continue
 		}
-		sw, sh = v.tex.Size()
+		sw, sh = v.tex.image.Size()
 		if sw < w || sh < h {
 			continue
 		}
 
 		pool.p[i].used = true
 		pool.p[i].usedInCycle = true
-		pool.p[i].tex.Clear()
+		pool.p[i].tex.image.Clear()
 		return pool.p[i].tex
 	}
 
-	tex, _ := ebiten.NewImage(w, h, ebiten.FilterDefault)
+	img, _ := ebiten.NewImage(w, h, ebiten.FilterDefault)
+	tex:= newTex(img,vec2.ZV)
 	pool.insertNewTex(tex, true)
 	//@@@
 	log.Println("pool extended with temp to len: ", len(pool.p))
 	return tex
 }
 
-func (pool *texPool) PutTempTex(tex *ebiten.Image) {
+func (pool *texPool) PutTempTex(tex Tex) {
 	pool.Lock()
 	defer pool.Unlock()
 
 	pool.usedCount--
 	for i := range pool.p {
-		if pool.p[i].tex == tex {
+		if pool.p[i].tex== tex{
 			pool.p[i].used = false
 			break
 		}
 	}
 }
 
-func (pool *texPool) GetPoolTex(w, h int) *ebiten.Image {
+func (pool *texPool) GetPoolTex(w, h int) Tex {
 	pool.Lock()
 	defer pool.Unlock()
 
 	//todo: binary search
 	var sw, sh int
 	for i, v := range pool.p {
-		if v.used || v.tex == nil {
+		if v.used || v.tex.image == nil {
 			continue
 		}
-		sw, sh = v.tex.Size()
+		sw, sh = v.tex.image.Size()
 		if sw < w || sh < h {
 			continue
 		}
 
 		pool.removeElement(i)
-		v.tex.Clear()
+		v.tex.image.Clear()
 		return v.tex
 	}
 
-	tex, _ := ebiten.NewImage(w, h, ebiten.FilterDefault)
+	img, _ := ebiten.NewImage(w, h, ebiten.FilterDefault)
+	tex := newTex(img, vec2.ZV)
 	return tex
 }
 
-func (pool *texPool) PutPoolTex(tex *ebiten.Image) {
+func (pool *texPool) PutPoolTex(tex Tex) {
 	pool.Lock()
 	defer pool.Unlock()
 
@@ -202,13 +205,13 @@ func (pool *texPool) checkShrink() {
 	log.Println("temp pool shrink to len: ", len(pool.p))
 }
 
-func (pool *texPool) insertNewTex(tex *ebiten.Image, used bool) {
+func (pool *texPool) insertNewTex(tex Tex, used bool) {
 	var i int
 	var sw, sh int
-	w, h := tex.Size()
+	w, h := tex.image.Size()
 	//todo: binary search
 	for i = 0; i < len(pool.p); i++ {
-		sw, sh = pool.p[i].tex.Size()
+		sw, sh = pool.p[i].tex.image.Size()
 		if sw+sh >= w+h {
 			break
 		}
