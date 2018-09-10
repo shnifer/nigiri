@@ -4,15 +4,16 @@ import (
 	"github.com/hajimehoshi/ebiten"
 	"github.com/shnifer/nigiri/vec2"
 	"image/color"
+	"log"
 )
 
-type ImageDrawer struct {
+type Drawer struct {
 	Src           TexSrcer
-	CompositeMode ebiten.CompositeMode
 	Layer         Layer
 	Transform     Transformer
 	ChangeableTex bool
 
+	compositeMode ebiten.CompositeMode
 	//color
 	color  color.Color
 	alpha  float64
@@ -20,8 +21,8 @@ type ImageDrawer struct {
 
 	filter ebiten.Filter
 
-	//tagSuffix depends on color and filter
-	tagSuffix string
+	//tagSuffix depends on color and filter and CompositeMode
+	drawTag uint64
 
 	//just a temp to not alloc, rewritten each draw
 	r Rect
@@ -45,27 +46,39 @@ func putDo(do *ebiten.DrawImageOptions) {
 	doCache = append(doCache, do)
 }
 
-func NewImageDrawer(src TexSrcer, transform Transformer) *ImageDrawer {
-	res := &ImageDrawer{
+func NewDrawer(src TexSrcer, transform ...Transformer) *Drawer {
+	res := &Drawer{
 		Src:       src,
-		Transform: transform,
+		Transform: Transforms(transform),
 		color:     color.White,
 		alpha:     1,
 	}
-	res.calcTagSuffix()
+	res.calcDrawTag()
 	return res
 }
 
-func (id *ImageDrawer) SetSmooth(smooth bool) {
+func (id *Drawer) SetSmooth(smooth bool) {
 	if smooth {
 		id.filter = ebiten.FilterLinear
 	} else {
 		id.filter = ebiten.FilterDefault
 	}
-	id.calcTagSuffix()
+	id.calcDrawTag()
 }
 
-func (id *ImageDrawer) calcColorM() {
+func (id *Drawer) CompositeMode() ebiten.CompositeMode {
+	return id.compositeMode
+}
+
+func (id *Drawer) SetCompositeMode(mode ebiten.CompositeMode) {
+	if id.compositeMode == mode {
+		return
+	}
+	id.compositeMode = mode
+	id.calcDrawTag()
+}
+
+func (id *Drawer) calcColorM() {
 	const MaxColor = 0xffff
 	id.colorM.Reset()
 	r, g, b, a := id.color.RGBA()
@@ -75,43 +88,47 @@ func (id *ImageDrawer) calcColorM() {
 		id.alpha*float64(a)/MaxColor)
 }
 
-func (id *ImageDrawer) ColorAlpha() (color.Color, float64) {
+func (id *Drawer) ColorAlpha() (color.Color, float64) {
 	return id.color, id.alpha
 }
 
-func (id *ImageDrawer) SetColor(color color.Color) {
+func (id *Drawer) SetColor(color color.Color) {
 	if id.color == color {
 		return
 	}
 	id.color = color
 	id.calcColorM()
-	id.calcTagSuffix()
+	id.calcDrawTag()
 }
 
-func (id *ImageDrawer) SetAlpha(alpha float64) {
+func (id *Drawer) SetAlpha(alpha float64) {
 	if id.alpha == alpha {
 		return
 	}
 	id.alpha = alpha
 	id.calcColorM()
-	id.calcTagSuffix()
+	id.calcDrawTag()
 }
 
-func (id *ImageDrawer) calcTagSuffix() {
+func (id *Drawer) calcDrawTag() {
 	r, g, b, a := id.color.RGBA()
 	const k = 0xff
-	br, bg, bb, ba := byte(r/k), byte(g/k), byte(b/k), byte(a/k)
-	baa := byte(id.alpha * k)
-
-	id.tagSuffix = string([]byte{byte(id.filter), br, bg, bb, ba, baa})
+	br, bg, bb, ba := uint64(r/k), uint64(g/k), uint64(b/k), uint64(a/k)
+	bAlpha := uint64(id.alpha * k)
+	bFilterAndComposite := uint64(id.compositeMode) + uint64(16*id.filter)
+	id.drawTag = bFilterAndComposite<<40 + bAlpha<<32 + br<<24 + bg<<16 + bb<<8 + ba<<0
 }
 
-func (id *ImageDrawer) DrawReqs(Q *Queue) {
+func (id *Drawer) DrawReqs(Q *Queue) {
 	if id.Src == nil {
 		return
 	}
 
 	srcRect, uid := id.Src.GetSrcRectUID()
+	if srcRect == nil {
+		log.Println("srcRect nil")
+		return
+	}
 	w, h := float64(srcRect.Dx()), float64(srcRect.Dy())
 	if w == 0 || h == 0 {
 		return
@@ -125,21 +142,21 @@ func (id *ImageDrawer) DrawReqs(Q *Queue) {
 	}
 
 	order := reqOrder{
-		layer:    id.Layer,
-		uid: uid,
-
+		layer:   id.Layer,
+		uid:     uid,
+		drawTag: id.drawTag,
 	}
 
 	do := getDo()
 	*do = ebiten.DrawImageOptions{
-		CompositeMode: id.CompositeMode,
+		CompositeMode: id.compositeMode,
 		Filter:        id.filter,
 		ColorM:        id.colorM,
 		SourceRect:    srcRect,
 		GeoM:          id.geom(w, h),
 	}
 	if id.ChangeableTex {
-		tex := id.Src.GetSrcTex()
+		tex := id.Src.GetSrcImage()
 		if tex == nil {
 			return
 		}
@@ -156,7 +173,7 @@ func (id *ImageDrawer) DrawReqs(Q *Queue) {
 
 }
 
-func (id *ImageDrawer) geom(w, h float64) (G ebiten.GeoM) {
+func (id *Drawer) geom(w, h float64) (G ebiten.GeoM) {
 	G.Translate(-w*id.r.pivot.X, -h*id.r.pivot.Y)
 	G.Scale(id.r.Width/w, id.r.Height/h)
 	G.Rotate(-id.r.Angle * vec2.Deg2Rad)
@@ -168,18 +185,18 @@ func texDrawF(tex *ebiten.Image, do *ebiten.DrawImageOptions) drawF {
 	return func(dest *ebiten.Image) {
 		dest.DrawImage(tex, do)
 		putDo(do)
-		PutTempTex(tex)
+		PutTempImage(tex)
 	}
 }
 
 func srcDrawF(src TexSrcer, do *ebiten.DrawImageOptions) drawF {
 	return func(dest *ebiten.Image) {
-		tex := src.GetSrcTex()
+		tex := src.GetSrcImage()
 		if tex == nil {
 			return
 		}
 		dest.DrawImage(tex, do)
 		putDo(do)
-		PutTempTex(tex)
+		PutTempImage(tex)
 	}
 }

@@ -2,7 +2,6 @@ package nigiri
 
 import (
 	"bytes"
-	"fmt"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/pkg/errors"
 	"image"
@@ -12,26 +11,15 @@ import (
 
 type TexLoaderF func(name string) (*ebiten.Image, error)
 type TexCache struct {
-	cache  map[string]*ebiten.Image
+	cache  map[string]Tex
 	loader TexLoaderF
-	prefix string
 }
 
 func NewTexCache(loader TexLoaderF) *TexCache {
 	return &TexCache{
-		cache:  make(map[string]*ebiten.Image),
+		cache:  make(map[string]Tex),
 		loader: loader,
-		prefix: newPrefix(),
 	}
-}
-
-var prefixIterator byte
-
-func newPrefix() string {
-	if prefixIterator < 255 {
-		prefixIterator++
-	}
-	return fmt.Sprintf("%02X", prefixIterator)
 }
 
 var tCache *TexCache
@@ -48,24 +36,25 @@ func (tc *TexCache) SetTexLoader(f TexLoaderF) {
 	tc.loader = f
 }
 
-func GetTex(name string) (tex *ebiten.Image, err error) {
+func GetTex(name string) (tex Tex, err error) {
 	return tCache.GetTex(name)
 }
 
-func (tc *TexCache) GetTex(name string) (tex *ebiten.Image, err error) {
-	img, ok := tc.cache[name]
+func (tc *TexCache) GetTex(name string) (tex Tex, err error) {
+	tex, ok := tc.cache[name]
 	if ok {
-		return img, nil
+		return tex, nil
 	}
 	if tc.loader == nil {
-		return nil, errors.New("texture \"" + name + "\" not found, loader is nil")
+		return Tex{}, errors.New("texture \"" + name + "\" not found, loader is nil")
 	}
-	img, err = tc.loader(name)
+	img, err := tc.loader(name)
 	if err != nil {
-		return nil, errors.Wrap(err, "can't load tex \""+name+"\" with loader")
+		return Tex{}, errors.Wrap(err, "can't load tex \""+name+"\" with loader")
 	}
-	tc.cache[name] = img
-	return img, nil
+	tex = NewTex(img)
+	tc.cache[name] = tex
+	return tex, nil
 }
 
 func TexCacheReset() {
@@ -73,7 +62,7 @@ func TexCacheReset() {
 }
 
 func (tc *TexCache) Reset() {
-	tc.cache = make(map[string]*ebiten.Image)
+	tc.cache = make(map[string]Tex)
 }
 
 func FileTexLoader(pathStr string) TexLoaderF {

@@ -30,5 +30,6 @@ func (s Sprite) TransformRect(rect Rect) Rect {
 	rect = s.Scaler.TransformRect(rect)
 	rect.Position = s.Position
 	rect.Angle = s.Angle
+	rect.pivot = s.Pivot
 	return rect
 }

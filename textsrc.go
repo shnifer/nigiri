@@ -49,39 +49,38 @@ func newTextString(str string, face font.Face, color color.Color, align Align, i
 type TextSrc struct {
 	strs []textString
 
-	dirty bool
-	offs  []image.Point
-	rect  image.Rectangle
+	dirty   bool
+	offs    []image.Point
+	rect    *image.Rectangle
+	rectOff image.Point
 
 	permanentTex bool
-	permTex      *ebiten.Image
+	permTex      Tex
 
 	InterLineK float64
 }
 
-func (ts *TextSrc) GetSrcTex() Tex {
-
-}
-
-func (ts *TextSrc) GetSrcRect() (srcRect *image.Rectangle, tag string) {
+func (ts *TextSrc) GetSrcRectUID() (srcRect *image.Rectangle, uid uint64) {
 	ts.recalc()
-	srcR := image.Rect(0, 0, ts.rect.Dx(), ts.rect.Dy())
-	return &srcR, ""
+	if ts.permanentTex {
+		uid = ts.permTex.uid
+	}
+	return ts.rect, uid
 }
 
-func (ts *TextSrc) GetSrcTex() (srcImage *ebiten.Image) {
+func (ts *TextSrc) GetSrcImage() *ebiten.Image {
 	ts.recalc()
 
 	if ts.permanentTex {
-		return ts.permTex
+		return ts.permTex.image
 	}
 
 	w, h := ts.rect.Dx(), ts.rect.Dy()
 	if w == 0 || h == 0 {
 		return nil
 	}
-	tempTex := GetTempTex(w, h)
-	ts.drawTextInto(tempTex.image)
+	tempImage := GetTempImage(w, h)
+	ts.drawTextInto(tempImage)
 	return tempImage
 }
 
@@ -91,7 +90,7 @@ func (ts *TextSrc) drawTextInto(img *ebiten.Image) {
 	}
 	for i, s := range ts.strs {
 		text.Draw(img, s.str, s.face,
-			ts.offs[i].X-ts.rect.Min.X, ts.offs[i].Y-ts.rect.Min.Y, s.color)
+			ts.offs[i].X-ts.rectOff.X, ts.offs[i].Y-ts.rectOff.Y, s.color)
 	}
 }
 func (ts *TextSrc) recalc() {
@@ -100,10 +99,10 @@ func (ts *TextSrc) recalc() {
 	}
 	ts.dirty = false
 
-	var maxA int
+	var maxAdvance int
 	for _, str := range ts.strs {
-		if str.advance > maxA {
-			maxA = str.advance
+		if str.advance > maxAdvance {
+			maxAdvance = str.advance
 		}
 	}
 	var VOff, HOff int
@@ -115,9 +114,9 @@ func (ts *TextSrc) recalc() {
 		case AlignLeft:
 			HOff = 0
 		case AlignCenter:
-			HOff = (maxA - str.advance) / 2
+			HOff = (maxAdvance - str.advance) / 2
 		case AlignRight:
-			HOff = maxA - str.advance
+			HOff = maxAdvance - str.advance
 		default:
 			//unknown align as default left and do not panic
 			HOff = 0
@@ -126,22 +125,25 @@ func (ts *TextSrc) recalc() {
 		VOff += str.strH
 	}
 
-	ts.rect = image.ZR
+	//rect containing all strings
+	ts.rect = new(image.Rectangle)
 	for i, s := range ts.strs {
-		ts.rect = ts.rect.Union(s.bound.Add(ts.offs[i]))
+		*ts.rect = ts.rect.Union(s.bound.Add(ts.offs[i]))
 	}
+	ts.rectOff = ts.rect.Min
+	*ts.rect = ts.rect.Sub(ts.rect.Min)
 
 	if ts.permanentTex {
-		w, h := ts.rect.Dx(), ts.rect.Dy()
-		if w == 0 || h == 0 {
-			ts.permTex = nil
-			return
-		}
-		if ts.permTex != nil {
+		if ts.permTex.image != nil {
 			PutPoolTex(ts.permTex)
 		}
+		w, h := ts.rect.Dx(), ts.rect.Dy()
+		if w == 0 || h == 0 {
+			ts.permTex = Tex{}
+			return
+		}
 		ts.permTex = GetPoolTex(w, h)
-		ts.drawTextInto(ts.permTex)
+		ts.drawTextInto(ts.permTex.image)
 	}
 }
 

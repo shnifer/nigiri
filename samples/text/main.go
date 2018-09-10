@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/Shnifer/nigiri"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
+	"github.com/shnifer/nigiri"
 	"github.com/shnifer/nigiri/vec2"
 	"golang.org/x/image/colornames"
 	"golang.org/x/image/font"
@@ -13,15 +13,19 @@ import (
 )
 
 var TD *nigiri.TextDrawer
-var TS *nigiri.TextSrc
+
 var C *nigiri.Camera
 var S *nigiri.Sprite
+var TI *nigiri.Drawer
+
 var Q *nigiri.Queue
 var Face font.Face
+
 var MUsedText *nigiri.TextSrc
 var MUsedSprite *nigiri.Sprite
+var MUsedDrawer *nigiri.Drawer
 
-func mainLoop(win *ebiten.Image) error {
+func mainLoop(win *ebiten.Image, dt float64) error {
 	if ebiten.IsKeyPressed(ebiten.KeyA) {
 		C.Translate(vec2.InDir(C.Angle()).Rotate90().Mul(1 / C.Scale()))
 	}
@@ -52,12 +56,12 @@ func mainLoop(win *ebiten.Image) error {
 	Q.Add(TD)
 	for i := 0; i < 3; i++ {
 		S.Position = vec2.V(0, 150).Mul(float64(i))
-		Q.Add(S)
+		Q.Add(TI)
 	}
 	for i := 0; i < 5; i++ {
 		MUsedText.SetText(strconv.Itoa(i), Face, nigiri.AlignLeft, colornames.Red)
 		MUsedSprite.Position = vec2.V(100, 150).AddMul(vec2.V(0, 100), float64(i))
-		Q.Add(MUsedSprite)
+		Q.Add(MUsedDrawer)
 	}
 	Q.Run(win)
 	ebitenutil.DebugPrint(win, fmt.Sprintf("FPS: %v\nDraws: %v", ebiten.CurrentFPS(), Q.Len()))
@@ -88,29 +92,31 @@ func main() {
 	TD.Color = colornames.Brown
 	TD.Text = "just simple textdrawer\nsecond line"
 
-	TS = nigiri.NewTextSrc(1.2, 1, true)
+	TS := nigiri.NewTextSrc(1.2, true)
 	TS.AddText("text source sample\nmulti-line", face, 0, colornames.White)
 	TS.AddText("colored and sized", bigFace, 0, colornames.Greenyellow)
 	TS.AddText("center or", face, 1, colornames.White)
 	TS.AddText("right aligned", face, 2, colornames.White)
 
-	S = nigiri.SpriteOpts{
-		Src:          TS,
-		Pivot:        vec2.Center,
-		Smooth:       true,
-		CamTransform: C.Phys(),
-	}.New()
+	S = &nigiri.Sprite{
+		Pivot:  vec2.Center,
+		Scaler: nigiri.NewScaler(1),
+	}
+	TI = nigiri.NewDrawer(TS, S, C.Phys())
+	TI.SetSmooth(true)
+	TI.Layer = 1
 
-	MUsedText = nigiri.NewTextSrc(1.2, 3, false)
+	MUsedText = nigiri.NewTextSrc(1.2, false)
 	MUsedText.SetText("text", Face, nigiri.AlignLeft, colornames.Red)
-	MUsedSprite = nigiri.SpriteOpts{
-		Src:           MUsedText,
-		Pivot:         vec2.Center,
-		Smooth:        true,
-		CamTransform:  C.Phys(),
-		ChangeableTex: true,
-	}.New()
+
+	MUsedSprite = &nigiri.Sprite{
+		Pivot:  vec2.Center,
+		Scaler: nigiri.NewScaler(1),
+	}
+	MUsedDrawer = nigiri.NewDrawer(MUsedText, MUsedSprite, C.Phys())
+	MUsedDrawer.Layer = 2
+	MUsedDrawer.ChangeableTex = true
 
 	ebiten.SetVsyncEnabled(true)
-	ebiten.Run(mainLoop, 1000, 1000, 1, "TEST")
+	nigiri.Run(mainLoop, 1000, 1000, 1, "TEST")
 }

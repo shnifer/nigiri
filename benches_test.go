@@ -132,7 +132,7 @@ func BenchmarkSampleQueue(b *testing.B) {
 	S := Sprite{
 		Pivot: vec2.TopMid,
 	}
-	I := NewImageDrawer(NewStatic(tex, nil, "ship"), Transforms{S, C.Phys()})
+	I := NewDrawer(tex, Transforms{S, C.Phys()})
 	I.Layer = 1
 	I.ChangeableTex = true
 	I.SetSmooth(true)
@@ -156,7 +156,7 @@ func BenchmarkSampleQueue(b *testing.B) {
 	S2 := Sprite{
 		Pivot: vec2.Center,
 	}
-	I2 := NewImageDrawer(TS, Transforms{S2, C.Phys()})
+	I2 := NewDrawer(TS, Transforms{S2, C.Phys()})
 
 	dest, _ := ebiten.NewImage(1000, 1000, ebiten.FilterDefault)
 
@@ -175,5 +175,18 @@ func BenchmarkSampleQueue(b *testing.B) {
 		}
 		//	Q.Add(TD)
 		Q.Run(dest)
+	}
+}
+
+//run me
+func BenchmarkImageDrawer_calcDrawTag(b *testing.B) {
+	id := NewDrawer(nil, nil)
+	id.SetColor(colornames.Aliceblue)
+	id.SetAlpha(0.3)
+	id.SetSmooth(true)
+	id.SetCompositeMode(ebiten.CompositeModeDestinationOut)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		id.calcDrawTag()
 	}
 }

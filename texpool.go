@@ -4,7 +4,6 @@ import (
 	"github.com/hajimehoshi/ebiten"
 	"log"
 	"sync"
-	"github.com/shnifer/nigiri/vec2"
 )
 
 const (
@@ -32,11 +31,11 @@ type texPool struct {
 	maxUsed       int
 }
 
-func GetTempTex(w, h int) Tex {
-	return ttPool.GetTempTex(w, h)
+func GetTempImage(w, h int) *ebiten.Image {
+	return ttPool.GetTempImage(w, h)
 }
-func PutTempTex(tex Tex) {
-	ttPool.PutTempTex(tex)
+func PutTempImage(tex *ebiten.Image) {
+	ttPool.PutTempImage(tex)
 }
 func GetPoolTex(w, h int) Tex {
 	return ttPool.GetPoolTex(w, h)
@@ -74,7 +73,7 @@ func (pool *texPool) SetShrink(shrinkPeriod, shrinkReserve, shrinkLimit int) {
 	pool.updateCounter = 0
 }
 
-func (pool *texPool) GetTempTex(w, h int) Tex {
+func (pool *texPool) GetTempImage(w, h int) *ebiten.Image {
 	pool.Lock()
 	defer pool.Unlock()
 
@@ -96,24 +95,24 @@ func (pool *texPool) GetTempTex(w, h int) Tex {
 		pool.p[i].used = true
 		pool.p[i].usedInCycle = true
 		pool.p[i].tex.image.Clear()
-		return pool.p[i].tex
+		return pool.p[i].tex.image
 	}
 
 	img, _ := ebiten.NewImage(w, h, ebiten.FilterDefault)
-	tex:= newTex(img,vec2.ZV)
+	tex := NewTex(img)
 	pool.insertNewTex(tex, true)
 	//@@@
 	log.Println("pool extended with temp to len: ", len(pool.p))
-	return tex
+	return tex.image
 }
 
-func (pool *texPool) PutTempTex(tex Tex) {
+func (pool *texPool) PutTempImage(image *ebiten.Image) {
 	pool.Lock()
 	defer pool.Unlock()
 
 	pool.usedCount--
 	for i := range pool.p {
-		if pool.p[i].tex== tex{
+		if pool.p[i].tex.image == image {
 			pool.p[i].used = false
 			break
 		}
@@ -141,7 +140,7 @@ func (pool *texPool) GetPoolTex(w, h int) Tex {
 	}
 
 	img, _ := ebiten.NewImage(w, h, ebiten.FilterDefault)
-	tex := newTex(img, vec2.ZV)
+	tex := NewTex(img)
 	return tex
 }
 

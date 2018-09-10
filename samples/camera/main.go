@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/Shnifer/nigiri"
-	"github.com/Shnifer/nigiri/v2"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
+	"github.com/shnifer/nigiri"
+	"github.com/shnifer/nigiri/vec2"
 	"golang.org/x/image/colornames"
 	"image"
 )
@@ -13,10 +13,11 @@ import (
 var T *ebiten.Image
 var C *nigiri.Camera
 var S *nigiri.Sprite
+var SI *nigiri.Drawer
 var Q *nigiri.Queue
-var FR *nigiri.Sprite
+var FR *nigiri.Drawer
 
-func mainLoop(win *ebiten.Image) error {
+func mainLoop(win *ebiten.Image, dt float64) error {
 	if ebiten.IsKeyPressed(ebiten.KeyA) {
 		C.Translate(vec2.InDir(C.Angle()).Rotate90().Mul(1 / C.Scale()))
 	}
@@ -46,8 +47,8 @@ func mainLoop(win *ebiten.Image) error {
 	Q.Clear()
 	for x := -100; x <= 100; x += 10 {
 		for y := -100; y <= 100; y += 10 {
-			S.Position = vec2.V2{X: float64(x), Y: float64(y)}
-			Q.Add(S)
+			S.Position = vec2.V(float64(x), float64(y))
+			Q.Add(SI)
 		}
 	}
 	Q.Add(FR)
@@ -73,25 +74,23 @@ func main() {
 
 	tt, _ := ebiten.NewImage(10, 10, ebiten.FilterDefault)
 	tt.Fill(colornames.Darkkhaki)
-
-	FR = nigiri.SpriteOpts{
-		Src:          nigiri.NewStatic(tt, nil, "particle"),
-		Pivot:        vec2.Center,
-		Layer:        -1,
-		CamTransform: C.Local(),
-	}.New()
-	FR.Position = vec2.V2{500, 500}
-	FR.UseFixed = true
-	FR.FixedH, FR.FixedW = 400, 400
-
-	Opts := nigiri.SpriteOpts{
-		Src:          nigiri.NewStatic(tex, nil, "particle"),
-		Pivot:        vec2.Center,
-		Smooth:       true,
-		CamTransform: C.Phys(),
+	if err != nil {
+		panic(err)
 	}
-	S = nigiri.NewSprite(Opts)
+	frSprite := nigiri.Sprite{
+		Position: vec2.V(500, 500),
+		Pivot:    vec2.Center,
+		Scaler:   nigiri.NewFixedScaler(400, 400),
+	}
+	FR = nigiri.NewDrawer(nigiri.NewTex(tt), nigiri.Transforms{frSprite, C.Local()})
+
+	S = &nigiri.Sprite{
+		Pivot: vec2.Center,
+	}
 	S.ScaleFactor = vec2.V2{X: 0.2, Y: 0.2}
-	ebiten.SetVsyncEnabled(true)
-	ebiten.Run(mainLoop, 1000, 1000, 1, "TEST")
+	SI = nigiri.NewDrawer(tex, nigiri.Transforms{S, C.Phys()})
+	SI.SetSmooth(true)
+	SI.Layer = 1
+	ebiten.SetVsyncEnabled(false)
+	nigiri.Run(mainLoop, 1000, 1000, 1, "TEST")
 }

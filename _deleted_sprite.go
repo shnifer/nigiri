@@ -22,7 +22,7 @@ package nigiri
 //}
 //
 //type Sprite struct {
-//	imgD         *ImageDrawer
+//	imgD         *Drawer
 //	rect         Rect
 //	CamTransform Transformer
 //	Position     v2.V2
@@ -39,7 +39,7 @@ package nigiri
 //		CamTransform: opts.CamTransform,
 //		Scaler:       NewScaler(1),
 //	}
-//	res.imgD = NewImageDrawer(opts.Src, res, opts.Pivot)
+//	res.imgD = NewDrawer(opts.Src, res, opts.Pivot)
 //	res.imgD.CompositeMode = opts.CompositeMode
 //	res.imgD.ChangeableTex = opts.ChangeableTex
 //	res.imgD.Layer = opts.Layer

@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/Shnifer/nigiri"
-	"github.com/Shnifer/nigiri/v2"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
+	"github.com/shnifer/nigiri"
+	"github.com/shnifer/nigiri/vec2"
 )
 
 var C *nigiri.Camera
@@ -15,7 +15,7 @@ var L nigiri.Line
 var from vec2.V2
 var dir float64
 
-func mainLoop(win *ebiten.Image) error {
+func mainLoop(win *ebiten.Image, dt float64) error {
 	if ebiten.IsKeyPressed(ebiten.KeyA) {
 		from.X -= 1
 	}
@@ -53,5 +53,5 @@ func main() {
 
 	L = nigiri.NewLine(nil, 1)
 
-	ebiten.Run(mainLoop, 600, 600, 1, "TEST")
+	nigiri.Run(mainLoop, 600, 600, 1, "TEST")
 }

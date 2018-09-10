@@ -2,7 +2,6 @@ package vec2
 
 import (
 	"fmt"
-	"github.com/Shnifer/magellan/v2"
 	"math"
 	"math/rand"
 )
@@ -227,7 +226,7 @@ func (a V2) String() string {
 }
 
 func RotateF(ang float64) func(V2) V2 {
-	sin, cos := math.Sincos(ang * v2.Deg2Rad)
+	sin, cos := math.Sincos(ang * Deg2Rad)
 	return func(v V2) V2 {
 		return V2{
 			X: v.X*cos - v.Y*sin,

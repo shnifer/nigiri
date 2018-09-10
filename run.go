@@ -27,7 +27,6 @@ func Run(mainLoop func(win *ebiten.Image, dt float64) error, width, height int, 
 		t := time.Now()
 		dt = t.Sub(last).Seconds()
 		last = t
-		ttPool.afterLoop()
 		return nil
 	}
 

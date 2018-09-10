@@ -7,15 +7,15 @@ import (
 )
 
 var defRectTex Tex
-var lineImgDrawer *ImageDrawer
+var lineImgDrawer *Drawer
 var lineRect Rect
 
 func init() {
-	img,_ := ebiten.NewImage(10, 10, ebiten.FilterDefault)
+	img, _ := ebiten.NewImage(10, 10, ebiten.FilterDefault)
 	img.Fill(color.White)
-	defRectTex = newTex(img)
+	defRectTex = NewTex(img)
 
-	lineImgDrawer = NewImageDrawer(defRectTex, &lineRect)
+	lineImgDrawer = NewDrawer(defRectTex, &lineRect)
 }
 
 type Line struct {

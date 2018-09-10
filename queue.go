@@ -14,15 +14,18 @@ type drawF func(dest *ebiten.Image)
 type Layer float32
 
 type reqOrder struct {
-	layer    Layer
-	uid uint64
+	layer   Layer
+	uid     uint64
+	drawTag uint64
 }
 
 func (r reqOrder) less(s reqOrder) bool {
 	if r.layer != s.layer {
 		return r.layer < s.layer
-	} else {
+	} else if r.uid != s.uid {
 		return r.uid < s.uid
+	} else {
+		return r.drawTag < s.drawTag
 	}
 }
 

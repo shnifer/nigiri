@@ -1,8 +1,8 @@
 package nigiri
 
 import (
-	"image"
 	"github.com/hajimehoshi/ebiten"
+	"image"
 )
 
 type Updater interface {

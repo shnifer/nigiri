@@ -2,22 +2,21 @@ package main
 
 import (
 	"fmt"
-	"github.com/Shnifer/nigiri"
-	"github.com/Shnifer/nigiri/v2"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"github.com/hajimehoshi/ebiten/inpututil"
+	"github.com/shnifer/nigiri"
 	"github.com/shnifer/nigiri/vec2"
 	_ "image/png"
 )
 
 var T *ebiten.Image
 var C *nigiri.Camera
-var I *nigiri.ImageDrawer
+var I *nigiri.Drawer
 var S *nigiri.Sprite
 var Q *nigiri.Queue
 
-func mainLoop(win *ebiten.Image) error {
+func mainLoop(win *ebiten.Image, dt float64) error {
 	if ebiten.IsKeyPressed(ebiten.KeyA) {
 		S.Position.X -= 1
 	}
@@ -61,6 +60,9 @@ func mainLoop(win *ebiten.Image) error {
 }
 
 func main() {
+	nigiri.StartProfile("sprite")
+	defer nigiri.StopProfile("sprite")
+
 	Q = nigiri.NewQueue()
 	nigiri.SetTexLoader(nigiri.FileTexLoader("samples"))
 	tex, err := nigiri.GetTex("HUD_Ship.png")
@@ -70,18 +72,12 @@ func main() {
 	C := nigiri.NewCamera()
 	C.SetCenter(vec2.V2{X: 300, Y: 300})
 
-	//Opts := nigiri.SpriteOpts{
-	//	Src:          nigiri.NewStatic(tex, nil, "ship"),
-	//	Pivot:        v2.TopMid,
-	//	Smooth:       true,
-	//	CamTransform: C.Phys(),
-	//}
-	//S = nigiri.NewSprite(Opts)
 	S = &nigiri.Sprite{
 		Scaler: nigiri.NewScaler(1),
+		Pivot:  vec2.Center,
 	}
-	I = nigiri.NewImageDrawer(nigiri.NewStatic(tex, nil, "ship"),
-		nigiri.Transforms{S, C.Phys()}, vec2.ZV)
+	I = nigiri.NewDrawer(tex, nigiri.Transforms{S, C.Phys()})
+	I.SetSmooth(true)
 
-	ebiten.Run(mainLoop, 600, 600, 1, "TEST")
+	nigiri.Run(mainLoop, 600, 600, 1, "TEST")
 }
