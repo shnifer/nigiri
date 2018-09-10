@@ -50,7 +50,7 @@ func NewDrawer(src TexSrcer, layer Layer, transform ...Transformer) *Drawer {
 	res := &Drawer{
 		Src:       src,
 		Transform: Transforms(transform),
-		Layer: layer,
+		Layer:     layer,
 		color:     color.White,
 		alpha:     1,
 	}
@@ -127,7 +127,6 @@ func (id *Drawer) DrawReqs(Q *Queue) {
 
 	srcRect, uid := id.Src.GetSrcRectUID()
 	if srcRect == nil {
-		log.Println("srcRect nil")
 		return
 	}
 	w, h := float64(srcRect.Dx()), float64(srcRect.Dy())
