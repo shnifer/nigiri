@@ -102,7 +102,7 @@ func main() {
 		Pivot:  vec2.Center,
 		Scaler: nigiri.NewScaler(1),
 	}
-	TI = nigiri.NewDrawer(TS, S, C.Phys())
+	TI = nigiri.NewDrawer(TS, 0, S, C.Phys())
 	TI.SetSmooth(true)
 	TI.Layer = 1
 
@@ -113,7 +113,7 @@ func main() {
 		Pivot:  vec2.Center,
 		Scaler: nigiri.NewScaler(1),
 	}
-	MUsedDrawer = nigiri.NewDrawer(MUsedText, MUsedSprite, C.Phys())
+	MUsedDrawer = nigiri.NewDrawer(MUsedText, 1, MUsedSprite, C.Phys())
 	MUsedDrawer.Layer = 2
 	MUsedDrawer.ChangeableTex = true
 

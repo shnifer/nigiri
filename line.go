@@ -15,7 +15,7 @@ func init() {
 	img.Fill(color.White)
 	defRectTex = NewTex(img)
 
-	lineImgDrawer = NewDrawer(defRectTex, &lineRect)
+	lineImgDrawer = NewDrawer(defRectTex, 0, &lineRect)
 }
 
 type Line struct {

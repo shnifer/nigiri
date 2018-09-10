@@ -46,10 +46,11 @@ func putDo(do *ebiten.DrawImageOptions) {
 	doCache = append(doCache, do)
 }
 
-func NewDrawer(src TexSrcer, transform ...Transformer) *Drawer {
+func NewDrawer(src TexSrcer, layer Layer, transform ...Transformer) *Drawer {
 	res := &Drawer{
 		Src:       src,
 		Transform: Transforms(transform),
+		Layer: layer,
 		color:     color.White,
 		alpha:     1,
 	}

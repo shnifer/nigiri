@@ -82,13 +82,13 @@ func main() {
 		Pivot:    vec2.Center,
 		Scaler:   nigiri.NewFixedScaler(400, 400),
 	}
-	FR = nigiri.NewDrawer(nigiri.NewTex(tt), nigiri.Transforms{frSprite, C.Local()})
+	FR = nigiri.NewDrawer(nigiri.NewTex(tt), 0, nigiri.Transforms{frSprite, C.Local()})
 
 	S = &nigiri.Sprite{
 		Pivot: vec2.Center,
 	}
 	S.ScaleFactor = vec2.V2{X: 0.2, Y: 0.2}
-	SI = nigiri.NewDrawer(tex, nigiri.Transforms{S, C.Phys()})
+	SI = nigiri.NewDrawer(tex, 1, nigiri.Transforms{S, C.Phys()})
 	SI.SetSmooth(true)
 	SI.Layer = 1
 	ebiten.SetVsyncEnabled(false)
