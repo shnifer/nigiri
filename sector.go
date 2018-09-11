@@ -14,6 +14,8 @@ type Sector struct {
 	Radius   float64
 	StartAng float64
 	EndAng   float64
+
+	maxRadius float64
 }
 
 const (
@@ -79,9 +81,25 @@ func (s Sector) ColorAlpha() (clr color.Color, a float64) {
 	return s.sprite.ColorAlpha()
 }
 
+func (s *Sector) ReduceRadiusCam(cam *Camera){
+	if cam.clipRect.Empty(){
+		s.maxRadius = 0
+		return
+	}
+	sx,sy:=float64(cam.clipRect.Dx()), float64(cam.clipRect.Dy())
+	L:=vec2.V(sx,sy).Len()
+
+	s.maxRadius = L / cam.scale
+}
+
+
 func (s Sector) DrawReqs(Q *Queue) {
 	s.sprite.Position = s.Center
-	s.sprite.Scaler = NewScaler(s.Radius / sectorLen)
+	scale:=s.Radius / sectorLen
+	if s.maxRadius>0 && s.Radius>s.maxRadius{
+		scale = s.maxRadius / sectorLen
+	}
+	s.sprite.Scaler = NewScaler(scale)
 
 	start, end := vec2.NormAngRange(s.StartAng, s.EndAng)
 
@@ -93,10 +111,10 @@ loop:
 		left = end - ang
 		switch {
 		case left >= sectorBigDeg:
-			step = sectorBigDeg * 0.99
+			step = sectorBigDeg * 0.9
 			s.sprite.Src = bigDegreeTex
 		case left >= sectorMidDeg:
-			step = sectorMidDeg * 0.99
+			step = sectorMidDeg * 0.95
 			s.sprite.Src = midDegreeTex
 		case left >= sectorSmallDeg:
 			step = sectorSmallDeg * 0.99

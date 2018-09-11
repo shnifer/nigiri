@@ -193,7 +193,7 @@ func (c *Camera) ClippedRect(rect Rect) bool {
 	}
 	px := math.Max(rect.pivot.X, 1-rect.pivot.X) * rect.Width
 	py := math.Max(rect.pivot.Y, 1-rect.pivot.Y) * rect.Height
-	dr := int(vec2.V2{X: px, Y: py}.Len())
+	dr := int(vec2.V(px, py).Len())
 	x, y := int(rect.Position.X), int(rect.Position.Y)
 	cr := image.Rect(x-dr, y-dr, x+dr, y+dr)
 	return cr.Intersect(c.clipRect).Empty()

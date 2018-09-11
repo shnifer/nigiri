@@ -7,6 +7,7 @@ import (
 	"github.com/shnifer/nigiri"
 	"github.com/shnifer/nigiri/vec2"
 	"golang.org/x/image/colornames"
+	"image"
 )
 
 var Q *nigiri.Queue
@@ -59,6 +60,7 @@ func mainLoop(win *ebiten.Image, dt float64) error {
 		Sector.Radius /= 1.05
 	}
 
+	Sector.ReduceRadiusCam(C)
 	Q.Clear()
 	Q.Add(Circle)
 	Q.Add(Sector)
@@ -74,6 +76,7 @@ func main() {
 	Q = nigiri.NewQueue()
 	C = nigiri.NewCamera()
 	C.SetCenter(vec2.V2{X: 300, Y: 300})
+	C.SetClipRect(image.Rect(0,0,600,600))
 
 	Circle = nigiri.NewSprite(nigiri.CircleTex(), 0, C.Phys())
 	Circle.Scaler = nigiri.NewFixedScaler(400, 400)
