@@ -190,3 +190,53 @@ func BenchmarkImageDrawer_calcDrawTag(b *testing.B) {
 		id.calcDrawTag()
 	}
 }
+
+func BenchmarkCircleTex1(b *testing.B) {
+	const radius = 512
+	d := radius*2 + 1
+
+	p := make([]byte, d*d*4)
+	dw := d * 4
+	r2 := radius * radius
+
+	var ix, iy int
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		for x := -radius; x <= radius; x++ {
+			for y := -radius; y <= radius; y++ {
+				if x*x+y*y <= r2 {
+					ix = x + radius
+					iy = y + radius
+					for i := 0; i < 4; i++ {
+						p[4*ix+dw*iy+i] = 255
+					}
+				}
+			}
+		}
+	}
+}
+
+func BenchmarkCircleTex2(b *testing.B) {
+	const radius = 512
+	d := radius*2 + 1
+
+	p := make([]byte, d*d*4)
+	dw := d * 4
+	r2 := radius * radius
+
+	white := []byte{255, 255, 255, 255}
+
+	var ix, iy int
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		for x := -radius; x <= radius; x++ {
+			for y := -radius; y <= radius; y++ {
+				if x*x+y*y <= r2 {
+					ix = x + radius
+					iy = y + radius
+					copy(p[4*ix+dw*iy:], white)
+				}
+			}
+		}
+	}
+}

@@ -256,7 +256,7 @@ func NormAngRange(start, end float64) (float64, float64) {
 	if start > end {
 		start, end = end, start
 	}
-
+	//todo: devide?
 	for start < 0 {
 		start += 360
 	}
