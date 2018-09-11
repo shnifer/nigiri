@@ -15,15 +15,13 @@ import (
 var TD *nigiri.TextDrawer
 
 var C *nigiri.Camera
-var S *nigiri.SpriteTrans
-var TI *nigiri.Drawer
+var MultiText nigiri.Sprite
 
 var Q *nigiri.Queue
 var Face font.Face
 
+var UsedText nigiri.Sprite
 var MUsedText *nigiri.TextSrc
-var MUsedSprite *nigiri.SpriteTrans
-var MUsedDrawer *nigiri.Drawer
 
 func mainLoop(win *ebiten.Image, dt float64) error {
 	if ebiten.IsKeyPressed(ebiten.KeyA) {
@@ -55,13 +53,13 @@ func mainLoop(win *ebiten.Image, dt float64) error {
 	Q.Clear()
 	Q.Add(TD)
 	for i := 0; i < 3; i++ {
-		S.Position = vec2.V(0, 150).Mul(float64(i))
-		Q.Add(TI)
+		MultiText.Position = vec2.V(0, 150).Mul(float64(i))
+		Q.Add(MultiText)
 	}
 	for i := 0; i < 5; i++ {
 		MUsedText.SetText(strconv.Itoa(i), Face, nigiri.AlignLeft, colornames.Red)
-		MUsedSprite.Position = vec2.V(100, 150).AddMul(vec2.V(0, 100), float64(i))
-		Q.Add(MUsedDrawer)
+		UsedText.Position = vec2.V(100, 150).AddMul(vec2.V(0, 100), float64(i))
+		Q.Add(UsedText)
 	}
 	Q.Run(win)
 	ebitenutil.DebugPrint(win, fmt.Sprintf("FPS: %v\nDraws: %v", ebiten.CurrentFPS(), Q.Len()))
@@ -98,24 +96,15 @@ func main() {
 	TS.AddText("center or", face, 1, colornames.White)
 	TS.AddText("right aligned", face, 2, colornames.White)
 
-	S = &nigiri.SpriteTrans{
-		Pivot:  vec2.Center,
-		Scaler: nigiri.NewScaler(1),
-	}
-	TI = nigiri.NewDrawer(TS, 0, S, C.Phys())
-	TI.SetSmooth(true)
-	TI.Layer = 1
+	MultiText = nigiri.NewSprite(TS, 0, C.Phys())
+	MultiText.SetSmooth(true)
+	MultiText.Pivot = vec2.Center
 
 	MUsedText = nigiri.NewTextSrc(1.2, false)
 	MUsedText.SetText("text", Face, nigiri.AlignLeft, colornames.Red)
 
-	MUsedSprite = &nigiri.SpriteTrans{
-		Pivot:  vec2.Center,
-		Scaler: nigiri.NewScaler(1),
-	}
-	MUsedDrawer = nigiri.NewDrawer(MUsedText, 1, MUsedSprite, C.Phys())
-	MUsedDrawer.Layer = 2
-	MUsedDrawer.ChangeableTex = true
+	UsedText = nigiri.NewSprite(MUsedText, 2, C.Phys())
+	UsedText.ChangeableTex = true
 
 	ebiten.SetVsyncEnabled(true)
 	nigiri.Run(mainLoop, 1000, 1000, 1, "TEST")

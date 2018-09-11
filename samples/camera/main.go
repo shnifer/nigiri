@@ -10,12 +10,10 @@ import (
 	"image"
 )
 
-var T *ebiten.Image
 var C *nigiri.Camera
-var S *nigiri.SpriteTrans
-var SI *nigiri.Drawer
 var Q *nigiri.Queue
-var FR *nigiri.Drawer
+var FR nigiri.Sprite
+var Partice nigiri.Sprite
 
 func mainLoop(win *ebiten.Image, dt float64) error {
 	if ebiten.IsKeyPressed(ebiten.KeyA) {
@@ -47,8 +45,8 @@ func mainLoop(win *ebiten.Image, dt float64) error {
 	Q.Clear()
 	for x := -100; x <= 100; x += 10 {
 		for y := -100; y <= 100; y += 10 {
-			S.Position = vec2.V(float64(x), float64(y))
-			Q.Add(SI)
+			Partice.Position = vec2.V(float64(x), float64(y))
+			Q.Add(Partice)
 		}
 	}
 	Q.Add(FR)
@@ -77,20 +75,16 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	frSprite := nigiri.SpriteTrans{
-		Position: vec2.V(500, 500),
-		Pivot:    vec2.Center,
-		Scaler:   nigiri.NewFixedScaler(400, 400),
-	}
-	FR = nigiri.NewDrawer(nigiri.NewTex(tt), 0, nigiri.Transforms{frSprite, C.Local()})
+	FR = nigiri.NewSprite(nigiri.NewTex(tt), 0, C.Local())
+	FR.Position = vec2.V(500, 500)
+	FR.Pivot = vec2.Center
+	FR.Scaler = nigiri.NewFixedScaler(400, 400)
 
-	S = &nigiri.SpriteTrans{
-		Pivot: vec2.Center,
-	}
-	S.ScaleFactor = vec2.V2{X: 0.2, Y: 0.2}
-	SI = nigiri.NewDrawer(tex, 1, nigiri.Transforms{S, C.Phys()})
-	SI.SetSmooth(true)
-	SI.Layer = 1
+	Partice = nigiri.NewSprite(tex, 1, C.Phys())
+	Partice.SetSmooth(true)
+	Partice.Pivot = vec2.Center
+	Partice.ScaleFactor = vec2.V(0.2, 0.2)
+
 	ebiten.SetVsyncEnabled(false)
 	nigiri.Run(mainLoop, 1000, 1000, 1, "TEST")
 }
