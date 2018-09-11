@@ -19,8 +19,8 @@ type Sector struct {
 const (
 	sectorLen      = 1000
 	sectorSmallDeg = 1
-	sectorMidDeg   = 7
-	sectorBigDeg   = 50
+	sectorMidDeg   = 8
+	sectorBigDeg   = 60
 )
 
 var smallDegreeTex Tex
