@@ -4,7 +4,6 @@ import (
 	"github.com/hajimehoshi/ebiten"
 	"github.com/shnifer/nigiri/vec2"
 	"image/color"
-	"log"
 )
 
 type Drawer struct {
