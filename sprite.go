@@ -32,3 +32,22 @@ func NewSprite(src TexSrcer, layer Layer, transforms ...Transformer) Sprite {
 	}
 	return res
 }
+
+type TextSprite struct {
+	*TextSrc
+	*SpriteTrans
+	*Drawer
+}
+
+func NewTextSprite(interlineK float64, permanentTex bool, layer Layer, transforms ...Transformer) TextSprite {
+	src := NewTextSrc(interlineK, permanentTex)
+	SpriteT := &SpriteTrans{
+		Scaler: NewScaler(1),
+	}
+	res := TextSprite{
+		TextSrc:     src,
+		SpriteTrans: SpriteT,
+		Drawer:      NewDrawer(src, layer, append(Transforms{SpriteT}, transforms...)),
+	}
+	return res
+}

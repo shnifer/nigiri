@@ -13,14 +13,14 @@ type Drawer struct {
 	ChangeableTex bool
 
 	compositeMode ebiten.CompositeMode
-	//color
+	//Color
 	color  color.Color
 	alpha  float64
 	colorM ebiten.ColorM
 
 	filter ebiten.Filter
 
-	//tagSuffix depends on color and filter and CompositeMode
+	//tagSuffix depends on Color and filter and CompositeMode
 	drawTag uint64
 
 	//just a temp to not alloc, rewritten each draw

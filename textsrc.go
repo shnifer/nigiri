@@ -57,6 +57,11 @@ type TextSrc struct {
 	permanentTex bool
 	permTex      Tex
 
+	//default values for new strings, already exist do not change
+	Face  font.Face
+	Color color.Color
+	Align Align
+
 	InterLineK float64
 }
 
@@ -118,7 +123,7 @@ func (ts *TextSrc) recalc() {
 		case AlignRight:
 			HOff = maxAdvance - str.advance
 		default:
-			//unknown align as default left and do not panic
+			//unknown Align as default left and do not panic
 			HOff = 0
 		}
 		ts.offs = append(ts.offs, image.Pt(HOff, VOff))
@@ -158,17 +163,45 @@ func NewTextSrc(InterLineK float64, permanentTex bool) *TextSrc {
 	return res
 }
 
+func NewTextSrcExt(InterLineK float64, permanentTex bool, face font.Face, align Align, clr color.Color) *TextSrc {
+	res := &TextSrc{
+		strs:         make([]textString, 0),
+		offs:         make([]image.Point, 0),
+		InterLineK:   InterLineK,
+		permanentTex: permanentTex,
+		dirty:        true,
+		Face:         face,
+		Align:        align,
+		Color:        clr,
+	}
+	return res
+}
+
 func (ts *TextSrc) Reset() {
 	ts.strs = ts.strs[:0]
 	ts.offs = ts.offs[:0]
 }
 
-func (ts *TextSrc) SetText(text string, face font.Face, align Align, clr color.Color) {
+func (ts *TextSrc) SetText(text string) {
 	ts.Reset()
-	ts.AddText(text, face, align, clr)
+	ts.AddText(text)
 }
 
-func (ts *TextSrc) AddText(text string, face font.Face, align Align, clr color.Color) {
+func (ts *TextSrc) AddText(text string) {
+	ts.dirty = true
+	strs := strings.Split(text, "\n")
+
+	for _, str := range strs {
+		ts.strs = append(ts.strs, newTextString(str, ts.Face, ts.Color, ts.Align, ts.InterLineK))
+	}
+}
+
+func (ts *TextSrc) SetTextExt(text string, face font.Face, align Align, clr color.Color) {
+	ts.Reset()
+	ts.AddTextExt(text, face, align, clr)
+}
+
+func (ts *TextSrc) AddTextExt(text string, face font.Face, align Align, clr color.Color) {
 	ts.dirty = true
 	strs := strings.Split(text, "\n")
 

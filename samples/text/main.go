@@ -15,13 +15,12 @@ import (
 var TD *nigiri.TextDrawer
 
 var C *nigiri.Camera
-var MultiText nigiri.Sprite
+var MultiText nigiri.TextSprite
 
 var Q *nigiri.Queue
 var Face font.Face
 
-var UsedText nigiri.Sprite
-var MUsedText *nigiri.TextSrc
+var UsedText nigiri.TextSprite
 
 func mainLoop(win *ebiten.Image, dt float64) error {
 	if ebiten.IsKeyPressed(ebiten.KeyA) {
@@ -57,7 +56,7 @@ func mainLoop(win *ebiten.Image, dt float64) error {
 		Q.Add(MultiText)
 	}
 	for i := 0; i < 5; i++ {
-		MUsedText.SetText(strconv.Itoa(i), Face, nigiri.AlignLeft, colornames.Red)
+		UsedText.SetText(strconv.Itoa(i))
 		UsedText.Position = vec2.V(100, 150).AddMul(vec2.V(0, 100), float64(i))
 		Q.Add(UsedText)
 	}
@@ -90,20 +89,19 @@ func main() {
 	TD.Color = colornames.Brown
 	TD.Text = "just simple textdrawer\nsecond line"
 
-	TS := nigiri.NewTextSrc(1.2, true)
-	TS.AddText("text source sample\nmulti-line", face, 0, colornames.White)
-	TS.AddText("colored and sized", bigFace, 0, colornames.Greenyellow)
-	TS.AddText("center or", face, 1, colornames.White)
-	TS.AddText("right aligned", face, 2, colornames.White)
-
-	MultiText = nigiri.NewSprite(TS, 0, C.Phys())
+	MultiText = nigiri.NewTextSprite(1.2, true, 0, C.Phys())
 	MultiText.SetSmooth(true)
 	MultiText.Pivot = vec2.Center
 
-	MUsedText = nigiri.NewTextSrc(1.2, false)
-	MUsedText.SetText("text", Face, nigiri.AlignLeft, colornames.Red)
+	MultiText.AddTextExt("text source sample\nmulti-line", face, 0, colornames.White)
+	MultiText.AddTextExt("colored and sized", bigFace, 0, colornames.Greenyellow)
+	MultiText.AddTextExt("center or", face, 1, colornames.White)
+	MultiText.AddTextExt("right aligned", face, 2, colornames.White)
 
-	UsedText = nigiri.NewSprite(MUsedText, 2, C.Phys())
+	UsedText = nigiri.NewTextSprite(1.2, false, 1, C.Phys())
+	UsedText.Color = colornames.Red
+	UsedText.Face = Face
+	UsedText.SetText("text")
 	UsedText.ChangeableTex = true
 
 	ebiten.SetVsyncEnabled(true)

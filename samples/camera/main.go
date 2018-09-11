@@ -12,8 +12,8 @@ import (
 
 var C *nigiri.Camera
 var Q *nigiri.Queue
-var FR nigiri.Sprite
-var Partice nigiri.Sprite
+var ClipRect nigiri.Sprite
+var Particle nigiri.Sprite
 
 func mainLoop(win *ebiten.Image, dt float64) error {
 	if ebiten.IsKeyPressed(ebiten.KeyA) {
@@ -45,11 +45,11 @@ func mainLoop(win *ebiten.Image, dt float64) error {
 	Q.Clear()
 	for x := -100; x <= 100; x += 10 {
 		for y := -100; y <= 100; y += 10 {
-			Partice.Position = vec2.V(float64(x), float64(y))
-			Q.Add(Partice)
+			Particle.Position = vec2.V(float64(x), float64(y))
+			Q.Add(Particle)
 		}
 	}
-	Q.Add(FR)
+	Q.Add(ClipRect)
 	Q.Run(win)
 	ebitenutil.DebugPrint(win, fmt.Sprintf("FPS: %v\nDraws: %v", ebiten.CurrentFPS(), Q.Len()))
 	return nil
@@ -75,15 +75,15 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	FR = nigiri.NewSprite(nigiri.NewTex(tt), 0, C.Local())
-	FR.Position = vec2.V(500, 500)
-	FR.Pivot = vec2.Center
-	FR.Scaler = nigiri.NewFixedScaler(400, 400)
+	ClipRect = nigiri.NewSprite(nigiri.NewTex(tt), 0, C.Local())
+	ClipRect.Position = vec2.V(500, 500)
+	ClipRect.Pivot = vec2.Center
+	ClipRect.Scaler = nigiri.NewFixedScaler(400, 400)
 
-	Partice = nigiri.NewSprite(tex, 1, C.Phys())
-	Partice.SetSmooth(true)
-	Partice.Pivot = vec2.Center
-	Partice.ScaleFactor = vec2.V(0.2, 0.2)
+	Particle = nigiri.NewSprite(tex, 1, C.Phys())
+	Particle.SetSmooth(true)
+	Particle.Pivot = vec2.Center
+	Particle.ScaleFactor = vec2.V(0.2, 0.2)
 
 	ebiten.SetVsyncEnabled(false)
 	nigiri.Run(mainLoop, 1000, 1000, 1, "TEST")

@@ -10,10 +10,9 @@ import (
 	_ "image/png"
 )
 
-var T *ebiten.Image
+var Q *nigiri.Queue
 var C *nigiri.Camera
 var Sprite nigiri.Sprite
-var Q *nigiri.Queue
 
 func mainLoop(win *ebiten.Image, dt float64) error {
 	if ebiten.IsKeyPressed(ebiten.KeyA) {

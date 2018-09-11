@@ -149,9 +149,9 @@ func BenchmarkSampleQueue(b *testing.B) {
 	TD.Text = "just simple textdrawer\nsecond line"
 
 	TS := NewTextSrc(1.2, true)
-	TS.AddText("text source sample\nmulti-line", face, 0, colornames.White)
-	TS.AddText("center or", face, 1, colornames.White)
-	TS.AddText("right aligned", face, 2, colornames.White)
+	TS.AddTextExt("text source sample\nmulti-line", face, 0, colornames.White)
+	TS.AddTextExt("center or", face, 1, colornames.White)
+	TS.AddTextExt("right aligned", face, 2, colornames.White)
 
 	S2 := SpriteTrans{
 		Pivot: vec2.Center,
