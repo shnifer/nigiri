@@ -62,3 +62,65 @@ func (l Line) DrawReqs(Q *Queue) {
 
 	Q.Add(lineImgDrawer)
 }
+
+type Polyline struct {
+	CamTransform Transformer
+	Layer        Layer
+	Points []vec2.V2
+	Closed bool
+	Width        float64
+	Color        color.Color
+}
+
+func NewPolyline(camTransform Transformer, layer Layer) Polyline {
+	return Polyline{
+		CamTransform: camTransform,
+		Width:        1,
+		Color:        color.White,
+		Layer:        layer,
+		Points: make([]vec2.V2,0),
+	}
+}
+
+func NewPolylineExt(camTransform Transformer, layer Layer, points []vec2.V2,
+	width float64, color color.Color) Polyline {
+	return Polyline{
+		CamTransform: camTransform,
+		Width:        width,
+		Color:        color,
+		Points: points,
+		Layer:        layer,
+	}
+}
+
+func (l Polyline) DrawReqs(Q *Queue) {
+	if l.Points == nil{
+		return
+	}
+
+	lineImgDrawer.SetColor(l.Color)
+	lineImgDrawer.Layer = l.Layer
+
+	var to vec2.V2
+	for i, from:=range l.Points {
+		if i==len(l.Points)-1{
+			if l.Closed{
+				to = l.Points[0]
+			} else {
+				break
+			}
+		} else {
+			to = l.Points[i+1]
+		}
+		lineRect.Position = from
+		v := vec2.Sub(from, to)
+		lineRect.Height = v.Len()
+		lineRect.Angle = v.Dir()
+		if l.CamTransform != nil {
+			lineRect = l.CamTransform.TransformRect(lineRect)
+		}
+		lineRect.Width = l.Width
+
+		Q.Add(lineImgDrawer)
+	}
+}
