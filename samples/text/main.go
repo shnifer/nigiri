@@ -15,14 +15,14 @@ import (
 var TD *nigiri.TextDrawer
 
 var C *nigiri.Camera
-var S *nigiri.Sprite
+var S *nigiri.SpriteTrans
 var TI *nigiri.Drawer
 
 var Q *nigiri.Queue
 var Face font.Face
 
 var MUsedText *nigiri.TextSrc
-var MUsedSprite *nigiri.Sprite
+var MUsedSprite *nigiri.SpriteTrans
 var MUsedDrawer *nigiri.Drawer
 
 func mainLoop(win *ebiten.Image, dt float64) error {
@@ -98,7 +98,7 @@ func main() {
 	TS.AddText("center or", face, 1, colornames.White)
 	TS.AddText("right aligned", face, 2, colornames.White)
 
-	S = &nigiri.Sprite{
+	S = &nigiri.SpriteTrans{
 		Pivot:  vec2.Center,
 		Scaler: nigiri.NewScaler(1),
 	}
@@ -109,7 +109,7 @@ func main() {
 	MUsedText = nigiri.NewTextSrc(1.2, false)
 	MUsedText.SetText("text", Face, nigiri.AlignLeft, colornames.Red)
 
-	MUsedSprite = &nigiri.Sprite{
+	MUsedSprite = &nigiri.SpriteTrans{
 		Pivot:  vec2.Center,
 		Scaler: nigiri.NewScaler(1),
 	}

@@ -12,7 +12,7 @@ import (
 
 var T *ebiten.Image
 var C *nigiri.Camera
-var S *nigiri.Sprite
+var S *nigiri.SpriteTrans
 var SI *nigiri.Drawer
 var Q *nigiri.Queue
 var FR *nigiri.Drawer
@@ -77,14 +77,14 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	frSprite := nigiri.Sprite{
+	frSprite := nigiri.SpriteTrans{
 		Position: vec2.V(500, 500),
 		Pivot:    vec2.Center,
 		Scaler:   nigiri.NewFixedScaler(400, 400),
 	}
 	FR = nigiri.NewDrawer(nigiri.NewTex(tt), 0, nigiri.Transforms{frSprite, C.Local()})
 
-	S = &nigiri.Sprite{
+	S = &nigiri.SpriteTrans{
 		Pivot: vec2.Center,
 	}
 	S.ScaleFactor = vec2.V2{X: 0.2, Y: 0.2}

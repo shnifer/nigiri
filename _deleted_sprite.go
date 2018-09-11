@@ -17,11 +17,11 @@ package nigiri
 //	Layer         Layer
 //}
 //
-//func (so SpriteOpts) New() *Sprite {
+//func (so SpriteOpts) New() *SpriteTrans {
 //	return NewSprite(so)
 //}
 //
-//type Sprite struct {
+//type SpriteTrans struct {
 //	imgD         *Drawer
 //	rect         Rect
 //	CamTransform Transformer
@@ -30,12 +30,12 @@ package nigiri
 //	Scaler
 //}
 //
-//func (s *Sprite) DrawReqs(Q *Queue) {
+//func (s *SpriteTrans) DrawReqs(Q *Queue) {
 //	Q.Add(s.imgD)
 //}
 //
-//func NewSprite(opts SpriteOpts) *Sprite {
-//	res := &Sprite{
+//func NewSprite(opts SpriteOpts) *SpriteTrans {
+//	res := &SpriteTrans{
 //		CamTransform: opts.CamTransform,
 //		Scaler:       NewScaler(1),
 //	}
@@ -48,7 +48,7 @@ package nigiri
 //	return res
 //}
 //
-//func (s *Sprite) GetRect() Rect {
+//func (s *SpriteTrans) GetRect() Rect {
 //	srcRect, _ := s.imgD.Src.GetSrcRect()
 //	w, h := float64(srcRect.Dx()), float64(srcRect.Dy())
 //	if w <= 0 || h <= 0 {
@@ -57,7 +57,7 @@ package nigiri
 //	return s.TransformRect(NewRect(w, h, pivot))
 //}
 //
-//func (s *Sprite) TransformRect(rect Rect) Rect {
+//func (s *SpriteTrans) TransformRect(rect Rect) Rect {
 //	s.rect = s.Scaler.TransformRect(rect)
 //	s.rect.Position = s.Position
 //	s.rect.Angle = s.Angle
@@ -67,13 +67,13 @@ package nigiri
 //	return s.rect
 //}
 //
-//func (s *Sprite) SetColor(clr color.Color) {
+//func (s *SpriteTrans) SetColor(clr color.Color) {
 //	s.imgD.SetColor(clr)
 //}
-//func (s *Sprite) SetAlpha(v float64) {
+//func (s *SpriteTrans) SetAlpha(v float64) {
 //	s.imgD.SetAlpha(v)
 //}
 //
-//func (s *Sprite) ColorAlpha() (color.Color, float64) {
+//func (s *SpriteTrans) ColorAlpha() (color.Color, float64) {
 //	return s.imgD.color, s.imgD.alpha
 //}
