@@ -14,22 +14,27 @@ type Sector struct {
 	Radius   float64
 	StartAng float64
 	EndAng   float64
-
-	maxRadius float64
 }
 
 const (
-	sectorLen      = 1000
-	sectorSmallDeg = 1
-	sectorMidDeg   = 8
-	sectorBigDeg   = 60
+	defSectorLen      = 1000
+	sectorSmallDeg = 0.716 //tan(7.125)=1/80
+	sectorMidDeg   = 7.125 //tan(7.125)=1/8
+	sectorBigDeg   = 45
 )
+
+var sectorLen int
 
 var smallDegreeTex Tex
 var midDegreeTex Tex
 var bigDegreeTex Tex
 
 func init() {
+	SetSectorLen(defSectorLen)
+}
+
+func SetSectorLen(len int) {
+	sectorLen = len
 	smallDegreeTex = degreeTex(sectorSmallDeg)
 	midDegreeTex = degreeTex(sectorMidDeg)
 	bigDegreeTex = degreeTex(sectorBigDeg)
@@ -37,7 +42,7 @@ func init() {
 
 func degreeTex(ang float64) Tex {
 	h := sectorLen
-	w := 1 + int(sectorLen*math.Tan(ang*vec2.Deg2Rad))
+	w := 1 + int(float64(sectorLen)*math.Tan(ang*vec2.Deg2Rad))
 	img, _ := ebiten.NewImage(w, h, ebiten.FilterDefault)
 
 	p := make([]byte, w*h*4)
@@ -81,56 +86,39 @@ func (s Sector) ColorAlpha() (clr color.Color, a float64) {
 	return s.sprite.ColorAlpha()
 }
 
-func (s *Sector) ReduceRadiusCam(cam *Camera){
-	if cam.clipRect.Empty(){
-		s.maxRadius = 0
-		return
-	}
-	sx,sy:=float64(cam.clipRect.Dx()), float64(cam.clipRect.Dy())
-	L:=vec2.V(sx,sy).Len()
-
-	s.maxRadius = L / cam.scale
-}
-
-
 func (s Sector) DrawReqs(Q *Queue) {
 	s.sprite.Position = s.Center
-	scale:=s.Radius / sectorLen
-	if s.maxRadius>0 && s.Radius>s.maxRadius{
-		scale = s.maxRadius / sectorLen
-	}
-	s.sprite.Scaler = NewScaler(scale)
+	s.sprite.Scaler = NewScaler(s.Radius / float64(sectorLen))
 
 	start, end := vec2.NormAngRange(s.StartAng, s.EndAng)
 
+	var size, step float64
+	left:=end-start
+	switch {
+	case left >= sectorBigDeg:
+		size = sectorBigDeg
+		step = size * 0.9
+		s.sprite.Src = bigDegreeTex
+	case left >= sectorMidDeg:
+		size = sectorMidDeg
+		step = size * 0.95
+		s.sprite.Src = midDegreeTex
+	default:
+		size = sectorSmallDeg
+		step = size * 0.99
+		s.sprite.Src = smallDegreeTex
+	}
+
 	ang := start
-	step := float64(sectorSmallDeg)
-	var left float64
-loop:
-	for {
-		left = end - ang
-		switch {
-		case left >= sectorBigDeg:
-			step = sectorBigDeg * 0.9
-			s.sprite.Src = bigDegreeTex
-		case left >= sectorMidDeg:
-			step = sectorMidDeg * 0.95
-			s.sprite.Src = midDegreeTex
-		case left >= sectorSmallDeg:
-			step = sectorSmallDeg * 0.99
-			s.sprite.Src = smallDegreeTex
-		default:
-			break loop
-		}
+	for ang+size<=end{
 		s.sprite.Angle = ang
 		ang += step
 		Q.Add(s.sprite)
 	}
 
-	lastPart := end - sectorSmallDeg
-	if lastPart > start {
-		s.sprite.Src = smallDegreeTex
-		s.sprite.Angle = lastPart
+	if left>sectorSmallDeg {
+		s.sprite.ScaleFactor.X *= (-1)
+		s.sprite.Angle = end
 		Q.Add(s.sprite)
 	}
 }

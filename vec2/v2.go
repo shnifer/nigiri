@@ -241,11 +241,13 @@ func V(x, y float64) V2 {
 
 //put angle in degs in [0;360) range
 func NormAng(angle float64) float64 {
-	for angle < 0 {
-		angle += 360
+	if angle < 0 {
+		a:=float64(int(-angle/360)+1)
+		return angle + 360*a
 	}
-	for angle >= 360 {
-		angle -= 360
+	if angle >= 360 {
+		a:=float64(int(angle/360))
+		return angle - 360*a
 	}
 	return angle
 }
@@ -256,18 +258,21 @@ func NormAngRange(start, end float64) (float64, float64) {
 	if start > end {
 		start, end = end, start
 	}
-	//todo: devide?
-	for start < 0 {
-		start += 360
+	if start < 0 {
+		a:=float64(int(-start/360)+1)
+		start += 360*a
 	}
-	for start >= 360 {
-		start -= 360
+	if start >= 360 {
+		a:=float64(int(start/360))
+		start -= 360*a
 	}
-	for end < start {
-		end += 360
+	if end < start {
+		a:=float64(int((start-end)/360)+1)
+		end += 360*a
 	}
-	for end >= start+360 {
-		end -= 360
+	if end >= start+360 {
+		a:=float64(int((end-start)/360))
+		end -= 360*a
 	}
 	return start, end
 }

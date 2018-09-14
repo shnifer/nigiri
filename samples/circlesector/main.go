@@ -60,7 +60,6 @@ func mainLoop(win *ebiten.Image, dt float64) error {
 		Sector.Radius /= 1.05
 	}
 
-	Sector.ReduceRadiusCam(C)
 	Q.Clear()
 	Q.Add(Circle)
 	Q.Add(Sector)
