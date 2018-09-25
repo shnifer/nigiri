@@ -58,9 +58,9 @@ type TextSrc struct {
 	permTex      Tex
 
 	//default values for new strings, already exist do not change
-	Face  font.Face
-	Color color.Color
-	Align Align
+	DefFace  font.Face
+	DefColor color.Color
+	DefAlign Align
 
 	InterLineK float64
 }
@@ -159,6 +159,8 @@ func NewTextSrc(InterLineK float64, permanentTex bool) *TextSrc {
 		InterLineK:   InterLineK,
 		permanentTex: permanentTex,
 		dirty:        true,
+		DefAlign:     AlignLeft,
+		DefColor:     color.White,
 	}
 	return res
 }
@@ -170,9 +172,9 @@ func NewTextSrcExt(InterLineK float64, permanentTex bool, face font.Face, align 
 		InterLineK:   InterLineK,
 		permanentTex: permanentTex,
 		dirty:        true,
-		Face:         face,
-		Align:        align,
-		Color:        clr,
+		DefFace:      face,
+		DefAlign:     align,
+		DefColor:     clr,
 	}
 	return res
 }
@@ -192,7 +194,7 @@ func (ts *TextSrc) AddText(text string) {
 	strs := strings.Split(text, "\n")
 
 	for _, str := range strs {
-		ts.strs = append(ts.strs, newTextString(str, ts.Face, ts.Color, ts.Align, ts.InterLineK))
+		ts.strs = append(ts.strs, newTextString(str, ts.DefFace, ts.DefColor, ts.DefAlign, ts.InterLineK))
 	}
 }
 

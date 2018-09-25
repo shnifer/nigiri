@@ -99,8 +99,8 @@ func main() {
 	MultiText.AddTextExt("right aligned", face, 2, colornames.White)
 
 	UsedText = nigiri.NewTextSprite(1.2, false, 1, C.Phys())
-	UsedText.Color = colornames.Red
-	UsedText.Face = Face
+	UsedText.DefColor = colornames.Red
+	UsedText.DefFace = Face
 	UsedText.SetText("text")
 	UsedText.ChangeableTex = true
 

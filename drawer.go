@@ -3,6 +3,7 @@ package nigiri
 import (
 	"github.com/hajimehoshi/ebiten"
 	"github.com/shnifer/nigiri/vec2"
+	"image"
 )
 
 type Drawer struct {
@@ -52,26 +53,37 @@ func (id *Drawer) SetSmooth(smooth bool) {
 	id.calcDrawTag()
 }
 
-func (id *Drawer) DrawReqs(Q *Queue) {
-	if id.Src == nil {
-		return
-	}
+func (id *Drawer) GetRect() Rect {
+	srcRect, _ := id.Src.GetSrcRectUID()
+	return id.calcRect(srcRect)
+}
 
-	srcRect, uid := id.Src.GetSrcRectUID()
+func (id *Drawer) calcRect(srcRect *image.Rectangle) Rect {
 	if srcRect == nil {
-		return
+		return ZR
 	}
 	w, h := float64(srcRect.Dx()), float64(srcRect.Dy())
 	if w == 0 || h == 0 {
-		return
+		return ZR
 	}
 	id.r = NewRect(w, h, vec2.ZV)
 	if id.Transform != nil {
 		id.r = id.Transform.TransformRect(id.r)
 	}
 	if id.r.Empty() {
+		return ZR
+	}
+	return id.r
+}
+
+func (id *Drawer) DrawReqs(Q *Queue) {
+	if id.Src == nil {
 		return
 	}
+
+	srcRect, uid := id.Src.GetSrcRectUID()
+	w, h := float64(srcRect.Dx()), float64(srcRect.Dy())
+	id.r = id.calcRect(srcRect)
 
 	order := reqOrder{
 		layer:   id.Layer,

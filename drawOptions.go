@@ -9,14 +9,14 @@ type DrawOptions struct {
 	Layer Layer
 
 	compositeMode ebiten.CompositeMode
-	//Color
+	//DefColor
 	color  color.Color
 	alpha  float64
 	colorM ebiten.ColorM
 
 	filter ebiten.Filter
 
-	//tagSuffix depends on Color and filter and CompositeMode
+	//tagSuffix depends on DefColor and filter and CompositeMode
 	drawTag uint64
 }
 

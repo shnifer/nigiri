@@ -22,6 +22,10 @@ func (r Rect) TransformRect(rect Rect) Rect {
 	return r
 }
 
+func (r Rect) ClipRect() Rect {
+	return r
+}
+
 func NewRect(w, h float64, pivotRel vec2.V2) Rect {
 	return Rect{
 		pivot:  pivotRel,

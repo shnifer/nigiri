@@ -76,13 +76,13 @@ func NewSector(layer Layer, transformers ...Transformer) Sector {
 	}
 }
 
-func (s Sector) SetColor(clr color.Color) {
+func (s Sector) SetColor(clr color.DefColor) {
 	s.sprite.SetColor(clr)
 }
 func (s Sector) SetAlpha(a float64) {
 	s.sprite.SetAlpha(a)
 }
-func (s Sector) ColorAlpha() (clr color.Color, a float64) {
+func (s Sector) ColorAlpha() (clr color.DefColor, a float64) {
 	return s.sprite.ColorAlpha()
 }
 

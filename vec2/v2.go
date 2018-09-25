@@ -226,7 +226,12 @@ func (a V2) String() string {
 }
 
 func RotateF(ang float64) func(V2) V2 {
-	sin, cos := math.Sincos(ang * Deg2Rad)
+	var sin, cos float64
+	if ang == 0 {
+		sin, cos = 0, 1
+	} else {
+		sin, cos = math.Sincos(ang * Deg2Rad)
+	}
 	return func(v V2) V2 {
 		return V2{
 			X: v.X*cos - v.Y*sin,
@@ -242,11 +247,11 @@ func V(x, y float64) V2 {
 //put angle in degs in [0;360) range
 func NormAng(angle float64) float64 {
 	if angle < 0 {
-		a:=float64(int(-angle/360)+1)
+		a := float64(int(-angle/360) + 1)
 		return angle + 360*a
 	}
 	if angle >= 360 {
-		a:=float64(int(angle/360))
+		a := float64(int(angle / 360))
 		return angle - 360*a
 	}
 	return angle
@@ -259,20 +264,20 @@ func NormAngRange(start, end float64) (float64, float64) {
 		start, end = end, start
 	}
 	if start < 0 {
-		a:=float64(int(-start/360)+1)
-		start += 360*a
+		a := float64(int(-start/360) + 1)
+		start += 360 * a
 	}
 	if start >= 360 {
-		a:=float64(int(start/360))
-		start -= 360*a
+		a := float64(int(start / 360))
+		start -= 360 * a
 	}
 	if end < start {
-		a:=float64(int((start-end)/360)+1)
-		end += 360*a
+		a := float64(int((start-end)/360) + 1)
+		end += 360 * a
 	}
 	if end >= start+360 {
-		a:=float64(int((end-start)/360))
-		end -= 360*a
+		a := float64(int((end - start) / 360))
+		end -= 360 * a
 	}
 	return start, end
 }
