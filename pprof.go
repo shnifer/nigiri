@@ -1,7 +1,6 @@
 package nigiri
 
 import (
-	. "github.com/Shnifer/magellan/log"
 	"log"
 	"os"
 	"runtime"
@@ -10,8 +9,6 @@ import (
 )
 
 func StartProfile(prefix string) {
-	defer LogFunc("StartProfile " + prefix)()
-
 	f, err := os.Create(prefix + "cpu.prof")
 	if err != nil {
 		log.Panicln("can't create cpu profile", prefix, err)
@@ -33,28 +30,26 @@ func StartProfile(prefix string) {
 func heap(fn string) {
 	f, err := os.Create(fn)
 	if err != nil {
-		log.Panicln("can't create mem profile", fn)
+		return
 	}
 	defer f.Close()
 	runtime.GC()
 	err = pprof.WriteHeapProfile(f)
 	if err != nil {
-		log.Panicln("can't start mem profile", err)
+		return
 	}
 }
 
 func StopProfile(prefix string) {
-	defer LogFunc("StopProfile " + prefix)()
-
 	mutex, err := os.Create(prefix + "mutex.prof")
 	if err != nil {
-		log.Panicln("can't create profile mutex")
+		return
 	}
 	defer mutex.Close()
 
 	block, err := os.Create(prefix + "block.prof")
 	if err != nil {
-		log.Panicln("can't create profile block")
+		return
 	}
 	defer block.Close()
 

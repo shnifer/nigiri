@@ -20,15 +20,24 @@ func (s SpriteTrans) TransformRect(rect Rect) Rect {
 type Sprite struct {
 	*SpriteTrans
 	*Drawer
+	srcUpdate Updater
+}
+
+func (s Sprite) Update(dt float64) {
+	if s.srcUpdate != nil {
+		s.srcUpdate.Update(dt)
+	}
 }
 
 func NewSprite(src TexSrcer, layer Layer, transforms ...Transformer) Sprite {
 	SpriteT := &SpriteTrans{
 		Scaler: NewScaler(1),
 	}
+	updater, _ := src.(Updater)
 	res := Sprite{
 		SpriteTrans: SpriteT,
 		Drawer:      NewDrawer(src, layer, append(Transforms{SpriteT}, transforms...)),
+		srcUpdate:   updater,
 	}
 	return res
 }

@@ -1,6 +1,6 @@
 package nigiri
 
-import (
+/*import (
 	"github.com/hajimehoshi/ebiten"
 	"github.com/shnifer/nigiri/vec2"
 	"image/color"
@@ -122,3 +122,4 @@ func (s Sector) DrawReqs(Q *Queue) {
 		Q.Add(s.sprite)
 	}
 }
+*/

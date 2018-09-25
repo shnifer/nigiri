@@ -95,7 +95,7 @@ func (c *Camera) phys(rect Rect) Rect {
 	rect.Width *= c.scale
 	rect.Height *= c.scale
 	rect.Angle += c.ang
-	rect.Position = c.applyV2(rect.Position)
+	rect.Position = c.ApplyV2(rect.Position)
 	if c.ClippedRect(rect) {
 		rect = ZR
 	}
@@ -109,7 +109,7 @@ func (c *Camera) Phys() Transformer {
 func (c *Camera) noRot(rect Rect) Rect {
 	rect.Width *= c.scale
 	rect.Height *= c.scale
-	rect.Position = c.applyV2(rect.Position)
+	rect.Position = c.ApplyV2(rect.Position)
 	if c.ClippedRect(rect) {
 		rect = ZR
 	}
@@ -122,7 +122,7 @@ func (c *Camera) NoRot() Transformer {
 
 func (c *Camera) noScale(rect Rect) Rect {
 	rect.Angle += c.ang
-	rect.Position = c.applyV2(rect.Position)
+	rect.Position = c.ApplyV2(rect.Position)
 	if c.ClippedRect(rect) {
 		rect = ZR
 	}
@@ -145,7 +145,7 @@ func (c *Camera) Local() Transformer {
 }
 
 func (c *Camera) mark(rect Rect) Rect {
-	rect.Position = c.applyV2(rect.Position)
+	rect.Position = c.ApplyV2(rect.Position)
 	if c.ClippedRect(rect) {
 		rect = ZR
 	}
@@ -173,7 +173,7 @@ func (c *Camera) Apply(x, y float64) (float64, float64) {
 	return c.posG.Apply(x, y)
 }
 
-func (c *Camera) applyV2(v vec2.V2) vec2.V2 {
+func (c *Camera) ApplyV2(v vec2.V2) vec2.V2 {
 	c.calcPosG()
 	x, y := c.posG.Apply(v.X, v.Y)
 	return vec2.V2{X: x, Y: y}
@@ -184,6 +184,8 @@ func (c *Camera) inClipRect(v vec2.V2) bool {
 	return image.Pt(int(x), int(y)).In(c.clipRect)
 }
 
+//return true if we can skip drawing this rect, false if we should draw
+//false negative is ok as we draw some off-screen, false positives are not accepted
 func (c *Camera) ClippedRect(rect Rect) bool {
 	if c.clipRect.Empty() {
 		return false
@@ -193,8 +195,8 @@ func (c *Camera) ClippedRect(rect Rect) bool {
 	}
 	px := math.Max(rect.pivot.X, 1-rect.pivot.X) * rect.Width
 	py := math.Max(rect.pivot.Y, 1-rect.pivot.Y) * rect.Height
-	dr := int(vec2.V(px, py).Len())
+	dr := int(vec2.V(px, py).Len()) + 1
 	x, y := int(rect.Position.X), int(rect.Position.Y)
 	cr := image.Rect(x-dr, y-dr, x+dr, y+dr)
-	return cr.Intersect(c.clipRect).Empty()
+	return !cr.Overlaps(c.clipRect)
 }

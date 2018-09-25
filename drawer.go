@@ -3,25 +3,14 @@ package nigiri
 import (
 	"github.com/hajimehoshi/ebiten"
 	"github.com/shnifer/nigiri/vec2"
-	"image/color"
 )
 
 type Drawer struct {
 	Src           TexSrcer
-	Layer         Layer
 	Transform     Transformer
 	ChangeableTex bool
 
-	compositeMode ebiten.CompositeMode
-	//Color
-	color  color.Color
-	alpha  float64
-	colorM ebiten.ColorM
-
-	filter ebiten.Filter
-
-	//tagSuffix depends on Color and filter and CompositeMode
-	drawTag uint64
+	DrawOptions
 
 	//just a temp to not alloc, rewritten each draw
 	r Rect
@@ -47,13 +36,10 @@ func putDo(do *ebiten.DrawImageOptions) {
 
 func NewDrawer(src TexSrcer, layer Layer, transform ...Transformer) *Drawer {
 	res := &Drawer{
-		Src:       src,
-		Transform: Transforms(transform),
-		Layer:     layer,
-		color:     color.White,
-		alpha:     1,
+		Src:         src,
+		Transform:   Transforms(transform),
+		DrawOptions: NewDrawOptions(layer),
 	}
-	res.calcDrawTag()
 	return res
 }
 
@@ -64,59 +50,6 @@ func (id *Drawer) SetSmooth(smooth bool) {
 		id.filter = ebiten.FilterDefault
 	}
 	id.calcDrawTag()
-}
-
-func (id *Drawer) CompositeMode() ebiten.CompositeMode {
-	return id.compositeMode
-}
-
-func (id *Drawer) SetCompositeMode(mode ebiten.CompositeMode) {
-	if id.compositeMode == mode {
-		return
-	}
-	id.compositeMode = mode
-	id.calcDrawTag()
-}
-
-func (id *Drawer) calcColorM() {
-	const MaxColor = 0xffff
-	id.colorM.Reset()
-	r, g, b, a := id.color.RGBA()
-	id.colorM.Scale(id.alpha*float64(r)/MaxColor,
-		id.alpha*float64(g)/MaxColor,
-		id.alpha*float64(b)/MaxColor,
-		id.alpha*float64(a)/MaxColor)
-}
-
-func (id *Drawer) ColorAlpha() (color.Color, float64) {
-	return id.color, id.alpha
-}
-
-func (id *Drawer) SetColor(color color.Color) {
-	if id.color == color {
-		return
-	}
-	id.color = color
-	id.calcColorM()
-	id.calcDrawTag()
-}
-
-func (id *Drawer) SetAlpha(alpha float64) {
-	if id.alpha == alpha {
-		return
-	}
-	id.alpha = alpha
-	id.calcColorM()
-	id.calcDrawTag()
-}
-
-func (id *Drawer) calcDrawTag() {
-	r, g, b, a := id.color.RGBA()
-	const k = 0xff
-	br, bg, bb, ba := uint64(r/k), uint64(g/k), uint64(b/k), uint64(a/k)
-	bAlpha := uint64(id.alpha * k)
-	bFilterAndComposite := uint64(id.compositeMode) + uint64(16*id.filter)
-	id.drawTag = bFilterAndComposite<<40 + bAlpha<<32 + br<<24 + bg<<16 + bb<<8 + ba<<0
 }
 
 func (id *Drawer) DrawReqs(Q *Queue) {

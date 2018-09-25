@@ -12,6 +12,8 @@ import (
 
 var Q *nigiri.Queue
 var C *nigiri.Camera
+var aniT float64
+var Ani *nigiri.FrameTexSrc
 var Sprite nigiri.Sprite
 
 func mainLoop(win *ebiten.Image, dt float64) error {
@@ -50,6 +52,8 @@ func mainLoop(win *ebiten.Image, dt float64) error {
 		Sprite.ScaleFactor.Y /= 1.05
 	}
 
+	Sprite.Update(dt)
+
 	Q.Clear()
 	Q.Add(Sprite)
 	Q.Run(win)
@@ -58,21 +62,22 @@ func mainLoop(win *ebiten.Image, dt float64) error {
 }
 
 func main() {
-	nigiri.StartProfile("sprite")
-	defer nigiri.StopProfile("sprite")
-
 	Q = nigiri.NewQueue()
 	nigiri.SetTexLoader(nigiri.FileTexLoader("samples"))
-	tex, err := nigiri.GetTex("HUD_Ship.png")
+	tex, err := nigiri.GetTex("planet_ani.png")
+	if err != nil {
+		panic(err)
+	}
+	Ani, err = nigiri.NewFrameTexSrc(tex, 64, 64, 19,
+		nigiri.AnimateFrameCycle(5))
 	if err != nil {
 		panic(err)
 	}
 	C := nigiri.NewCamera()
 	C.SetCenter(vec2.V2{X: 300, Y: 300})
 
-	Sprite = nigiri.NewSprite(tex, 0, C.Phys())
+	Sprite = nigiri.NewSprite(Ani, 0, C.Phys())
 	Sprite.Pivot = vec2.Center
 	Sprite.SetSmooth(true)
-
 	nigiri.Run(mainLoop, 600, 600, 1, "TEST")
 }
