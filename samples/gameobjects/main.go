@@ -64,7 +64,7 @@ func main() {
 	ClipRect.Pivot = vec2.Center
 	ClipRect.Scaler = nigiri.NewFixedScaler(600, 500)
 
-	LoadData()
+	StartData()
 	for _, dat := range Data {
 		vo := NewVisualObject(dat, C)
 		AddObjects(vo)
@@ -72,6 +72,6 @@ func main() {
 
 	AddObjects(ClipRect, C)
 
-	ebiten.SetVsyncEnabled(true)
+	ebiten.SetVsyncEnabled(false)
 	nigiri.Run(mainLoop, 1000, 700, 1, "TEST")
 }

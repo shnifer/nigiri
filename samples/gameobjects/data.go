@@ -4,6 +4,8 @@ import (
 	"github.com/shnifer/nigiri/vec2"
 	"math/rand"
 	"strconv"
+	"sync"
+	"time"
 )
 
 type objectData struct {
@@ -14,9 +16,10 @@ type objectData struct {
 	texType int
 }
 
+var DataMu sync.Mutex
 var Data []*objectData
 
-func LoadData() {
+func StartData() {
 	Data = make([]*objectData, 0)
 
 	for i := 0; i < 16; i++ {
@@ -30,5 +33,34 @@ func LoadData() {
 			texType: (i & 8) / 8,
 		}
 		Data = append(Data, objDat)
+	}
+
+	go DataProgress()
+}
+
+func DataProgress() {
+	var n int
+	for {
+		time.Sleep(time.Second / 10)
+		n++
+		refreshData(n)
+	}
+}
+
+func refreshData(n int) {
+	DataMu.Lock()
+	defer DataMu.Unlock()
+
+	for i, v := range Data {
+		Data[i].pos = v.pos.Rotate(1)
+		if n%2 == 0 {
+			Data[i].r = !v.r
+		}
+		if n%3 == 0 {
+			Data[i].g = !v.g
+		}
+		if n%5 == 0 {
+			Data[i].b = !v.b
+		}
 	}
 }

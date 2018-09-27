@@ -91,65 +91,62 @@ func (c *Camera) SetClipRect(rect image.Rectangle) {
 	c.clipRect = rect
 }
 
-func (c *Camera) phys(rect Rect) Rect {
+func (c *Camera) phys(rect Rect) (Rect, image.Rectangle) {
 	rect.Width *= c.scale
 	rect.Height *= c.scale
 	rect.Angle += c.ang
-	rect.Position = c.ApplyV2(rect.Position)
-	if c.ClippedRect(rect) {
-		rect = ZR
-	}
-	return rect
+	rect.Position = c.ApplyPoint(rect.Position)
+	return rect, c.clipRect
 }
 
 func (c *Camera) Phys() Transformer {
 	return TransformerF(c.phys)
 }
 
-func (c *Camera) noRot(rect Rect) Rect {
+func (c *Camera) noRot(rect Rect) (Rect, image.Rectangle) {
 	rect.Width *= c.scale
 	rect.Height *= c.scale
-	rect.Position = c.ApplyV2(rect.Position)
+	rect.Position = c.ApplyPoint(rect.Position)
 	if c.ClippedRect(rect) {
 		rect = ZR
 	}
-	return rect
+	return rect, c.clipRect
 }
 
 func (c *Camera) NoRot() Transformer {
 	return TransformerF(c.noRot)
 }
 
-func (c *Camera) noScale(rect Rect) Rect {
+func (c *Camera) noScale(rect Rect) (Rect, image.Rectangle) {
 	rect.Angle += c.ang
-	rect.Position = c.ApplyV2(rect.Position)
+	rect.Position = c.ApplyPoint(rect.Position)
 	if c.ClippedRect(rect) {
 		rect = ZR
 	}
-	return rect
+	return rect, c.clipRect
 }
 
 func (c *Camera) NoScale() Transformer {
 	return TransformerF(c.noScale)
 }
 
-func (c *Camera) local(rect Rect) Rect {
+func (c *Camera) local(rect Rect) (Rect, image.Rectangle) {
 	if c.ClippedRect(rect) {
 		rect = ZR
 	}
-	return rect
+	return rect, c.clipRect
 }
 
 func (c *Camera) Local() Transformer {
 	return TransformerF(c.local)
 }
 
-func (c *Camera) mark(rect Rect) Rect {
-	rect.Position = c.ApplyV2(rect.Position)
+func (c *Camera) mark(rect Rect) (Rect, image.Rectangle) {
+	rect.Position = c.ApplyPoint(rect.Position)
 	if c.ClippedRect(rect) {
 		rect = ZR
 	}
-	return rect
+	return rect, c.clipRect
 }
 
 func (c *Camera) Mark() Transformer {
@@ -173,7 +170,7 @@ func (c *Camera) Apply(x, y float64) (float64, float64) {
 	return c.posG.Apply(x, y)
 }
 
-func (c *Camera) ApplyV2(v vec2.V2) vec2.V2 {
+func (c *Camera) ApplyPoint(v vec2.V2) vec2.V2 {
 	c.calcPosG()
 	x, y := c.posG.Apply(v.X, v.Y)
 	return vec2.V2{X: x, Y: y}
@@ -187,6 +184,8 @@ func (c *Camera) inClipRect(v vec2.V2) bool {
 //return true if we can skip drawing this rect, false if we should draw
 //false negative is ok as we draw some off-screen, false positives are not accepted
 func (c *Camera) ClippedRect(rect Rect) bool {
+	return false
+	//TODO: remove from transfers, cz clip moved to clipper
 	if c.clipRect.Empty() {
 		return false
 	}

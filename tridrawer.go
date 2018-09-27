@@ -94,7 +94,7 @@ func (s *TriDrawer) getParams(src TriSrcer) ([]ebiten.Vertex,
 	}
 
 	v, i := src.GetVerticesIndices()
-	if s.Cam == nil {
+	if s.Cam == nil && s.Clipper == nil {
 		//for j:=range v {
 		//	v[j].SrcX, v[j].SrcY = 5, 5
 		//}
@@ -102,11 +102,13 @@ func (s *TriDrawer) getParams(src TriSrcer) ([]ebiten.Vertex,
 	}
 
 	s.v = append(s.v[:0], v...)
-	var p vec2.V2
-	for j, V := range s.v {
-		//s.v[j].SrcX, s.v[j].SrcY = 5, 5
-		p = s.Cam.ApplyV2(vec2.V(float64(V.DstX), float64(V.DstY)))
-		s.v[j].DstX, s.v[j].DstY = float32(p.X), float32(p.Y)
+	if s.Cam != nil {
+		var p vec2.V2
+		for j, V := range s.v {
+			//s.v[j].SrcX, s.v[j].SrcY = 5, 5
+			p = s.Cam.ApplyPoint(vec2.V(float64(V.DstX), float64(V.DstY)))
+			s.v[j].DstX, s.v[j].DstY = float32(p.X), float32(p.Y)
+		}
 	}
 
 	if s.Clipper == nil || len(s.v) == 0 {

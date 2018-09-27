@@ -23,10 +23,15 @@ type Transformer interface {
 	TransformRect(rect Rect) Rect
 }
 
-type TransformerF func(Rect) Rect
+type TransformerF func(in Rect) (out Rect, clip image.Rectangle)
 
 func (f TransformerF) TransformRect(rect Rect) Rect {
-	return f(rect)
+	r, _ := f(rect)
+	return r
+}
+func (f TransformerF) ClipRect() image.Rectangle {
+	_, clip := f(ZR)
+	return clip
 }
 
 type TriSrcer interface {
@@ -34,7 +39,15 @@ type TriSrcer interface {
 }
 
 type VTransformer interface {
-	ApplyV2(vec2.V2) vec2.V2
+	ApplyPoint(vec2.V2) vec2.V2
+}
+
+//Apply t to both ends of vector (0,0)-(v) and takes delta t(v)-t(0,0)
+func TransformVector(t VTransformer, v vec2.V2) vec2.V2 {
+	return t.ApplyPoint(v).Sub(t.ApplyPoint(vec2.ZV))
+}
+func TransformUpVector(t VTransformer) vec2.V2 {
+	return t.ApplyPoint(vec2.Up).Sub(t.ApplyPoint(vec2.ZV))
 }
 
 type Clipper interface {

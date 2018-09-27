@@ -26,14 +26,14 @@ type Sector struct {
 	i      []uint16
 }
 
-func NewSector(p SectorParams, layer Layer, camera *Camera) *Sector {
+func NewSector(p SectorParams, layer Layer, vTransformer VTransformer) *Sector {
 	res := &Sector{
 		SectorParams: p,
 		calced:       p,
 		v:            make([]ebiten.Vertex, 0),
 		i:            make([]uint16, 0),
 	}
-	res.TriDrawer = NewTriDrawer(res, layer, camera)
+	res.TriDrawer = NewTriDrawer(res, layer, vTransformer)
 	res.recalc()
 	return res
 }

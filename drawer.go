@@ -4,11 +4,13 @@ import (
 	"github.com/hajimehoshi/ebiten"
 	"github.com/shnifer/nigiri/vec2"
 	"image"
+	"math"
 )
 
 type Drawer struct {
 	Src           TexSrcer
 	Transform     Transformer
+	Clipper       Clipper
 	ChangeableTex bool
 
 	DrawOptions
@@ -41,6 +43,7 @@ func NewDrawer(src TexSrcer, layer Layer, transform ...Transformer) *Drawer {
 		Transform:   Transforms(transform),
 		DrawOptions: NewDrawOptions(layer),
 	}
+	res.Clipper = Transforms(transform).lastClipper()
 	return res
 }
 
@@ -76,6 +79,26 @@ func (id *Drawer) calcRect(srcRect *image.Rectangle) Rect {
 	return id.r
 }
 
+func (id *Drawer) skipClipped(r Rect) bool {
+	if id.Clipper == nil {
+		return false
+	}
+	clipRect := id.Clipper.ClipRect()
+	if clipRect.Empty() {
+		return false
+	}
+
+	if image.Pt(int(r.Position.X), int(r.Position.Y)).In(clipRect) {
+		return false
+	}
+	px := math.Max(r.pivot.X, 1-r.pivot.X) * r.Width
+	py := math.Max(r.pivot.Y, 1-r.pivot.Y) * r.Height
+	dr := int(vec2.V(px, py).Len()) + 1
+	x, y := int(r.Position.X), int(r.Position.Y)
+	cr := image.Rect(x-dr, y-dr, x+dr, y+dr)
+	return !cr.Overlaps(clipRect)
+}
+
 func (id *Drawer) DrawReqs(Q *Queue) {
 	if id.Src == nil {
 		return
@@ -84,6 +107,9 @@ func (id *Drawer) DrawReqs(Q *Queue) {
 	srcRect, uid := id.Src.GetSrcRectUID()
 	w, h := float64(srcRect.Dx()), float64(srcRect.Dy())
 	id.r = id.calcRect(srcRect)
+	if id.skipClipped(id.r) {
+		return
+	}
 
 	order := reqOrder{
 		layer:   id.Layer,

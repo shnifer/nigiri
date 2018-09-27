@@ -19,6 +19,7 @@ const Rad2Deg = 180 / math.Pi
 
 //zero vector
 var ZV V2
+var Up = V2{X: 0, Y: -1}
 
 //Corners relative vectors
 var TopLeft V2

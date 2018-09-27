@@ -16,9 +16,14 @@ type visualObject struct {
 	mainSprite   nigiri.Sprite
 	flagParticle nigiri.Sprite
 	caption      nigiri.TextSprite
+	cam          nigiri.VTransformer
+	sector       *nigiri.Sector
 }
 
 func (vo *visualObject) DrawReqs(Q *nigiri.Queue) {
+	DataMu.Lock()
+	defer DataMu.Unlock()
+
 	dat := vo.data
 	vo.mainSprite.FixedH = dat.radius * 2
 	vo.mainSprite.FixedW = dat.radius * 2
@@ -26,6 +31,7 @@ func (vo *visualObject) DrawReqs(Q *nigiri.Queue) {
 	Q.Add(vo.mainSprite)
 
 	r := vo.mainSprite.GetRect()
+
 	r.Angle = 0
 	corners := r.Corners()
 	topLeft := corners[0]
@@ -49,6 +55,12 @@ func (vo *visualObject) DrawReqs(Q *nigiri.Queue) {
 	vo.caption.SetText(vo.data.name)
 	vo.caption.Position = corners[2].Add(corners[3]).Mul(0.5)
 	Q.Add(vo.caption)
+
+	ang := nigiri.TransformVector(vo.cam, vec2.InDir(45)).Dir()
+	vo.sector.Center = vo.cam.ApplyPoint(vo.data.pos)
+	vo.sector.StartAng = ang - 5
+	vo.sector.EndAng = ang + 5
+	Q.Add(vo.sector)
 }
 
 func (vo *visualObject) Update(dt float64) {
@@ -71,7 +83,6 @@ func NewVisualObject(data *objectData, cam MyCam) *visualObject {
 	mainSprite := nigiri.NewSprite(src, 1, cam.Phys())
 	mainSprite.Scaler = nigiri.NewFixedScaler(0, 0)
 	mainSprite.Pivot = vec2.Center
-	mainSprite.SetSmooth(true)
 
 	particle, _ := nigiri.GetTex("particle.png")
 	particleSprite := nigiri.NewSprite(particle, 2, cam.Local())
@@ -83,11 +94,19 @@ func NewVisualObject(data *objectData, cam MyCam) *visualObject {
 	face, _ := nigiri.GetFace("furore.ttf", 16)
 	captionSprite.DefFace = face
 
+	sector := nigiri.NewSector(nigiri.SectorParams{
+		Radius: 50,
+	}, 2, nil)
+	sector.Clipper = cam
+	sector.ChangeableSrc = true
+
 	res := &visualObject{
 		data:         data,
 		mainSprite:   mainSprite,
 		flagParticle: particleSprite,
 		caption:      captionSprite,
+		cam:          cam,
+		sector:       sector,
 	}
 
 	return res
