@@ -41,7 +41,7 @@ func StartData() {
 func DataProgress() {
 	var n int
 	for {
-		time.Sleep(time.Second / 10)
+		time.Sleep(time.Second / 30)
 		n++
 		refreshData(n)
 	}
@@ -52,14 +52,15 @@ func refreshData(n int) {
 	defer DataMu.Unlock()
 
 	for i, v := range Data {
-		Data[i].pos = v.pos.Rotate(1)
-		if n%2 == 0 {
+		dist:=v.pos.Len()
+		Data[i].pos = v.pos.Rotate(100/dist)
+		if n%20 == 0 {
 			Data[i].r = !v.r
 		}
-		if n%3 == 0 {
+		if n%30 == 0 {
 			Data[i].g = !v.g
 		}
-		if n%5 == 0 {
+		if n%50 == 0 {
 			Data[i].b = !v.b
 		}
 	}

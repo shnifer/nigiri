@@ -54,7 +54,7 @@ func main() {
 	nigiri.SetFaceLoader(nigiri.FileFaceLoader("samples"))
 
 	C = MyCam{nigiri.NewCamera()}
-	C.SetCenter(vec2.V2{X: 500, Y: 500})
+	C.SetCenter(vec2.V2{X: 500, Y: 350})
 	C.SetScale(5)
 	C.SetClipRect(image.Rect(200, 100, 800, 600))
 
