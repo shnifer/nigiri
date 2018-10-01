@@ -19,7 +19,7 @@ type TexSrcer interface {
 	GetSrcImage() *ebiten.Image
 }
 
-type Transformer interface {
+type RTransformer interface {
 	TransformRect(rect Rect) Rect
 }
 

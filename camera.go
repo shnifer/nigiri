@@ -99,7 +99,7 @@ func (c *Camera) phys(rect Rect) (Rect, image.Rectangle) {
 	return rect, c.clipRect
 }
 
-func (c *Camera) Phys() Transformer {
+func (c *Camera) Phys() RTransformer {
 	return TransformerF(c.phys)
 }
 
@@ -113,7 +113,7 @@ func (c *Camera) noRot(rect Rect) (Rect, image.Rectangle) {
 	return rect, c.clipRect
 }
 
-func (c *Camera) NoRot() Transformer {
+func (c *Camera) NoRot() RTransformer {
 	return TransformerF(c.noRot)
 }
 
@@ -126,7 +126,7 @@ func (c *Camera) noScale(rect Rect) (Rect, image.Rectangle) {
 	return rect, c.clipRect
 }
 
-func (c *Camera) NoScale() Transformer {
+func (c *Camera) NoScale() RTransformer {
 	return TransformerF(c.noScale)
 }
 
@@ -137,7 +137,7 @@ func (c *Camera) local(rect Rect) (Rect, image.Rectangle) {
 	return rect, c.clipRect
 }
 
-func (c *Camera) Local() Transformer {
+func (c *Camera) Local() RTransformer {
 	return TransformerF(c.local)
 }
 
@@ -149,7 +149,7 @@ func (c *Camera) mark(rect Rect) (Rect, image.Rectangle) {
 	return rect, c.clipRect
 }
 
-func (c *Camera) Mark() Transformer {
+func (c *Camera) Mark() RTransformer {
 	return TransformerF(c.mark)
 }
 

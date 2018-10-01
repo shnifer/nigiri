@@ -29,7 +29,7 @@ func (s Sprite) Update(dt float64) {
 	}
 }
 
-func NewSprite(src TexSrcer, layer Layer, transforms ...Transformer) Sprite {
+func NewSprite(src TexSrcer, layer Layer, transforms ...RTransformer) Sprite {
 	SpriteT := &SpriteTrans{
 		Scaler: NewScaler(1),
 	}
@@ -48,7 +48,7 @@ type TextSprite struct {
 	*Drawer
 }
 
-func NewTextSprite(interlineK float64, permanentTex bool, layer Layer, transforms ...Transformer) TextSprite {
+func NewTextSprite(interlineK float64, permanentTex bool, layer Layer, transforms ...RTransformer) TextSprite {
 	src := NewTextSrc(interlineK, permanentTex)
 	SpriteT := &SpriteTrans{
 		Scaler: NewScaler(1),

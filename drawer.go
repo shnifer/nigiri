@@ -9,7 +9,7 @@ import (
 
 type Drawer struct {
 	Src           TexSrcer
-	Transform     Transformer
+	Transform     RTransformer
 	Clipper       Clipper
 	ChangeableTex bool
 
@@ -37,7 +37,7 @@ func putDo(do *ebiten.DrawImageOptions) {
 	doCache = append(doCache, do)
 }
 
-func NewDrawer(src TexSrcer, layer Layer, transform ...Transformer) *Drawer {
+func NewDrawer(src TexSrcer, layer Layer, transform ...RTransformer) *Drawer {
 	res := &Drawer{
 		Src:         src,
 		Transform:   Transforms(transform),

@@ -1,6 +1,6 @@
 package nigiri
 
-type Transforms []Transformer
+type Transforms []RTransformer
 
 func (t Transforms) TransformRect(rect Rect) Rect {
 	for _, v := range t {
