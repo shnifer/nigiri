@@ -11,17 +11,18 @@ type MyCam struct {
 }
 
 func (C MyCam) Update(dt float64) {
+	up:=vec2.InDir(-C.Angle())
 	if ebiten.IsKeyPressed(ebiten.KeyA) {
-		C.Translate(vec2.InDir(C.Angle()).Rotate90().Mul(1 / C.Scale()))
+		C.Translate(up.Rotate90().Mul(1 / C.Scale()))
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyD) {
-		C.Translate(vec2.InDir(C.Angle()).Rotate90().Mul(-1 / C.Scale()))
+		C.Translate(up.Rotate90().Mul(-1 / C.Scale()))
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyW) {
-		C.Translate(vec2.InDir(C.Angle()).Mul(1 / C.Scale()))
+		C.Translate(up.Mul(1 / C.Scale()))
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyS) {
-		C.Translate(vec2.InDir(C.Angle()).Mul(-1 / C.Scale()))
+		C.Translate(up.Mul(-1 / C.Scale()))
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyQ) {
 		C.Rotate(1)

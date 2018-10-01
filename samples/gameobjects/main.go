@@ -40,7 +40,8 @@ func mainLoop(win *ebiten.Image, dt float64) error {
 		v.DrawReqs(Q)
 	}
 	Q.Run(win)
-	ebitenutil.DebugPrint(win, fmt.Sprintf("FPS: %v\nDraws: %v", ebiten.CurrentFPS(), Q.Len()))
+	ebitenutil.DebugPrint(win, fmt.Sprintf("FPS: %v\nDraw calls: %v\nUse WASD to move camera\n"+
+		"Q-E to rotate\nZ-X to scale", ebiten.CurrentFPS(), Q.Len()))
 	return nil
 }
 
