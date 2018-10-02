@@ -53,3 +53,13 @@ func TransformUpVector(t VTransformer) vec2.V2 {
 type Clipper interface {
 	ClipRect() image.Rectangle
 }
+
+type OnMouser interface{
+	OnMouse(x,y int) bool
+}
+
+type OnMouserF func (x,y int) bool
+
+func (f OnMouserF) OnMouse(x, y int) bool {
+	return f(x,y)
+}

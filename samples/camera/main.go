@@ -12,8 +12,8 @@ import (
 
 var C *nigiri.Camera
 var Q *nigiri.Queue
-var ClipRect nigiri.Sprite
-var Particle nigiri.Sprite
+var ClipRect *nigiri.Sprite
+var Particle *nigiri.Sprite
 
 func mainLoop(win *ebiten.Image, dt float64) error {
 	if ebiten.IsKeyPressed(ebiten.KeyA) {

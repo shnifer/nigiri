@@ -8,14 +8,17 @@ import (
 	"github.com/shnifer/nigiri/vec2"
 	"golang.org/x/image/colornames"
 	"image"
+	"github.com/hajimehoshi/ebiten/inpututil"
+	"log"
 )
 
 var C MyCam
 var Q *nigiri.Queue
-var ClipRect nigiri.Sprite
+var ClipRect *nigiri.Sprite
 
 var Updaters []nigiri.Updater
 var Draws []nigiri.DrawRequester
+var MainMouser nigiri.MouseRect
 
 func AddObjects(objs ...interface{}) {
 	for _, obj := range objs {
@@ -25,12 +28,18 @@ func AddObjects(objs ...interface{}) {
 		if drawR, ok := obj.(nigiri.DrawRequester); ok {
 			Draws = append(Draws, drawR)
 		}
+		if onMouser, ok := obj.(nigiri.OnMouser); ok {
+			MainMouser.AddChild(onMouser)
+		}
 	}
 }
 
 func mainLoop(win *ebiten.Image, dt float64) error {
 	for _, v := range Updaters {
 		v.Update(dt)
+	}
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft){
+		MainMouser.OnMouse(ebiten.CursorPosition())
 	}
 	if ebiten.IsDrawingSkipped() {
 		return nil
@@ -57,6 +66,12 @@ func main() {
 	C.SetCenter(vec2.V2{X: 500, Y: 350})
 	C.SetScale(5)
 	C.SetClipRect(image.Rect(200, 100, 800, 600))
+
+	MainMouser = nigiri.NewClickRect(func(x,y int) bool{
+		log.Println("main mouser self ",x,", ",y)
+		return true
+	})
+	MainMouser.CatchRect = C.ClipRect()
 
 	tt, _ := ebiten.NewImage(10, 10, ebiten.FilterDefault)
 	tt.Fill(colornames.Darkkhaki)

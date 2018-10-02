@@ -15,12 +15,12 @@ import (
 var TD *nigiri.TextDrawer
 
 var C *nigiri.Camera
-var MultiText nigiri.TextSprite
+var MultiText *nigiri.TextSprite
 
 var Q *nigiri.Queue
 var Face font.Face
 
-var UsedText nigiri.TextSprite
+var UsedText *nigiri.TextSprite
 
 func mainLoop(win *ebiten.Image, dt float64) error {
 	if ebiten.IsKeyPressed(ebiten.KeyA) {

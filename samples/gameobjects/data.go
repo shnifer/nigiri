@@ -53,7 +53,7 @@ func refreshData(n int) {
 
 	for i, v := range Data {
 		dist:=v.pos.Len()
-		Data[i].pos = v.pos.Rotate(100/dist)
+		Data[i].pos = v.pos.Rotate(10/dist)
 		if n%20 == 0 {
 			Data[i].r = !v.r
 		}

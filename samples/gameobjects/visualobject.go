@@ -5,6 +5,7 @@ import (
 	"github.com/shnifer/nigiri/vec2"
 	"golang.org/x/image/colornames"
 	"image/color"
+	"log"
 )
 
 const (
@@ -12,10 +13,12 @@ const (
 )
 
 type visualObject struct {
+	nigiri.MouseRect
+
 	data         *objectData
-	mainSprite   nigiri.Sprite
-	flagParticle nigiri.Sprite
-	caption      nigiri.TextSprite
+	mainSprite   *nigiri.Sprite
+	flagParticle *nigiri.Sprite
+	caption      *nigiri.TextSprite
 	cam          nigiri.VTransformer
 	sector       *nigiri.Sector
 }
@@ -31,6 +34,7 @@ func (vo *visualObject) DrawReqs(Q *nigiri.Queue) {
 	Q.Add(vo.mainSprite)
 
 	r := vo.mainSprite.GetRect()
+	vo.CatchRect = r.OuterImageRect()
 
 	r.Angle = 0
 	corners := r.Corners()
@@ -109,5 +113,20 @@ func NewVisualObject(data *objectData, cam MyCam) *visualObject {
 		sector:       sector,
 	}
 
+	clickRect:=nigiri.NewClickRect(res.click)
+	res.MouseRect = clickRect
 	return res
+}
+
+func (vo *visualObject) click(x,y int) bool{
+	log.Println("clicked rect of ",vo.data.name)
+	clr, ok:=vo.mainSprite.GetSrcColor(x,y)
+	if ok{
+		log.Println("clicked main sprite ",vo.data.name)
+		_,_,_,a:=clr.RGBA()
+		if a>0{
+			log.Println("clicked non-transparent part",vo.data.name)
+		}
+	}
+	return true
 }
