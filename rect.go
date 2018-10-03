@@ -2,6 +2,7 @@ package nigiri
 
 import (
 	"github.com/shnifer/nigiri/vec2"
+	"image"
 )
 
 var ZR Rect
@@ -45,5 +46,36 @@ func (r Rect) Corners() (res [4]vec2.V2) {
 	res[1] = r.Position.Add(rF(vec2.V2{X: r.Width, Y: 0}.Sub(p)))
 	res[2] = r.Position.Add(rF(vec2.V2{X: r.Width, Y: r.Height}.Sub(p)))
 	res[3] = r.Position.Add(rF(vec2.V2{X: 0, Y: r.Height}.Sub(p)))
+	return res
+}
+
+func (r Rect) AbsToRel(absPoint vec2.V2) (relPoint vec2.V2, ok bool){
+	if r.Empty() {
+		return vec2.ZV, false
+	}
+	v:=absPoint.Sub(r.Position).Rotate(-r.Angle)
+	v.X/=r.Width
+	v.Y/=r.Height
+	return v.Add(r.pivot), true
+}
+
+func (r Rect) RelToAbs(relPoint vec2.V2) (absPoint vec2.V2){
+	if r.Empty() {
+		return vec2.ZV
+	}
+	return relPoint.Sub(r.pivot).MulXY(vec2.V(r.Width,r.Height)).Rotate(r.Angle).Add(r.Position)
+}
+
+func (r Rect) OuterImageRect() (res image.Rectangle){
+	rect:=func(v2 vec2.V2) image.Rectangle{
+		x,y:=int(v2.X), int(v2.Y)
+		return image.Rect(x,y,x+1,y+1)
+	}
+	c:=r.Corners()
+	for i:=0; i<4; i++{
+		res = res.Union(rect(c[i]))
+	}
+	res.Max.X++
+	res.Max.Y++
 	return res
 }
