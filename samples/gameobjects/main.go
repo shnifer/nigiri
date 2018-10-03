@@ -8,7 +8,6 @@ import (
 	"github.com/shnifer/nigiri/vec2"
 	"golang.org/x/image/colornames"
 	"image"
-	"github.com/hajimehoshi/ebiten/inpututil"
 	"log"
 )
 
@@ -38,9 +37,9 @@ func mainLoop(win *ebiten.Image, dt float64) error {
 	for _, v := range Updaters {
 		v.Update(dt)
 	}
-	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft){
+//	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft){
 		MainMouser.OnMouse(ebiten.CursorPosition())
-	}
+//	}
 	if ebiten.IsDrawingSkipped() {
 		return nil
 	}
