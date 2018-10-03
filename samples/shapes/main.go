@@ -121,7 +121,7 @@ func rect(x, y, w, h float32, clr color.RGBA) ([]ebiten.Vertex, []uint16) {
 			DstX:   x1,
 			DstY:   y0,
 			SrcX:   1,
-			SrcY:   1,
+			SrcY:   2,
 			ColorR: r,
 			ColorG: g,
 			ColorB: b,
@@ -130,8 +130,8 @@ func rect(x, y, w, h float32, clr color.RGBA) ([]ebiten.Vertex, []uint16) {
 		{
 			DstX:   x0,
 			DstY:   y1,
-			SrcX:   1,
-			SrcY:   1,
+			SrcX:   2,
+			SrcY:   2,
 			ColorR: r,
 			ColorG: g,
 			ColorB: b,
@@ -140,7 +140,7 @@ func rect(x, y, w, h float32, clr color.RGBA) ([]ebiten.Vertex, []uint16) {
 		{
 			DstX:   x1,
 			DstY:   y1,
-			SrcX:   1,
+			SrcX:   2,
 			SrcY:   1,
 			ColorR: r,
 			ColorG: g,
