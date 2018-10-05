@@ -17,7 +17,7 @@ func init() {
 
 	lineImgDrawer = NewDrawer(defRectTex, 0, &lineRect)
 }
-
+//todo: change to triangles
 type Line struct {
 	CamTransform RTransformer
 	DrawOptions

@@ -7,14 +7,14 @@ const defaultTexRadius = 512
 var defaultCircle Tex
 
 func init() {
-	defaultCircle = circleTex(defaultTexRadius)
+	defaultCircle = NewCircleTex(defaultTexRadius)
 }
 
 func CircleTex() Tex {
 	return defaultCircle
 }
 
-func circleTex(radius int) Tex {
+func NewCircleTex(radius int) Tex {
 	d := radius*2 + 1
 	img, _ := ebiten.NewImage(d, d, ebiten.FilterLinear)
 

@@ -258,7 +258,7 @@ func NormAng(angle float64) float64 {
 	return angle
 }
 
-//normalize start angle in [0;360) and end in [start; start+360)
+//normalize start angle in [0;360) and end in [start; start+360]
 //so always end > start. End value itself may be more than 360
 func NormAngRange(start, end float64) (float64, float64) {
 	if start > end {
@@ -276,7 +276,7 @@ func NormAngRange(start, end float64) (float64, float64) {
 		a := float64(int((start-end)/360) + 1)
 		end += 360 * a
 	}
-	if end >= start+360 {
+	if end > start+360 {
 		a := float64(int((end - start) / 360))
 		end -= 360 * a
 	}
