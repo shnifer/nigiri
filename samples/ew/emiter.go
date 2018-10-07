@@ -28,9 +28,9 @@ type Emitter interface {
 
 type LightEmitter struct{
 	Circle
-	Dir float64
 	Signature string
 	MaxPower float64
+	Dir float64
 	PowerK [EmiDirCount]float64
 }
 
