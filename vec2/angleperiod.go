@@ -42,6 +42,13 @@ func (a AnglePeriod) has(dir float64) bool{
 }
 
 func (a AnglePeriod) Intersect (b AnglePeriod) (intersection AnglePeriod, is bool){
+	//fixme: implement for two end cross
+	if a==FullAnglePeriod{
+		return b, true
+	}
+	if b==FullAnglePeriod{
+		return a, true
+	}
 	if a.has(b.start){
 		return NewAnglePeriod(b.start, a.end+360), true
 	}

@@ -13,7 +13,9 @@ type Camera struct {
 	scale  float64
 	ang    float64
 	dirty  bool
+
 	posG   ebiten.GeoM
+	revG   ebiten.GeoM
 
 	clipRect image.Rectangle
 }
@@ -163,6 +165,12 @@ func (c *Camera) calcPosG() {
 	c.posG.Scale(c.scale, c.scale)
 	c.posG.Rotate(-c.ang * vec2.Deg2Rad)
 	c.posG.Translate(c.center.X, c.center.Y)
+
+	c.revG.Reset()
+	if c.posG.IsInvertible() {
+		c.revG = c.posG
+		c.revG.Invert()
+	}
 }
 
 func (c *Camera) Apply(x, y float64) (float64, float64) {
@@ -170,9 +178,20 @@ func (c *Camera) Apply(x, y float64) (float64, float64) {
 	return c.posG.Apply(x, y)
 }
 
+func (c *Camera) UnApply(x, y float64) (float64, float64) {
+	c.calcPosG()
+	return c.revG.Apply(x, y)
+}
+
 func (c *Camera) ApplyPoint(v vec2.V2) vec2.V2 {
 	c.calcPosG()
 	x, y := c.posG.Apply(v.X, v.Y)
+	return vec2.V2{X: x, Y: y}
+}
+
+func (c *Camera) UnApplyPoint(v vec2.V2) vec2.V2 {
+	c.calcPosG()
+	x, y := c.revG.Apply(v.X, v.Y)
 	return vec2.V2{X: x, Y: y}
 }
 

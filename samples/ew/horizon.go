@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/shnifer/nigiri/vec2"
-	"sort"
 )
 
 type Horizon struct {
@@ -59,7 +58,7 @@ func TakeObjectPart(object, part vec2.AnglePeriod) ObjectPart{
 	}
 	start1,_:=object.Get()
 	start2,_:=part.Get()
-	startOff:=vec2.NewAnglePeriod(start1, start2+360).Wide()
+	startOff:=vec2.NewAnglePeriod(start1, start2).Wide()
 	medOff:=part.Wide()
 	return ObjectPart{
 		PartStart:startOff/total,
@@ -146,7 +145,6 @@ func (h *Horizon) calculateTemporary(targets, obstacles, blockers []HorizonObjec
 			add(&h.blockAngles, blocker, dist, cross)
 		}
 	}
-
 	for _, target := range targets {
 		dist, angles = target.HorizonCircle().FromPoint(h.point)
 		if dist > h.maxDist && h.maxDist > 0 {

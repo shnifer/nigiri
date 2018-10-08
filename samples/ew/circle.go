@@ -22,7 +22,7 @@ func (c Circle) FromPoint(p vec2.V2) (dist float64, period vec2.AnglePeriod) {
 	if  dist < c.Radius {
 		halfAng = 180
 	} else {
-		alpha:=dist / c.Radius
+		alpha:=c.Radius/dist
 		if alpha<minAlphaOptimisation{
 			halfAng = alpha * vec2.Rad2Deg
 		} else {
