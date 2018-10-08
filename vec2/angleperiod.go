@@ -1,5 +1,7 @@
 package vec2
 
+import "log"
+
 type AnglePeriod struct{
 	start, end float64
 }
@@ -60,6 +62,9 @@ func (a AnglePeriod) Intersect (b AnglePeriod) (intersection AnglePeriod, is boo
 
 func (a AnglePeriod) Sub (b AnglePeriod) (n int, c,d AnglePeriod){
 	cross, is:= a.Intersect(b)
+	log.Println("a", a)
+	log.Println("b", b)
+	log.Println("c", cross)
 	if !is {
 		return 1, a, EmptyAnglePeriod
 	}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/shnifer/nigiri/vec2"
+	"log"
 )
 
 type Horizon struct {
@@ -145,6 +146,7 @@ func (h *Horizon) calculateTemporary(targets, obstacles, blockers []HorizonObjec
 			add(&h.blockAngles, blocker, dist, cross)
 		}
 	}
+
 	for _, target := range targets {
 		dist, angles = target.HorizonCircle().FromPoint(h.point)
 		if dist > h.maxDist && h.maxDist > 0 {
@@ -198,6 +200,7 @@ func (h *Horizon) applyBlockOnResolve(dist float64, cross vec2.AnglePeriod) {
 			continue
 		}
 
+		log.Println("applyind block", block)
 		l := len(h.blockResolve)
 		i := 0
 		for i < l {

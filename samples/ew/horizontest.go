@@ -95,16 +95,14 @@ func main() {
 
 	C = MyCam{cam}
 
-	for i:=0;i<2;i++ {
-		center:=vec2.RandomInCircle(600)
-		radius:=50+rand.Float64()*50
-		SolidObjects = append(SolidObjects, NewSolidObject(Circle{Center: center, Radius: radius}))
-	}
+	SolidObjects = append(SolidObjects, NewSolidObject(Circle{Center: vec2.V(0,0), Radius: 50}))
+	SolidObjects = append(SolidObjects, NewSolidObject(Circle{Center: vec2.V(200,0), Radius: 50}))
+
 	HorizonObjects = make([]HorizonObject, len(SolidObjects))
 	for i:=0; i<len(SolidObjects);i++{
 		HorizonObjects[i] = SolidObjects[i]
 	}
 	horizon = NewHorizon()
-	horizon.SetPointZoneDist(vec2.V(200,200),vec2.FullAnglePeriod,0)
+	horizon.SetPointZoneDist(vec2.V(-250,70),vec2.FullAnglePeriod,0)
 	nigiri.Run(mainLoop, 800, 800, 1, "TEST")
 }
