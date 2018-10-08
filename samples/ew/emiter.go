@@ -17,12 +17,12 @@ type EmitData struct{
 	Signature string
 }
 
-type HorizonCircler interface {
+type HorizonObject interface {
 	HorizonCircle() Circle
 }
 
 type Emitter interface {
-	HorizonCircler
+	HorizonObject
 	Emits(dir float64) []EmitData
 }
 
@@ -59,7 +59,7 @@ func (l *LightEmitter) Emits(dir float64) []EmitData {
 		return nil
 	}
 	return []EmitData{
-		EmitData{
+		{
 			Type: EMI_LIGHT,
 			Signature: l.Signature,
 			Power: l.MaxPower * k,

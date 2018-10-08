@@ -10,36 +10,27 @@ type Circle struct{
 	Radius float64
 }
 
-type anglePeriod struct{
-	Start, End float64
-}
-
-var EmptyAnglePeriod = anglePeriod{0,0}
-var FullAnglePeriod = anglePeriod{0,360}
-
-func rayAnglePeriod(midDir, halfAng float64) anglePeriod{
-	if halfAng==0{
-		return EmptyAnglePeriod
-	}
-	if halfAng>=180{
-		return FullAnglePeriod
-	}
-	start:=vec2.NormAng(midDir - halfAng)
-	return anglePeriod{
-		Start:start,
-		End:start+2*halfAng,
-	}
-}
-
-func (c Circle) FromPoint(p vec2.V2) anglePeriod{
-	if c.Radius<=0 {
-		return EmptyAnglePeriod
-	}
+func (c Circle) FromPoint(p vec2.V2) (dist float64, period vec2.AnglePeriod) {
 	V:=c.Center.Sub(p)
-	dist :=V.Len()
-	if  dist < c.Radius {
-		return FullAnglePeriod
+	dist =V.Len()
+	if c.Radius<=0 {
+		return dist, vec2.EmptyAnglePeriod
 	}
-	halfAng:=math.Asin(dist /c.Radius)
-	return  rayAnglePeriod(V.Dir(), halfAng)
+	var halfAng float64
+	if  dist < c.Radius {
+		halfAng = 180
+	} else {
+		halfAng = math.Asin(dist / c.Radius)
+	}
+	return  dist, rayAnglePeriod(V.Dir(), halfAng)
+}
+
+func rayAnglePeriod(midDir, halfAng float64) vec2.AnglePeriod {
+	if halfAng<0{
+		halfAng = 0
+	}
+	if halfAng>180{
+		halfAng = 180
+	}
+	return vec2.NewAnglePeriod(midDir-halfAng, midDir+halfAng)
 }

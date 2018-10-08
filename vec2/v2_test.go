@@ -55,3 +55,32 @@ func TestDir(t *testing.T) {
 		t.Errorf("{-100,0}.InDir waited 90 got %v", v.Dir())
 	}
 }
+
+func TestNormAngRange(t *testing.T) {
+	var a,b float64
+	table:=[][4]float64{
+		{0,100,0,100},
+		{200,100,100,200},
+		{350,100,100,350},
+		{350,370,350,370},
+		{-10, 20, 350, 380},
+		{370, 390, 10, 30},
+		{740, 700, 340, 380},
+		{0,360,0,360},
+		{0,0,0,0},
+		{-10,-10,350,350},
+		{-10,350,350,710},
+	}
+	for _,v:=range table {
+		a, b = NormAngRange(v[0], v[1])
+		if a!= v[2] || b != v[3] {
+			t.Errorf("NormAngRange (%v,%v) is (%v,%v) must be (%v, %v)",
+				v[0],v[1],a,b,v[2],v[3])
+		}
+		a, b = NormAngRange(v[1], v[0])
+		if a!= v[2] || b != v[3] {
+			t.Errorf("NormAngRange (%v,%v) is (%v,%v) must be (%v, %v)",
+				v[1],v[0],a,b,v[2],v[3])
+		}
+	}
+}
