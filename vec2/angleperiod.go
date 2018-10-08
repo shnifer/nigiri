@@ -21,6 +21,12 @@ func (a AnglePeriod) IsFull() bool{
 func (a AnglePeriod) Get() (start,end float64){
 	return a.start, a.end
 }
+func (a AnglePeriod) Medium() float64{
+	return NormAng((a.start+a.end)/2)
+}
+func (a AnglePeriod) Wide() float64{
+	return a.end-a.start
+}
 
 //is dir within AnglePeriod [start-end)
 func (a AnglePeriod) has(dir float64) bool{
