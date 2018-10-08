@@ -174,6 +174,19 @@ func (h *Horizon) calculateTemporary(targets, obstacles, blockers []HorizonObjec
 			continue
 		}
 
+		for i,target:=range h.targetAngles{
+			if target.Dist<=dist{
+				continue
+			}
+			cross,ok:=target.Angles.Intersect(cross)
+			if !ok{
+				continue
+			}
+			start,end:=cross.Get()
+			h.splitTarget(i, start)
+			h.splitTarget(i, vec2.NormAng(end))
+		}
+
 		add(&h.obstacleAngles, obstacle, dist, cross)
 	}
 }
@@ -206,4 +219,14 @@ func (h *Horizon) applyBlockOnResolve(dist float64, cross vec2.AnglePeriod) {
 			}
 		}
 	}
+}
+
+func (h *Horizon) splitTarget(i int, angle float64) {
+	start, end:=h.targetAngles[i].Angles.Get()
+	if start==angle || vec2.NormAng(end)==angle{
+		return
+	}
+	h.targetAngles[i].Angles = vec2.NewAnglePeriod(start, angle+360)
+	h.targetAngles = append(h.targetAngles, h.targetAngles[i])
+	h.targetAngles[len(h.targetAngles)-1].Angles = vec2.NewAnglePeriod(angle, end+360)
 }
