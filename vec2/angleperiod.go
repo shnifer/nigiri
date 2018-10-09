@@ -1,38 +1,50 @@
 package vec2
 
+//start and end angle of period,
+//both are supposed to be [0;360)
+//[a,a) is a line-reduced ray, if not isFull
+//isFull is 360 degree full circle
 type AnglePeriod struct{
 	start, end float64
+	isFull bool
 }
 
-var EmptyAnglePeriod = AnglePeriod{0,0}
-var FullAnglePeriod = AnglePeriod{0,360}
+var EmptyAnglePeriod = AnglePeriod{0,0, false}
+var FullAnglePeriod = AnglePeriod{0,0, true}
 
 func NewAnglePeriod(start, end float64) AnglePeriod {
-	s,e:=NormAngRange(start, end)
-	return AnglePeriod{start:s, end:e}
+	return AnglePeriod{
+		start:NormAng(start),
+		end:NormAng(end)}
 }
 
 func (a AnglePeriod) IsEmpty() bool{
-	return a.start == a.end
+	return a.start == a.end && !a.isFull
 }
 func (a AnglePeriod) IsFull() bool{
-	return a.start + 360 == a.end
+	return a.isFull
 }
 func (a AnglePeriod) Get() (start,end float64){
 	return a.start, a.end
 }
+func (a AnglePeriod) Start() float64{
+	return a.start
+}
+func (a AnglePeriod) End() float64{
+	return a.end
+}
 
 //is dir within AnglePeriod [start-end)
-func (a AnglePeriod) has(dir float64) bool{
+func (a AnglePeriod) Has(dir float64) bool{
+	if a.isFull{
+		return true
+	}
 	dir = NormAng(dir)
-	if dir >= a.start && dir<a.end {
-		return true
+	if a.start<a.end{
+		return dir>=a.start && dir<a.end
+	} else {
+		return dir>=a.start || dir<a.end
 	}
-	dir+=360
-	if dir >= a.start && dir<a.end {
-		return true
-	}
-	return false
 }
 
 func (a AnglePeriod) Intersect (b AnglePeriod) (intersection AnglePeriod, is bool){
