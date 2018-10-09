@@ -156,7 +156,6 @@ func (a AnglePeriod) Sub(b AnglePeriod) (n int, c, d AnglePeriod) {
 	}
 
 	//both a and b here are periods, not rays or full
-
 	if a.HasIn(b.start) && a.HasIn(b.end) {
 		return 2, NewAnglePeriod(a.start, b.start), NewAnglePeriod(b.end, a.end)
 	}
@@ -165,6 +164,10 @@ func (a AnglePeriod) Sub(b AnglePeriod) (n int, c, d AnglePeriod) {
 	}
 	if a.HasIn(b.start) {
 		return 1, NewAnglePeriod(a.start, b.start), EmptyAnglePeriod
+	}
+	//todo: check this for border points
+	if b.Has(a.start) || b.Has(a.end) {
+		return 0, EmptyAnglePeriod, EmptyAnglePeriod
 	}
 	return 1, a, EmptyAnglePeriod
 }
