@@ -52,8 +52,8 @@ func refreshData(n int) {
 	defer DataMu.Unlock()
 
 	for i, v := range Data {
-		dist:=v.pos.Len()
-		Data[i].pos = v.pos.Rotate(10/dist)
+		dist := v.pos.Len()
+		Data[i].pos = v.pos.Rotate(10 / dist)
 		if n%20 == 0 {
 			Data[i].r = !v.r
 		}

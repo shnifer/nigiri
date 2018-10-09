@@ -5,13 +5,13 @@ type Diffuser interface {
 	DiffuserAlbedo(t EmiType) float64
 }
 
-type Shadower interface{
+type Shadower interface {
 	HorizonObject
 	ShadowDensity(t EmiType) (density float64)
 	ShadowBlock() bool
 }
 
-type DiffShadowBody struct{
+type DiffShadowBody struct {
 	Circle
 	Albedo float64
 }
@@ -22,7 +22,7 @@ func (d DiffShadowBody) HorizonCircle() Circle {
 func (d DiffShadowBody) ShadowDensity(t EmiType) (density float64) {
 	return 0
 }
-func (d DiffShadowBody) ShadowBlock() bool{
+func (d DiffShadowBody) ShadowBlock() bool {
 	return true
 }
 

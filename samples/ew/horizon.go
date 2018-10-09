@@ -48,23 +48,25 @@ type ObjectPart struct {
 	PartStart float64
 	PartEnd   float64
 }
-func TakeObjectPart(object, part vec2.AnglePeriod) ObjectPart{
-	total:=object.Wide()
-	if total == 0{
+
+//Part is assumed to be totally inside object
+func TakeObjectPart(object, part vec2.AnglePeriod) ObjectPart {
+	total := object.Wide()
+	if total == 0 {
 		return ObjectPart{
 			PartStart: 0,
-			PartEnd: 1,
-			Dir: object.Medium(),
+			PartEnd:   1,
+			Dir:       object.Medium(),
 		}
 	}
-	start1,_:=object.Get()
-	start2,_:=part.Get()
-	startOff:=vec2.NewAnglePeriod(start1, start2).Wide()
-	medOff:=part.Wide()
+	start1, _ := object.Get()
+	start2, _ := part.Get()
+	startOff := vec2.NewAnglePeriod(start1, start2).Wide()
+	medOff := part.Wide()
 	return ObjectPart{
-		PartStart:startOff/total,
-		PartEnd:(startOff+medOff)/total,
-		Dir: object.Medium(),
+		PartStart: startOff / total,
+		PartEnd:   (startOff + medOff) / total,
+		Dir:       object.Medium(),
 	}
 }
 
@@ -84,14 +86,18 @@ type ObjectData struct {
 	Angles vec2.AnglePeriod
 }
 
-func (h *Horizon) Calculate(targets, obstacles, blockers []HorizonObject) []HorizonCalculus {
-	h.calculateTemporary(targets, obstacles, blockers)
+func (h *Horizon) Calculate(targets, obstacles, blockers []HorizonObject,
+	ignoreSelf HorizonObject) []HorizonCalculus {
+
+	h.calculateTemporary(targets, obstacles, blockers, ignoreSelf)
 	h.calculateResult()
 
 	return h.result
 }
 
 func (h *Horizon) calculateResult() {
+	var cN int
+	var r1 vec2.AnglePeriod
 	h.result = h.result[:0]
 	for _, target := range h.targetAngles {
 		var obs []HorizonObjectPart
@@ -99,17 +105,20 @@ func (h *Horizon) calculateResult() {
 			if obstacle.Dist >= target.Dist {
 				continue
 			}
-			cross, is := obstacle.Angles.Intersect(target.Angles)
-			if !is {
+			cN, r1, _ = obstacle.Angles.Intersect(target.Angles)
+			if cN == 0 {
 				continue
 			}
-			_, total:=obstacle.Object.HorizonCircle().FromPoint(h.point)
+			_, total := obstacle.Object.HorizonCircle().FromPoint(h.point)
 			obs = append(obs, HorizonObjectPart{
 				ObjectData: obstacle,
-				ObjectPart: TakeObjectPart(total, cross),
+				ObjectPart: TakeObjectPart(total, r1),
 			})
+			if cN == 2 {
+				log.Println("There is not waiting for obstacles 2-cross target parts")
+			}
 		}
-		_, total:=target.Object.HorizonCircle().FromPoint(h.point)
+		_, total := target.Object.HorizonCircle().FromPoint(h.point)
 		h.result = append(h.result, HorizonCalculus{
 			Obstacles: obs,
 			Target: HorizonObjectPart{
@@ -120,87 +129,100 @@ func (h *Horizon) calculateResult() {
 	}
 }
 
-func (h *Horizon) calculateTemporary(targets, obstacles, blockers []HorizonObject) {
+func addObjIntoArr(arr *[]ObjectData, obj HorizonObject, dist float64, angles vec2.AnglePeriod) {
+	*arr = append(*arr, ObjectData{
+		Object: obj,
+		Dist:   dist,
+		Angles: angles,
+	})
+}
+
+func (h *Horizon) calculateTemporary(targets, obstacles, blockers []HorizonObject,
+	ignoreSelf HorizonObject) {
+
 	h.blockAngles = h.blockAngles[:0]
 	h.targetAngles = h.targetAngles[:0]
 	h.obstacleAngles = h.obstacleAngles[:0]
 
-	var angles, cross vec2.AnglePeriod
+	var rN int
+	var r1, r2 vec2.AnglePeriod
+	var angles vec2.AnglePeriod
+	var circle Circle
 	var dist float64
-	var ok bool
-
-	add := func(arr *[]ObjectData, obj HorizonObject, dist float64, angles vec2.AnglePeriod) {
-		*arr = append(*arr, ObjectData{
-			Object: obj,
-			Dist:   dist,
-			Angles: angles,
-		})
-	}
 
 	for _, blocker := range blockers {
-		dist, angles = blocker.HorizonCircle().FromPoint(h.point)
-		if dist > h.maxDist && h.maxDist > 0 {
+		if blocker == ignoreSelf {
 			continue
 		}
-		if cross, ok = h.zone.Intersect(angles); ok {
-			add(&h.blockAngles, blocker, dist, cross)
+		circle = blocker.HorizonCircle()
+		dist, angles = circle.FromPoint(h.point)
+		if dist-circle.Radius > h.maxDist && h.maxDist > 0 {
+			continue
+		}
+		rN, r1, r2 = h.zone.Intersect(angles)
+		switch rN {
+		case 0:
+			continue
+		case 1:
+			addObjIntoArr(&h.blockAngles, blocker, dist, r1)
+		case 2:
+			addObjIntoArr(&h.blockAngles, blocker, dist, r1)
+			addObjIntoArr(&h.blockAngles, blocker, dist, r2)
 		}
 	}
 
 	for _, target := range targets {
-		dist, angles = target.HorizonCircle().FromPoint(h.point)
-		if dist > h.maxDist && h.maxDist > 0 {
+		if target == ignoreSelf {
 			continue
 		}
-		cross, ok = h.zone.Intersect(angles)
-		if !ok {
+		circle = target.HorizonCircle()
+		dist, angles = circle.FromPoint(h.point)
+		if dist-circle.Radius > h.maxDist && h.maxDist > 0 {
 			continue
 		}
-
-		h.applyBlockOnResolve(dist, cross)
-
-		for _, res := range h.blockResolve {
-			add(&h.targetAngles, target, dist, res)
+		rN, r1, r2 = h.zone.Intersect(angles)
+		switch rN {
+		case 0:
+			continue
+		case 1:
+			h.applyBlockOnTarget(target, dist, r1)
+		case 2:
+			h.applyBlockOnTarget(target, dist, r1)
+			h.applyBlockOnTarget(target, dist, r2)
 		}
 	}
 
 	for _, obstacle := range obstacles {
-		dist, angles = obstacle.HorizonCircle().FromPoint(h.point)
-		if dist > h.maxDist && h.maxDist > 0 {
+		if obstacle == ignoreSelf {
 			continue
 		}
-		cross, ok = h.zone.Intersect(angles)
-		if !ok {
+		circle = obstacle.HorizonCircle()
+		dist, angles = circle.FromPoint(h.point)
+		if dist-circle.Radius > h.maxDist && h.maxDist > 0 {
 			continue
 		}
-
-		for i,target:=range h.targetAngles{
-			if target.Dist<=dist{
-				continue
-			}
-			cross,ok:=target.Angles.Intersect(cross)
-			if !ok{
-				continue
-			}
-			start,end:=cross.Get()
-			h.splitTarget(i, start)
-			h.splitTarget(i, vec2.NormAng(end))
+		rN, r1, r2 = h.zone.Intersect(angles)
+		switch rN {
+		case 0:
+			continue
+		case 1:
+			h.applyObstacle(obstacle, dist, r1)
+		case 2:
+			h.applyObstacle(obstacle, dist, r1)
+			h.applyObstacle(obstacle, dist, r2)
 		}
-
-		add(&h.obstacleAngles, obstacle, dist, cross)
 	}
 }
 
-func (h *Horizon) applyBlockOnResolve(dist float64, cross vec2.AnglePeriod) {
+func (h *Horizon) applyBlockOnTarget(target HorizonObject, dist float64, angles vec2.AnglePeriod) {
 	h.blockResolve = h.blockResolve[:0]
-	h.blockResolve = append(h.blockResolve, cross)
+	h.blockResolve = append(h.blockResolve, angles)
 
 	for _, block := range h.blockAngles {
 		if block.Dist >= dist {
 			continue
 		}
 
-		log.Println("applyind block", block)
 		l := len(h.blockResolve)
 		i := 0
 		for i < l {
@@ -220,14 +242,37 @@ func (h *Horizon) applyBlockOnResolve(dist float64, cross vec2.AnglePeriod) {
 			}
 		}
 	}
+
+	for _, res := range h.blockResolve {
+		addObjIntoArr(&h.targetAngles, target, dist, res)
+	}
 }
 
-func (h *Horizon) splitTarget(i int, angle float64) {
-	start, end:=h.targetAngles[i].Angles.Get()
-	if start==angle || vec2.NormAng(end)==angle{
+func (h *Horizon) applyObstacle(obstacle HorizonObject, dist float64, angles vec2.AnglePeriod) {
+	for i := 0; i < len(h.targetAngles); i++ {
+		target := h.targetAngles[i]
+		if target.Dist <= dist {
+			continue
+		}
+		h.splitTargetWithAngles(i, angles)
+	}
+
+	addObjIntoArr(&h.obstacleAngles, obstacle, dist, angles)
+}
+
+func (h *Horizon) splitTargetWithAngles(i int, angles vec2.AnglePeriod) {
+	target := h.targetAngles[i].Angles
+	sN, r1, r2, r3 := target.Split(angles)
+	if sN <= 1 {
 		return
 	}
-	h.targetAngles[i].Angles = vec2.NewAnglePeriod(start, angle+360)
-	h.targetAngles = append(h.targetAngles, h.targetAngles[i])
-	h.targetAngles[len(h.targetAngles)-1].Angles = vec2.NewAnglePeriod(angle, end+360)
+	h.targetAngles[i].Angles = r1
+	if sN >= 2 {
+		h.targetAngles = append(h.targetAngles, h.targetAngles[i])
+		h.targetAngles[len(h.targetAngles)-1].Angles = r2
+	}
+	if sN == 3 {
+		h.targetAngles = append(h.targetAngles, h.targetAngles[i])
+		h.targetAngles[len(h.targetAngles)-1].Angles = r3
+	}
 }

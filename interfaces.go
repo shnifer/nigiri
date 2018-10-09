@@ -54,12 +54,12 @@ type Clipper interface {
 	ClipRect() image.Rectangle
 }
 
-type OnMouser interface{
-	OnMouse(x,y int) bool
+type OnMouser interface {
+	OnMouse(x, y int) bool
 }
 
-type OnMouserF func (x,y int) bool
+type OnMouserF func(x, y int) bool
 
 func (f OnMouserF) OnMouse(x, y int) bool {
-	return f(x,y)
+	return f(x, y)
 }

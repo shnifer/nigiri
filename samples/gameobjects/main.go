@@ -37,9 +37,9 @@ func mainLoop(win *ebiten.Image, dt float64) error {
 	for _, v := range Updaters {
 		v.Update(dt)
 	}
-//	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft){
-		MainMouser.OnMouse(ebiten.CursorPosition())
-//	}
+	//	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft){
+	MainMouser.OnMouse(ebiten.CursorPosition())
+	//	}
 	if ebiten.IsDrawingSkipped() {
 		return nil
 	}
@@ -66,8 +66,8 @@ func main() {
 	C.SetScale(5)
 	C.SetClipRect(image.Rect(200, 100, 800, 600))
 
-	MainMouser = nigiri.NewClickRect(func(x,y int) bool{
-		log.Println("main mouser self ",x,", ",y)
+	MainMouser = nigiri.NewClickRect(func(x, y int) bool {
+		log.Println("main mouser self ", x, ", ", y)
 		return true
 	})
 	MainMouser.CatchRect = C.ClipRect()

@@ -17,31 +17,32 @@ func init() {
 
 	lineImgDrawer = NewDrawer(defRectTex, 0, &lineRect)
 }
+
 //todo: change to triangles
 type Line struct {
 	CamTransform RTransformer
 	DrawOptions
 
-	From         vec2.V2
-	To           vec2.V2
-	Width        float64
+	From  vec2.V2
+	To    vec2.V2
+	Width float64
 }
 
 func NewLine(camTransform RTransformer, layer Layer) Line {
 	return Line{
 		CamTransform: camTransform,
 		Width:        1,
-		DrawOptions: NewDrawOptions(layer),
+		DrawOptions:  NewDrawOptions(layer),
 	}
 }
 
-func NewLineExt(camTransform RTransformer, opts DrawOptions, from, to vec2.V2, width float64, ) Line {
+func NewLineExt(camTransform RTransformer, opts DrawOptions, from, to vec2.V2, width float64) Line {
 	return Line{
 		CamTransform: camTransform,
 		Width:        width,
 		From:         from,
 		To:           to,
-		DrawOptions: opts,
+		DrawOptions:  opts,
 	}
 }
 
@@ -64,10 +65,10 @@ type Polyline struct {
 	CamTransform RTransformer
 	DrawOptions
 
-	Points       []vec2.V2
-	Closed       bool
-	Width        float64
-	Color        color.Color
+	Points []vec2.V2
+	Closed bool
+	Width  float64
+	Color  color.Color
 }
 
 func NewPolyline(camTransform RTransformer, layer Layer) Polyline {
@@ -75,8 +76,8 @@ func NewPolyline(camTransform RTransformer, layer Layer) Polyline {
 		CamTransform: camTransform,
 		Width:        1,
 		Color:        color.White,
-		DrawOptions:        NewDrawOptions(layer),
-		Points: make([]vec2.V2,0),
+		DrawOptions:  NewDrawOptions(layer),
+		Points:       make([]vec2.V2, 0),
 	}
 }
 
@@ -86,22 +87,22 @@ func NewPolylineExt(camTransform RTransformer, opts DrawOptions, points []vec2.V
 		CamTransform: camTransform,
 		Width:        width,
 		Color:        color,
-		Points: points,
-		DrawOptions: opts,
+		Points:       points,
+		DrawOptions:  opts,
 	}
 }
 
 func (l Polyline) DrawReqs(Q *Queue) {
-	if l.Points == nil{
+	if l.Points == nil {
 		return
 	}
 
 	lineImgDrawer.DrawOptions = l.DrawOptions
 
 	var to vec2.V2
-	for i, from:=range l.Points {
-		if i==len(l.Points)-1{
-			if l.Closed{
+	for i, from := range l.Points {
+		if i == len(l.Points)-1 {
+			if l.Closed {
 				to = l.Points[0]
 			} else {
 				break

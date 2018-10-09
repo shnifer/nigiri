@@ -11,7 +11,7 @@ type MyCam struct {
 }
 
 func (C MyCam) Update(dt float64) {
-	up:=vec2.InDir(-C.Angle())
+	up := vec2.InDir(-C.Angle())
 	if ebiten.IsKeyPressed(ebiten.KeyA) {
 		C.Translate(up.Rotate90().Mul(1 / C.Scale()))
 	}

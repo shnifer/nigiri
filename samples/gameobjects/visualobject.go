@@ -113,19 +113,19 @@ func NewVisualObject(data *objectData, cam MyCam) *visualObject {
 		sector:       sector,
 	}
 
-	clickRect:=nigiri.NewClickRect(res.click)
+	clickRect := nigiri.NewClickRect(res.click)
 	res.MouseRect = clickRect
 	return res
 }
 
-func (vo *visualObject) click(x,y int) bool{
-	log.Println("clicked rect of ",vo.data.name)
-	clr, ok:=vo.mainSprite.GetSrcColor(x,y)
-	if ok{
-		log.Println("clicked main sprite ",vo.data.name)
-		_,_,_,a:=clr.RGBA()
-		if a>0{
-			log.Println("clicked non-transparent part",vo.data.name)
+func (vo *visualObject) click(x, y int) bool {
+	log.Println("clicked rect of ", vo.data.name)
+	clr, ok := vo.mainSprite.GetSrcColor(x, y)
+	if ok {
+		log.Println("clicked main sprite ", vo.data.name)
+		_, _, _, a := clr.RGBA()
+		if a > 0 {
+			log.Println("clicked non-transparent part", vo.data.name)
 		}
 	}
 	return true

@@ -14,8 +14,8 @@ type Camera struct {
 	ang    float64
 	dirty  bool
 
-	posG   ebiten.GeoM
-	revG   ebiten.GeoM
+	posG ebiten.GeoM
+	revG ebiten.GeoM
 
 	clipRect image.Rectangle
 }
