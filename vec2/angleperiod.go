@@ -68,6 +68,9 @@ func (a AnglePeriod) MedPart(alpha float64) float64{
 //Full contains any direction
 //Dir MUST be NORMED
 func (a AnglePeriod) Has(dir float64) bool {
+	return a.isFull || a.start==dir||a.start <= dir && dir < a.end ||
+		a.start>a.end && (dir>=a.start || dir<a.end)
+	// this is slower and not inline
 	//if a.isFull {
 	//	return true
 	//}
@@ -80,32 +83,38 @@ func (a AnglePeriod) Has(dir float64) bool {
 	//} else {
 	//	return dir >= a.start || dir < a.end
 	//}
-	return a.isFull || a.start <= dir && dir <= a.end ||
-		a.start>a.end && (dir>=a.start || dir<a.end)
 }
 
 //HasIn is Has without a.start point, so for period it is (start;end)
 //Rays have nothing within
 //Dir MUST be NORMED
 func (a AnglePeriod) HasIn(dir float64) bool {
-//	if a.isFull {
-//		return true
-//	}
-//	if a.IsRay() {
-//		return false
-//	}
-//	dir = NormAng(dir)
-//	if a.start < a.end {
-//		return dir > a.start && dir < a.end
-//	} else {
-//		return dir > a.start || dir < a.end
-//	}
-return a.isFull || a.start==a.end || a.start < dir && dir < a.end ||
+return a.isFull || a.start==a.end && a.start==dir|| a.start < dir && dir < a.end ||
 	a.start>a.end && (dir>a.start || dir<a.end)
+	// this is slower and not inline
+	//	if a.isFull {
+	//		return true
+	//	}
+	//	if a.IsRay() {
+	//		return false
+	//	}
+	//	dir = NormAng(dir)
+	//	if a.start < a.end {
+	//		return dir > a.start && dir < a.end
+	//	} else {
+	//		return dir > a.start || dir < a.end
+	//	}
 }
 
 func (a AnglePeriod) IsIntersect(b AnglePeriod) bool{
 	return a.Has(b.start) || b.Has(a.start)
+	//this is much slower somehow
+	//as,ae := a.start, a.end
+	//bs,be := b.start, b.end
+	//return as>ae && (bs>=as || bs<ae || be>as || be<ae) ||
+	//	as <= bs && bs < ae ||
+	//	as < be && be < ae ||
+	//		a.isFull || b.isFull
 }
 
 //Intersect returns number of intersection (0-2) and their values
