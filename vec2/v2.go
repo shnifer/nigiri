@@ -154,6 +154,13 @@ func Dir(v V2) float64 {
 			return 90
 		}
 	}
+	if v.X == 0{
+		if v.Y >0{
+			return 180
+		} else {
+			return 0
+		}
+	}
 	a := math.Atan(v.X/v.Y) * Rad2Deg
 	if v.Y > 0 {
 		a += 180

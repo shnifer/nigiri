@@ -13,9 +13,13 @@ var EmptyAnglePeriod = AnglePeriod{0, 0, false}
 var FullAnglePeriod = AnglePeriod{0, 0, true}
 
 func NewAnglePeriod(start, end float64) AnglePeriod {
+	return newAnglePeriod(NormAng(start), NormAng(end))
+}
+
+func newAnglePeriod(start, end float64) AnglePeriod {
 	return AnglePeriod{
-		start: NormAng(start),
-		end:   NormAng(end)}
+		start: start,
+		end:   end}
 }
 
 func (a AnglePeriod) IsRay() bool {
@@ -37,60 +41,71 @@ func (a AnglePeriod) Wide() float64 {
 	if a.isFull {
 		return 360
 	}
-	if a.IsRay() {
-		return 0
-	}
 	if a.start > a.end {
 		return 360 - (a.start - a.end)
 	}
 	return a.end - a.start
 }
 func (a AnglePeriod) Medium() float64 {
-	if a.isFull {
-		return 0
-	}
-	if a.IsRay() {
-		return a.start
-	}
-	if a.start > a.end {
-		return NormAng((a.start+a.end)/2 + 180)
-	}
-	return (a.start + a.end) / 2
+	//if a.isFull {
+	//	return 180
+	//}
+	//if a.IsRay() {
+	//	return a.start
+	//}
+	//if a.start > a.end {
+	//	return NormAng((a.start+a.end)/2 + 180)
+	//}
+	//return (a.start + a.end) / 2
+	return NormAng(a.start + a.Wide()/2)
+}
+func (a AnglePeriod) MedPart(alpha float64) float64{
+	return NormAng(a.start+a.Wide()*alpha)
 }
 
 //is dir within AnglePeriod [start;end)
 //Ray contains only one value of dir == a.start == a.end
 //Full contains any direction
+//Dir MUST be NORMED
 func (a AnglePeriod) Has(dir float64) bool {
-	if a.isFull {
-		return true
-	}
-	dir = NormAng(dir)
-	if a.IsRay() {
-		return dir == a.start
-	}
-	if a.start < a.end {
-		return dir >= a.start && dir < a.end
-	} else {
-		return dir >= a.start || dir < a.end
-	}
+	//if a.isFull {
+	//	return true
+	//}
+	//dir = NormAng(dir)
+	//if a.IsRay() {
+	//	return dir == a.start
+	//}
+	//if a.start < a.end {
+	//	return dir >= a.start && dir < a.end
+	//} else {
+	//	return dir >= a.start || dir < a.end
+	//}
+	return a.isFull || a.start <= dir && dir <= a.end ||
+		a.start>a.end && (dir>=a.start || dir<a.end)
 }
 
 //HasIn is Has without a.start point, so for period it is (start;end)
 //Rays have nothing within
+//Dir MUST be NORMED
 func (a AnglePeriod) HasIn(dir float64) bool {
-	if a.isFull {
-		return true
-	}
-	if a.IsRay() {
-		return false
-	}
-	dir = NormAng(dir)
-	if a.start < a.end {
-		return dir > a.start && dir < a.end
-	} else {
-		return dir > a.start || dir < a.end
-	}
+//	if a.isFull {
+//		return true
+//	}
+//	if a.IsRay() {
+//		return false
+//	}
+//	dir = NormAng(dir)
+//	if a.start < a.end {
+//		return dir > a.start && dir < a.end
+//	} else {
+//		return dir > a.start || dir < a.end
+//	}
+return a.isFull || a.start==a.end || a.start < dir && dir < a.end ||
+	a.start>a.end && (dir>a.start || dir<a.end)
+}
+
+func (a AnglePeriod) IsIntersect(b AnglePeriod) bool{
+	return a.Has(b.start) || b.Has(a.start)
 }
 
 //Intersect returns number of intersection (0-2) and their values
@@ -119,13 +134,13 @@ func (a AnglePeriod) Intersect(b AnglePeriod) (n int, r1, r2 AnglePeriod) {
 		}
 	}
 	if a.Has(b.start) && b.Has(a.start) {
-		return 2, NewAnglePeriod(b.start, a.end), NewAnglePeriod(a.start, b.end)
+		return 2, newAnglePeriod(b.start, a.end), newAnglePeriod(a.start, b.end)
 	}
 	if a.Has(b.start) {
-		return 1, NewAnglePeriod(b.start, a.end), EmptyAnglePeriod
+		return 1, newAnglePeriod(b.start, a.end), EmptyAnglePeriod
 	}
 	if b.Has(a.start) {
-		return 1, NewAnglePeriod(a.start, b.end), EmptyAnglePeriod
+		return 1, newAnglePeriod(a.start, b.end), EmptyAnglePeriod
 	}
 	return 0, EmptyAnglePeriod, EmptyAnglePeriod
 }
@@ -152,21 +167,20 @@ func (a AnglePeriod) Sub(b AnglePeriod) (n int, c, d AnglePeriod) {
 		}
 	}
 	if a.isFull {
-		return 1, NewAnglePeriod(b.end, b.start), EmptyAnglePeriod
+		return 1, newAnglePeriod(b.end, b.start), EmptyAnglePeriod
 	}
 
 	//both a and b here are periods, not rays or full
 	if a.HasIn(b.start) && a.HasIn(b.end) {
-		return 2, NewAnglePeriod(a.start, b.start), NewAnglePeriod(b.end, a.end)
+		return 2, newAnglePeriod(a.start, b.start), newAnglePeriod(b.end, a.end)
 	}
 	if a.HasIn(b.end) {
-		return 1, NewAnglePeriod(b.end, a.end), EmptyAnglePeriod
+		return 1, newAnglePeriod(b.end, a.end), EmptyAnglePeriod
 	}
 	if a.HasIn(b.start) {
-		return 1, NewAnglePeriod(a.start, b.start), EmptyAnglePeriod
+		return 1, newAnglePeriod(a.start, b.start), EmptyAnglePeriod
 	}
-	//todo: check this for border points
-	if b.Has(a.start) || b.Has(a.end) {
+	if b.Has(a.start){
 		return 0, EmptyAnglePeriod, EmptyAnglePeriod
 	}
 	return 1, a, EmptyAnglePeriod

@@ -3,6 +3,7 @@ package nigiri
 import (
 	"github.com/hajimehoshi/ebiten"
 	"github.com/shnifer/nigiri/vec2"
+	"image/color"
 )
 
 const sectorAngleStep = 5
@@ -38,14 +39,26 @@ func NewSector(p SectorParams, layer Layer, vTransformer VTransformer) *Sector {
 	return res
 }
 
-func vertex(v2 vec2.V2) ebiten.Vertex {
+func Vertex(v2 vec2.V2) ebiten.Vertex {
 	return ebiten.Vertex{
 		DstX:   float32(v2.X),
 		DstY:   float32(v2.Y),
-		ColorA: 1,
 		ColorR: 1,
-		ColorB: 1,
 		ColorG: 1,
+		ColorB: 1,
+		ColorA: 1,
+	}
+}
+func VertexColor(v2 vec2.V2, clr color.Color) ebiten.Vertex {
+	r,g,b,a:=clr.RGBA()
+	max:=float32(0xFFFF)
+	return ebiten.Vertex{
+		DstX:   float32(v2.X),
+		DstY:   float32(v2.Y),
+		ColorR: float32(r)/max,
+		ColorG: float32(g)/max,
+		ColorB: float32(b)/max,
+		ColorA: float32(a)/max,
 	}
 }
 
@@ -53,15 +66,15 @@ func (s *Sector) recalc() {
 	s.v = s.v[:0]
 	s.i = s.i[:0]
 
-	s.v = append(s.v, vertex(s.Center))
+	s.v = append(s.v, Vertex(s.Center))
 	start, end := vec2.NormAngRange(s.StartAng, s.EndAng)
-	s.v = append(s.v, vertex(s.Center.AddMul(vec2.InDir(start), s.Radius)))
+	s.v = append(s.v, Vertex(s.Center.AddMul(vec2.InDir(start), s.Radius)))
 	st_int := int(start)
 	st_int = st_int - (st_int % sectorAngleStep) + sectorAngleStep
 	for a := float64(st_int); a < end; a += sectorAngleStep {
-		s.v = append(s.v, vertex(s.Center.AddMul(vec2.InDir(a), s.Radius)))
+		s.v = append(s.v, Vertex(s.Center.AddMul(vec2.InDir(a), s.Radius)))
 	}
-	s.v = append(s.v, vertex(s.Center.AddMul(vec2.InDir(end), s.Radius)))
+	s.v = append(s.v, Vertex(s.Center.AddMul(vec2.InDir(end), s.Radius)))
 
 	for n := 1; n < len(s.v)-1; n++ {
 		s.i = append(s.i, 0, uint16(n), uint16(n+1))

@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/shnifer/nigiri/vec2"
 	"log"
+	"sort"
 )
 
 type Horizon struct {
@@ -170,6 +171,9 @@ func (h *Horizon) calculateTemporary(targets, obstacles, blockers []HorizonObjec
 			addObjIntoArr(&h.blockAngles, blocker, dist, r2)
 		}
 	}
+	sort.Slice(h.blockAngles, func(i,j int) bool{
+		return h.blockAngles[i].Dist<h.blockAngles[j].Dist
+	})
 
 	for _, target := range targets {
 		if target == ignoreSelf {
@@ -217,16 +221,19 @@ func (h *Horizon) calculateTemporary(targets, obstacles, blockers []HorizonObjec
 func (h *Horizon) applyBlockOnTarget(target HorizonObject, dist float64, angles vec2.AnglePeriod) {
 	h.blockResolve = h.blockResolve[:0]
 	h.blockResolve = append(h.blockResolve, angles)
-
-	for _, block := range h.blockAngles {
-		if block.Dist >= dist {
-			continue
+	l:=1//len(h.blockResolve)
+	for iBlock :=range h.blockAngles{
+		if l==0 || h.blockAngles[iBlock].Dist >= dist {
+			break
 		}
 
-		l := len(h.blockResolve)
 		i := 0
 		for i < l {
-			n, p1, p2 := h.blockResolve[i].Sub(block.Angles)
+			if !h.blockResolve[i].IsIntersect(h.blockAngles[iBlock].Angles){
+				i++
+				continue
+			}
+			n, p1, p2 := h.blockResolve[i].Sub(h.blockAngles[iBlock].Angles)
 			switch n {
 			case 0:
 				h.blockResolve[i] = h.blockResolve[l-1]
