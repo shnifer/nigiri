@@ -3,6 +3,8 @@ package main
 import (
 	"github.com/hajimehoshi/ebiten"
 	"image/color"
+	"github.com/hajimehoshi/ebiten/ebitenutil"
+	"fmt"
 )
 
 var Particle *ebiten.Image
@@ -11,10 +13,10 @@ var ScaleFactor float64
 
 func mainLoop(win *ebiten.Image) error {
 	if ebiten.IsKeyPressed(ebiten.Key1) {
-		ScaleFactor*=1.05
+		ScaleFactor/=1.02
 	}
 	if ebiten.IsKeyPressed(ebiten.Key2) {
-		ScaleFactor/=1.05
+		ScaleFactor*=1.02
 	}
 	do:=&ebiten.DrawImageOptions{
 		Filter: ebiten.FilterLinear,//Filter this is critical
@@ -26,6 +28,7 @@ func mainLoop(win *ebiten.Image) error {
 	do.ColorM.Reset()
 	do.ColorM.Scale(0,1,1,1)
 	win.DrawImage(Particle, do)//and second draw for sure
+	ebitenutil.DebugPrint(win, fmt.Sprint(ScaleFactor))
 	return nil
 }
 
