@@ -6,6 +6,7 @@ import (
 )
 
 var Particle *ebiten.Image
+var Particle2 *ebiten.Image
 var ScaleFactor float64
 
 func mainLoop(win *ebiten.Image) error {
@@ -20,11 +21,11 @@ func mainLoop(win *ebiten.Image) error {
 	}
 	do.GeoM.Scale(ScaleFactor, ScaleFactor)//this is critical
 	do.ColorM.Scale(1,1,0,1)
-	win.DrawImage(Particle, do)
+	win.DrawImage(Particle, do)//this is critical
 	do.GeoM.Translate(400,0)
 	do.ColorM.Reset()
 	do.ColorM.Scale(0,1,1,1)
-	win.DrawImage(Particle, do)
+	win.DrawImage(Particle, do)//and this too
 	return nil
 }
 
@@ -34,5 +35,8 @@ func main() {
 	ScaleFactor = 1
 	Particle,_ = ebiten.NewImage(400,400, ebiten.FilterDefault)
 	Particle.Fill(color.White)
+	Particle2,_ = ebiten.NewImage(400,400, ebiten.FilterDefault)
+	Particle2.Fill(color.White)
+
 	ebiten.Run(mainLoop, 1000, 1000, 1, "TEST")
 }
