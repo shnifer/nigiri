@@ -17,7 +17,7 @@ func NewSolidObject(circle Circle) *SolidObject {
 	Sprite := nigiri.NewSprite(nigiri.CircleTex(), 0, C.Phys())
 	Sprite.Pivot = vec2.Center
 	Sprite.SetSmooth(false)
-	Sprite.SetColor(colornames.Green)
+	Sprite.SetColor(colornames.White)
 	Sprite.Position = circle.Center
 	visualSize := circle.Radius * 2
 	Sprite.Scaler = nigiri.NewFixedScaler(visualSize, visualSize)
@@ -52,7 +52,7 @@ func NewCloud(circle Circle, density float64) *Cloud{
 	sprite.SetSmooth(false)
 	sprite.Position = circle.Center
 	sprite.Scaler = nigiri.NewFixedScaler(circle.Radius * 2, circle.Radius * 2)
-	sprite.SetColor(colornames.Blue)
+	sprite.SetColor(colornames.Gray)
 
 	return &Cloud{
 		Circle: circle,

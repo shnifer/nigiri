@@ -17,15 +17,15 @@ func mainLoop(win *ebiten.Image) error {
 		ScaleFactor/=1.05
 	}
 	do:=&ebiten.DrawImageOptions{
-		Filter: ebiten.FilterLinear,//this is critical
+		Filter: ebiten.FilterLinear,//Filter this is critical
 	}
-	do.GeoM.Scale(ScaleFactor, ScaleFactor)//this is critical
-	do.ColorM.Scale(1,1,0,1)
-	win.DrawImage(Particle, do)//this is critical
+	do.GeoM.Scale(ScaleFactor, ScaleFactor)//Scale factor is critical
+	do.ColorM.Scale(1,1,0,1)//Draw with other color is critical
+	win.DrawImage(Particle, do)
 	do.GeoM.Translate(400,0)
 	do.ColorM.Reset()
 	do.ColorM.Scale(0,1,1,1)
-	win.DrawImage(Particle, do)//and this too
+	win.DrawImage(Particle, do)//and second draw for sure
 	return nil
 }
 

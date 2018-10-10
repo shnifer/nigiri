@@ -83,7 +83,7 @@ func main() {
 	C.SetScale(0.5)
 
 
-	for i:=0; i<10; i++{
+	for i:=0; i<20; i++{
 		circle:=Circle{Center: vec2.RandomInCircle(800), Radius: rand.Float64()*50+10}
 		SolidObjects = append(SolidObjects, NewSolidObject(circle))
 	}
@@ -106,7 +106,7 @@ func main() {
 	colornames.Cyan, colornames.Blue, colornames.Purple}
 	ViewSector = NewViewSectorDrawer(-1,C)
 	lightCount := len(colors)
-	lightCount = 3
+//	lightCount = 3
 	for i:=0;i<lightCount;i++ {
 		light := NewLight()
 		light.Color = colors[i]
