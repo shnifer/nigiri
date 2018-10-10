@@ -8,7 +8,6 @@ import (
 	"github.com/shnifer/nigiri/vec2"
 	"golang.org/x/image/colornames"
 	"image"
-	"log"
 )
 
 var C *nigiri.Camera
@@ -48,9 +47,9 @@ func mainLoop(win *ebiten.Image, dt float64) error {
 	if ebiten.IsKeyPressed(ebiten.Key2) {
 		Particle.ScaleFactor=Particle.ScaleFactor.Mul(1/1.05)
 	}
-	log.Println("===")
+
 	Q.Clear()
-	const gridBounds= 5
+	const gridBounds= 200
 	const gridStep = 10
 	for x := -gridBounds; x <= gridBounds; x += gridStep {
 		for y := -gridBounds; y <= gridBounds; y += gridStep {

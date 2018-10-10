@@ -16,7 +16,8 @@ type SolidObject struct {
 func NewSolidObject(circle Circle) *SolidObject {
 	Sprite := nigiri.NewSprite(nigiri.CircleTex(), 0, C.Phys())
 	Sprite.Pivot = vec2.Center
-	Sprite.SetSmooth(true)
+	Sprite.SetSmooth(false)
+	Sprite.SetColor(colornames.Green)
 	Sprite.Position = circle.Center
 	visualSize := circle.Radius * 2
 	Sprite.Scaler = nigiri.NewFixedScaler(visualSize, visualSize)
@@ -48,10 +49,10 @@ func (c *Cloud) ShadowBlock() bool {
 func NewCloud(circle Circle, density float64) *Cloud{
 	sprite := nigiri.NewSprite(nigiri.CircleTex(), 0, C.Phys())
 	sprite.Pivot = vec2.Center
-	sprite.SetSmooth(true)
+	sprite.SetSmooth(false)
 	sprite.Position = circle.Center
 	sprite.Scaler = nigiri.NewFixedScaler(circle.Radius * 2, circle.Radius * 2)
-	sprite.SetColor(colornames.Gray)
+	sprite.SetColor(colornames.Blue)
 
 	return &Cloud{
 		Circle: circle,

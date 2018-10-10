@@ -16,9 +16,9 @@ func mainLoop(win *ebiten.Image) error {
 		ScaleFactor/=1.05
 	}
 	do:=&ebiten.DrawImageOptions{
-		Filter: ebiten.FilterLinear,
+		Filter: ebiten.FilterLinear,//this is critical
 	}
-	do.GeoM.Scale(ScaleFactor, ScaleFactor)
+	do.GeoM.Scale(ScaleFactor, ScaleFactor)//this is critical
 	do.ColorM.Scale(1,1,0,1)
 	win.DrawImage(Particle, do)
 	do.GeoM.Translate(400,0)
