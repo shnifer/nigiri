@@ -16,7 +16,7 @@ func CircleTex() Tex {
 
 func NewCircleTex(radius int) Tex {
 	d := radius*2 + 1
-	img, _ := ebiten.NewImage(d, d, ebiten.FilterLinear)
+	img, _ := ebiten.NewImage(d, d, ebiten.FilterDefault)
 
 	p := make([]byte, d*d*4)
 	dw := d * 4
