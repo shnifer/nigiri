@@ -80,7 +80,7 @@ func main() {
 	L = nigiri.NewLine(cam.Phys(), 1)
 
 	C = MyCam{cam}
-	C.SetScale(0.5)
+	C.SetScale(0.4)
 
 
 	for i:=0; i<20; i++{
