@@ -11,6 +11,7 @@ import (
 	"golang.org/x/image/colornames"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"fmt"
+	"log"
 )
 
 var Q *nigiri.Queue
@@ -114,5 +115,8 @@ func main() {
 		Lights = append(Lights, light)
 	}
 	ebiten.SetVsyncEnabled(false)
-	nigiri.Run(mainLoop, 800, 800, 1, "TEST")
+	err:=nigiri.Run(mainLoop, 800, 800, 1, "TEST")
+	if err!=nil{
+		log.Println("ERROR: ",err)
+	}
 }
