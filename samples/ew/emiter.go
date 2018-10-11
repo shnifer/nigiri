@@ -1,4 +1,4 @@
-package main
+package ew
 
 import "github.com/shnifer/nigiri/vec2"
 

@@ -1,4 +1,4 @@
-package main
+package ew
 
 import (
 	"testing"
@@ -6,13 +6,14 @@ import (
 	"math/rand"
 )
 
+
 func BenchmarkHorizon_Calc1(b *testing.B) {
 	const objectCount = 300
 	HorizonObjects := make([]HorizonObject,objectCount)
 	//setup
 	for i:=0; i<objectCount; i++{
 		circle:=Circle{Center: vec2.RandomInCircle(800), Radius: rand.Float64()*50+10}
-		HorizonObjects[i] = NewSolidObject(circle)
+		HorizonObjects[i] = DiffShadowBody{Circle: circle}
 	}
 
 	horizon:=NewHorizon()
@@ -31,7 +32,7 @@ func BenchmarkHorizon_Calc2(b *testing.B) {
 	//setup
 	for i:=0; i<objectCount; i++{
 		circle:=Circle{Center: vec2.RandomInCircle(10000), Radius: rand.Float64()*50+10}
-		HorizonObjects[i] = NewSolidObject(circle)
+		HorizonObjects[i] = DiffShadowBody{Circle:circle}
 	}
 
 	horizon:=NewHorizon()

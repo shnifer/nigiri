@@ -1,4 +1,4 @@
-package main
+package ew
 
 type World struct {
 	emitters  []Emitter

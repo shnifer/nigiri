@@ -6,14 +6,15 @@ import (
 	"github.com/shnifer/nigiri/vec2"
 	"github.com/hajimehoshi/ebiten"
 	"golang.org/x/image/colornames"
+	"github.com/shnifer/nigiri/samples/ew"
 )
 
 type SolidObject struct {
-	DiffShadowBody
+	ew.DiffShadowBody
 	*nigiri.Sprite
 }
 
-func NewSolidObject(circle Circle) *SolidObject {
+func NewSolidObject(circle ew.Circle) *SolidObject {
 	Sprite := nigiri.NewSprite(nigiri.CircleTex(), 0, C.Phys())
 	Sprite.Pivot = vec2.Center
 	Sprite.SetSmooth(false)
@@ -23,22 +24,22 @@ func NewSolidObject(circle Circle) *SolidObject {
 	Sprite.Scaler = nigiri.NewFixedScaler(visualSize, visualSize)
 
 	return &SolidObject{
-		DiffShadowBody: DiffShadowBody{Circle: circle, Albedo: 1},
+		DiffShadowBody: ew.DiffShadowBody{Circle: circle, Albedo: 1},
 		Sprite:         Sprite,
 	}
 }
 
 type Cloud struct{
-	Circle
+	ew.Circle
 	Density float64
 	*nigiri.Sprite
 }
 
-func (c *Cloud) HorizonCircle() Circle {
+func (c *Cloud) HorizonCircle() ew.Circle {
 	return c.Circle
 }
 
-func (c *Cloud) ShadowDensity(t EmiType) (density float64) {
+func (c *Cloud) ShadowDensity(t ew.EmiType) (density float64) {
 	return c.Density
 }
 
@@ -46,7 +47,7 @@ func (c *Cloud) ShadowBlock() bool {
 	return false
 }
 
-func NewCloud(circle Circle, density float64) *Cloud{
+func NewCloud(circle ew.Circle, density float64) *Cloud{
 	sprite := nigiri.NewSprite(nigiri.CircleTex(), 0, C.Phys())
 	sprite.Pivot = vec2.Center
 	sprite.SetSmooth(false)
@@ -62,25 +63,25 @@ func NewCloud(circle Circle, density float64) *Cloud{
 }
 
 type Light struct{
-	*LightEmitter
-	*Horizon
+	*ew.LightEmitter
+	*ew.Horizon
 	Color color.Color
 }
 func NewLight() *Light{
-	k:=[EmiDirCount]float64{}
+	k:=[ew.EmiDirCount]float64{}
 	for i:=range k{
 		k[i] = 1
 	}
 	res := &Light{
-		LightEmitter: NewLightEmitter(1, k, ""),
-		Horizon: NewHorizon(),
+		LightEmitter: ew.NewLightEmitter(1, k, ""),
+		Horizon: ew.NewHorizon(),
 	}
 	return res
 }
 
 func (l *Light) SetPosition(pos vec2.V2){
 	l.LightEmitter.Center = pos
-	l.Horizon.point = pos
+	l.Horizon.SetPointZoneDist(pos, vec2.FullAnglePeriod, 0)
 }
 
 
@@ -88,7 +89,7 @@ type ViewSectorDrawer struct {
 	*nigiri.TriDrawer
 	Color color.Color
 	Point vec2.V2
-	Target HorizonObjectPart
+	Target ew.HorizonObjectPart
 }
 
 func NewViewSectorDrawer(layer nigiri.Layer, vTransformer nigiri.VTransformer) *ViewSectorDrawer{

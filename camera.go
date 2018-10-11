@@ -4,7 +4,6 @@ import (
 	"github.com/hajimehoshi/ebiten"
 	"github.com/shnifer/nigiri/vec2"
 	"image"
-	"math"
 )
 
 type Camera struct {
@@ -204,17 +203,4 @@ func (c *Camera) inClipRect(v vec2.V2) bool {
 //false negative is ok as we draw some off-screen, false positives are not accepted
 func (c *Camera) ClippedRect(rect Rect) bool {
 	return false
-	//TODO: remove from transfers, cz clip moved to clipper
-	if c.clipRect.Empty() {
-		return false
-	}
-	if c.inClipRect(rect.Position) {
-		return false
-	}
-	px := math.Max(rect.pivot.X, 1-rect.pivot.X) * rect.Width
-	py := math.Max(rect.pivot.Y, 1-rect.pivot.Y) * rect.Height
-	dr := int(vec2.V(px, py).Len()) + 1
-	x, y := int(rect.Position.X), int(rect.Position.Y)
-	cr := image.Rect(x-dr, y-dr, x+dr, y+dr)
-	return !cr.Overlaps(c.clipRect)
 }

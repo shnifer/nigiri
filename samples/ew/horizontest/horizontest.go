@@ -12,6 +12,7 @@ import (
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"fmt"
 	"log"
+	"github.com/shnifer/nigiri/samples/ew"
 )
 
 var Q *nigiri.Queue
@@ -21,9 +22,9 @@ var ViewSector *ViewSectorDrawer
 
 var Lights []*Light
 var SolidObjects []*SolidObject
-var HorizonSolid []HorizonObject
+var HorizonSolid []ew.HorizonObject
 var Clouds []*Cloud
-var HorizonObstacles []HorizonObject
+var HorizonObstacles []ew.HorizonObject
 
 func mainLoopUpdate(dt float64){
 	C.Update(dt)
@@ -31,7 +32,7 @@ func mainLoopUpdate(dt float64){
 		v.Update(dt)
 	}
 	for _, l:=range Lights{
-		l.SetPosition(l.point.Rotate(10*dt))
+		l.SetPosition(l.Center.Rotate(10*dt))
 	}
 }
 
@@ -56,7 +57,7 @@ func mainLoop(win *ebiten.Image, dt float64) error {
 	for _,light:=range Lights {
 		hRes := light.Calculate(HorizonSolid, nil, HorizonSolid, nil)
 		for _, rec := range hRes {
-			ViewSector.Point = light.point
+			ViewSector.Point = light.Center
 			ViewSector.Target = rec.Target
 			ViewSector.Color = light.Color
 			Q.Add(ViewSector)
@@ -85,20 +86,20 @@ func main() {
 
 
 	for i:=0; i<20; i++{
-		circle:=Circle{Center: vec2.RandomInCircle(800), Radius: rand.Float64()*50+10}
+		circle:=ew.Circle{Center: vec2.RandomInCircle(800), Radius: rand.Float64()*50+10}
 		SolidObjects = append(SolidObjects, NewSolidObject(circle))
 	}
 
 	for i:=0; i<0; i++{
-		circle:=Circle{Center: vec2.RandomInCircle(800), Radius: rand.Float64()*50+10}
+		circle:=ew.Circle{Center: vec2.RandomInCircle(800), Radius: rand.Float64()*50+10}
 		Clouds = append(Clouds, NewCloud(circle, 1))
 	}
 
-	HorizonSolid = make([]HorizonObject, len(SolidObjects))
+	HorizonSolid = make([]ew.HorizonObject, len(SolidObjects))
 	for i := 0; i < len(SolidObjects); i++ {
 		HorizonSolid[i] = SolidObjects[i]
 	}
-	HorizonObstacles = make([]HorizonObject, len(Clouds))
+	HorizonObstacles = make([]ew.HorizonObject, len(Clouds))
 	for i := 0; i < len(Clouds); i++ {
 		HorizonObstacles[i] = Clouds[i]
 	}
