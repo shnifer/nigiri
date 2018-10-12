@@ -4,6 +4,7 @@ import (
 	"github.com/hajimehoshi/ebiten"
 	"github.com/shnifer/nigiri/vec2"
 	"image/color"
+	"github.com/shnifer/nigiri/vec2/angle"
 )
 
 const sectorAngleStep = 5
@@ -67,7 +68,7 @@ func (s *Sector) recalc() {
 	s.i = s.i[:0]
 
 	s.v = append(s.v, Vertex(s.Center))
-	start, end := vec2.NormAngRange(s.StartAng, s.EndAng)
+	start, end := angle.NormRange(s.StartAng, s.EndAng)
 	s.v = append(s.v, Vertex(s.Center.AddMul(vec2.InDir(start), s.Radius)))
 	st_int := int(start)
 	st_int = st_int - (st_int % sectorAngleStep) + sectorAngleStep

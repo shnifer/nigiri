@@ -3,6 +3,7 @@ package vec2
 import (
 	"math"
 	"testing"
+	"github.com/shnifer/nigiri/vec2/angle"
 )
 
 func Test_DirInDir(t *testing.T) {
@@ -22,7 +23,7 @@ func Test_RotateInDir(t *testing.T) {
 			ang := float64(i)
 			v := InDir(ang)
 			v = v.Rotate(rang)
-			d := NormAng(v.Dir() - ang - rang)
+			d := angle.Norm(v.Dir() - ang - rang)
 
 			if d > 0.0001 && d < 359.999 {
 				t.Errorf("for ang %v rotated by %v vector %v but it's Dir is %v", ang, rang, v, v.Dir())
@@ -37,7 +38,7 @@ func TestV2_Rotate90(t *testing.T) {
 		sAng := float64(i)
 		v := InDir(sAng)
 		v = v.Rotate90()
-		wait := NormAng(sAng + 90)
+		wait := angle.Norm(sAng + 90)
 		d := wait - v.Dir()
 		if d > 0.0001 && d < 359.99 {
 			t.Errorf("for start vector with ang %v result of rotate90 is %v needed %v\n", sAng, v.Dir(), wait)
@@ -72,14 +73,14 @@ func TestNormAngRange(t *testing.T) {
 		{-10, 350, 350, 710},
 	}
 	for _, v := range table {
-		a, b = NormAngRange(v[0], v[1])
+		a, b = angle.NormRange(v[0], v[1])
 		if a != v[2] || b != v[3] {
-			t.Errorf("NormAngRange (%v,%v) is (%v,%v) must be (%v, %v)",
+			t.Errorf("NormRange (%v,%v) is (%v,%v) must be (%v, %v)",
 				v[0], v[1], a, b, v[2], v[3])
 		}
-		a, b = NormAngRange(v[1], v[0])
+		a, b = angle.NormRange(v[1], v[0])
 		if a != v[2] || b != v[3] {
-			t.Errorf("NormAngRange (%v,%v) is (%v,%v) must be (%v, %v)",
+			t.Errorf("NormRange (%v,%v) is (%v,%v) must be (%v, %v)",
 				v[1], v[0], a, b, v[2], v[3])
 		}
 	}

@@ -1,6 +1,8 @@
 package ew
 
-import "github.com/shnifer/nigiri/vec2"
+import (
+	"github.com/shnifer/nigiri/vec2/angle"
+)
 
 type EmiType int
 
@@ -53,7 +55,7 @@ func (l *LightEmitter) Emits(dir float64) []EmitData {
 	if l.MaxPower <= 0 {
 		return nil
 	}
-	ang := vec2.NormAng(dir - l.Dir)
+	ang := angle.Norm(dir - l.Dir)
 	angN := int(ang * EmiDirCount / 360)
 	k := l.PowerK[angN]
 	if k <= 0 {

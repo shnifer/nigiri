@@ -4,6 +4,7 @@ import (
 	"github.com/shnifer/nigiri/vec2"
 	"log"
 	"sort"
+	"github.com/shnifer/nigiri/vec2/angle"
 )
 
 type Horizon struct {
@@ -14,31 +15,31 @@ type Horizon struct {
 
 	//current source position
 	point   vec2.V2
-	zone    vec2.AnglePeriod
+	zone    angle.Period
 	maxDist float64
 
 	//temporary arrays
 	blockAngles    []ObjectData
 	targetAngles   []ObjectData
 	obstacleAngles []ObjectData
-	blockResolve   []vec2.AnglePeriod
+	blockResolve   []angle.Period
 
 	result []HorizonCalculus
 }
 
 func NewHorizon() *Horizon {
 	res := &Horizon{
-		zone:           vec2.FullAnglePeriod,
+		zone:           angle.FullPeriod,
 		blockAngles:    make([]ObjectData, 0),
 		targetAngles:   make([]ObjectData, 0),
 		obstacleAngles: make([]ObjectData, 0),
-		blockResolve:   make([]vec2.AnglePeriod, 0),
+		blockResolve:   make([]angle.Period, 0),
 		result:         make([]HorizonCalculus, 0),
 	}
 	return res
 }
 
-func (h *Horizon) SetPointZoneDist(p vec2.V2, zone vec2.AnglePeriod, maxDist float64) {
+func (h *Horizon) SetPointZoneDist(p vec2.V2, zone angle.Period, maxDist float64) {
 	h.point = p
 	h.zone = zone
 	h.maxDist = maxDist
@@ -51,7 +52,7 @@ type ObjectPart struct {
 }
 
 //Part is assumed to be totally inside object
-func TakeObjectPart(object, part vec2.AnglePeriod) ObjectPart {
+func TakeObjectPart(object, part angle.Period) ObjectPart {
 	total := object.Wide()
 	if total == 0 {
 		return ObjectPart{
@@ -62,7 +63,7 @@ func TakeObjectPart(object, part vec2.AnglePeriod) ObjectPart {
 	}
 	start1, _ := object.Get()
 	start2, _ := part.Get()
-	startOff := vec2.NewAnglePeriod(start1, start2).Wide()
+	startOff := angle.NewPeriod(start1, start2).Wide()
 	medOff := part.Wide()
 	return ObjectPart{
 		PartStart: startOff / total,
@@ -84,7 +85,7 @@ type HorizonCalculus struct {
 type ObjectData struct {
 	Object HorizonObject
 	Dist   float64
-	Angles vec2.AnglePeriod
+	Angles angle.Period
 }
 
 func (h *Horizon) Calculate(targets, obstacles, blockers []HorizonObject,
@@ -98,7 +99,7 @@ func (h *Horizon) Calculate(targets, obstacles, blockers []HorizonObject,
 
 func (h *Horizon) calculateResult() {
 	var cN int
-	var r1 vec2.AnglePeriod
+	var r1 angle.Period
 	h.result = h.result[:0]
 	for _, target := range h.targetAngles {
 		var obs []HorizonObjectPart
@@ -130,7 +131,7 @@ func (h *Horizon) calculateResult() {
 	}
 }
 
-func addObjIntoArr(arr *[]ObjectData, obj HorizonObject, dist float64, angles vec2.AnglePeriod) {
+func addObjIntoArr(arr *[]ObjectData, obj HorizonObject, dist float64, angles angle.Period) {
 	*arr = append(*arr, ObjectData{
 		Object: obj,
 		Dist:   dist,
@@ -146,8 +147,8 @@ func (h *Horizon) calculateTemporary(targets, obstacles, blockers []HorizonObjec
 	h.obstacleAngles = h.obstacleAngles[:0]
 
 	var rN int
-	var r1, r2 vec2.AnglePeriod
-	var angles vec2.AnglePeriod
+	var r1, r2 angle.Period
+	var angles angle.Period
 	var circle Circle
 	var dist float64
 
@@ -218,7 +219,7 @@ func (h *Horizon) calculateTemporary(targets, obstacles, blockers []HorizonObjec
 	}
 }
 
-func (h *Horizon) applyBlockOnTarget(target HorizonObject, dist float64, angles vec2.AnglePeriod) {
+func (h *Horizon) applyBlockOnTarget(target HorizonObject, dist float64, angles angle.Period) {
 	h.blockResolve = h.blockResolve[:0]
 	h.blockResolve = append(h.blockResolve, angles)
 	l:=1//len(h.blockResolve)
@@ -255,7 +256,7 @@ func (h *Horizon) applyBlockOnTarget(target HorizonObject, dist float64, angles 
 	}
 }
 
-func (h *Horizon) applyObstacle(obstacle HorizonObject, dist float64, angles vec2.AnglePeriod) {
+func (h *Horizon) applyObstacle(obstacle HorizonObject, dist float64, angles angle.Period) {
 	for i := 0; i < len(h.targetAngles); i++ {
 		target := h.targetAngles[i]
 		if target.Dist <= dist {
@@ -267,7 +268,7 @@ func (h *Horizon) applyObstacle(obstacle HorizonObject, dist float64, angles vec
 	addObjIntoArr(&h.obstacleAngles, obstacle, dist, angles)
 }
 
-func (h *Horizon) splitTargetWithAngles(i int, angles vec2.AnglePeriod) {
+func (h *Horizon) splitTargetWithAngles(i int, angles angle.Period) {
 	target := h.targetAngles[i].Angles
 	sN, r1, r2, r3 := target.Split(angles)
 	if sN <= 1 {

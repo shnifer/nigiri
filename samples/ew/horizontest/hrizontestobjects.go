@@ -7,6 +7,7 @@ import (
 	"github.com/hajimehoshi/ebiten"
 	"golang.org/x/image/colornames"
 	"github.com/shnifer/nigiri/samples/ew"
+	"github.com/shnifer/nigiri/vec2/angle"
 )
 
 type SolidObject struct {
@@ -81,7 +82,7 @@ func NewLight() *Light{
 
 func (l *Light) SetPosition(pos vec2.V2){
 	l.LightEmitter.Center = pos
-	l.Horizon.SetPointZoneDist(pos, vec2.FullAnglePeriod, 0)
+	l.Horizon.SetPointZoneDist(pos, angle.FullPeriod, 0)
 }
 
 
