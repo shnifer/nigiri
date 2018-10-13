@@ -144,31 +144,7 @@ func Normed(a V2) V2 {
 }
 
 func Dir(v V2) float64 {
-	if v == ZV {
-		return 0
-	}
-	if v.Y == 0 {
-		if v.X > 0 {
-			return 270
-		} else {
-			return 90
-		}
-	}
-	if v.X == 0{
-		if v.Y >0{
-			return 180
-		} else {
-			return 0
-		}
-	}
-	a := math.Atan(v.X/v.Y) * Rad2Deg
-	if v.Y > 0 {
-		a += 180
-	}
-	if a < 0 {
-		a += 360
-	}
-	return a
+	return v.Dir()
 }
 
 //method syntax
@@ -226,7 +202,31 @@ func (a *V2) DoAddMul(b V2, t float64) {
 }
 
 func (a V2) Dir() float64 {
-	return Dir(a)
+	if a == ZV {
+		return 0
+	}
+	if a.Y == 0 {
+		if a.X > 0 {
+			return 270
+		} else {
+			return 90
+		}
+	}
+	if a.X == 0{
+		if a.Y >0{
+			return 180
+		} else {
+			return 0
+		}
+	}
+	tan := math.Atan(a.X/a.Y) * Rad2Deg
+	if a.Y > 0 {
+		tan += 180
+	}
+	if tan < 0 {
+		tan += 360
+	}
+	return tan
 }
 
 func (a V2) String() string {

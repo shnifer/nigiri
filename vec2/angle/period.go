@@ -2,7 +2,7 @@ package angle
 
 //start and end angle of period,
 //both are supposed to be [0;360)
-//[a,a) is a line-reduced ray, if not isFull
+//[a,a) is an empty, if not isFull
 //isFull is 360 degree full circle
 type Period struct {
 	start, end float64
@@ -22,7 +22,7 @@ func newPeriod(start, end float64) Period {
 		end:   end}
 }
 
-func (a Period) IsRay() bool {
+func (a Period) Empty() bool {
 	return a.start == a.end && !a.isFull
 }
 func (a Period) IsFull() bool {
@@ -50,7 +50,7 @@ func (a Period) Medium() float64 {
 	//if a.isFull {
 	//	return 180
 	//}
-	//if a.IsRay() {
+	//if a.Empty() {
 	//	return a.start
 	//}
 	//if a.start > a.end {
@@ -64,18 +64,18 @@ func (a Period) MedPart(alpha float64) float64{
 }
 
 //is dir within Period [start;end)
-//Ray contains only one value of dir == a.start == a.end
 //Full contains any direction
+//Empty has nothing
 //Dir MUST be NORMED
 func (a Period) Has(dir float64) bool {
-	return a.isFull || a.start==dir||a.start <= dir && dir < a.end ||
+	return a.isFull || a.start <= dir && dir < a.end ||
 		a.start>a.end && (dir>=a.start || dir<a.end)
 	// this is slower and not inline
 	//if a.isFull {
 	//	return true
 	//}
 	//dir = Norm(dir)
-	//if a.IsRay() {
+	//if a.Empty() {
 	//	return dir == a.start
 	//}
 	//if a.start < a.end {
@@ -85,17 +85,22 @@ func (a Period) Has(dir float64) bool {
 	//}
 }
 
+func (a Period) nfHas(dir float64) bool{
+	return a.start <= dir && dir < a.end ||
+		a.start>a.end && (dir>=a.start || dir<a.end)
+}
+
 //HasIn is Has without a.start point, so for period it is (start;end)
 //Rays have nothing within
 //Dir MUST be NORMED
 func (a Period) HasIn(dir float64) bool {
-return a.isFull || a.start==a.end && a.start==dir|| a.start < dir && dir < a.end ||
+return a.isFull || a.start < dir && dir < a.end ||
 	a.start>a.end && (dir>a.start || dir<a.end)
 	// this is slower and not inline
 	//	if a.isFull {
 	//		return true
 	//	}
-	//	if a.IsRay() {
+	//	if a.Empty() {
 	//		return false
 	//	}
 	//	dir = Norm(dir)
@@ -117,6 +122,10 @@ func (a Period) IsIntersect(b Period) bool{
 	//		a.isFull || b.isFull
 }
 
+func (a Period) Contains (b Period) bool{
+	return a.isFull || (a.nfHas(b.start) && !b.Has(a.end))
+}
+
 //Intersect returns number of intersection (0-2) and their values
 //Rays may intersect equal Ray or period containing ray's direction, result is ray
 //Periods touching one start-end point do not intersect in it,
@@ -128,14 +137,14 @@ func (a Period) Intersect(b Period) (n int, r1, r2 Period) {
 	if b.isFull {
 		return 1, a, EmptyPeriod
 	}
-	if a.IsRay() {
+	if a.Empty() {
 		if b.Has(a.start) {
 			return 1, a, EmptyPeriod
 		} else {
 			return 0, EmptyPeriod, EmptyPeriod
 		}
 	}
-	if b.IsRay() {
+	if b.Empty() {
 		if a.Has(b.start) {
 			return 1, b, EmptyPeriod
 		} else {
@@ -161,14 +170,14 @@ func (a Period) Sub(b Period) (n int, c, d Period) {
 	if b.isFull {
 		return 0, EmptyPeriod, EmptyPeriod
 	}
-	if b.IsRay() {
+	if b.Empty() {
 		if a == b {
 			return 0, EmptyPeriod, EmptyPeriod
 		} else {
 			return 1, a, EmptyPeriod
 		}
 	}
-	if a.IsRay() {
+	if a.Empty() {
 		if b.Has(a.start) {
 			return 0, EmptyPeriod, EmptyPeriod
 		} else {
