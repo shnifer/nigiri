@@ -16,6 +16,10 @@ type DiffShadowBody struct {
 	Albedo float64
 }
 
+func (d DiffShadowBody) Types() (isObstacle, isTarget, isBlocker bool) {
+	return false, true, true
+}
+
 func (d DiffShadowBody) HorizonCircle() Circle {
 	return d.Circle
 }

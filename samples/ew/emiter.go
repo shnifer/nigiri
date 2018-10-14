@@ -22,6 +22,7 @@ type EmitData struct {
 
 type HorizonObject interface {
 	HorizonCircle() Circle
+	Types() (isObstacle, isTarget, isBlocker bool)
 }
 
 type Emitter interface {

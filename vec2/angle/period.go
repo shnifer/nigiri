@@ -130,94 +130,91 @@ func (a Period) Contains (b Period) bool{
 //Rays may intersect equal Ray or period containing ray's direction, result is ray
 //Periods touching one start-end point do not intersect in it,
 //so intersect results on non-ray periods can't be a ray
-func (a Period) Intersect(b Period) (n int, r1, r2 Period) {
+func (a Period) Intersect(b Period) (n int, periods [2]Period) {
 	if a.isFull {
-		return 1, b, EmptyPeriod
+		return 1, [2]Period{b, EmptyPeriod}
 	}
 	if b.isFull {
-		return 1, a, EmptyPeriod
+		return 1, [2]Period{a, EmptyPeriod}
 	}
 	if a.Empty() {
 		if b.Has(a.start) {
-			return 1, a, EmptyPeriod
+			return 1, [2]Period{a, EmptyPeriod}
 		} else {
-			return 0, EmptyPeriod, EmptyPeriod
+			return 0, [2]Period{EmptyPeriod, EmptyPeriod}
 		}
 	}
 	if b.Empty() {
 		if a.Has(b.start) {
-			return 1, b, EmptyPeriod
+			return 1, [2]Period{b, EmptyPeriod}
 		} else {
-			return 0, EmptyPeriod, EmptyPeriod
+			return 0, [2]Period{EmptyPeriod, EmptyPeriod}
 		}
 	}
 	if a.Has(b.start) && b.Has(a.start) {
-		return 2, newPeriod(b.start, a.end), newPeriod(a.start, b.end)
+		return 2, [2]Period{newPeriod(b.start, a.end), newPeriod(a.start, b.end)}
 	}
 	if a.Has(b.start) {
-		return 1, newPeriod(b.start, a.end), EmptyPeriod
+		return 1, [2]Period{newPeriod(b.start, a.end), EmptyPeriod}
 	}
 	if b.Has(a.start) {
-		return 1, newPeriod(a.start, b.end), EmptyPeriod
+		return 1, [2]Period{newPeriod(a.start, b.end), EmptyPeriod}
 	}
-	return 0, EmptyPeriod, EmptyPeriod
+	return 0, [2]Period{EmptyPeriod, EmptyPeriod}
 }
 
 //Sub subtracts b from a period, returning number of, and parts
 //Ray subtracted from equal ray deletes it.
 //Ray subtracted from period is no-op.
-func (a Period) Sub(b Period) (n int, c, d Period) {
+func (a Period) Sub(b Period) (n int, periods [2]Period) {
 	if b.isFull {
-		return 0, EmptyPeriod, EmptyPeriod
+		return 0, [2]Period{EmptyPeriod, EmptyPeriod}
 	}
 	if b.Empty() {
 		if a == b {
-			return 0, EmptyPeriod, EmptyPeriod
+			return 0, [2]Period{EmptyPeriod, EmptyPeriod}
 		} else {
-			return 1, a, EmptyPeriod
+			return 1, [2]Period{a, EmptyPeriod}
 		}
 	}
 	if a.Empty() {
 		if b.Has(a.start) {
-			return 0, EmptyPeriod, EmptyPeriod
+			return 0, [2]Period{EmptyPeriod, EmptyPeriod}
 		} else {
-			return 1, a, EmptyPeriod
+			return 1, [2]Period{a, EmptyPeriod}
 		}
 	}
 	if a.isFull {
-		return 1, newPeriod(b.end, b.start), EmptyPeriod
+		return 1, [2]Period{newPeriod(b.end, b.start), EmptyPeriod}
 	}
 
 	//both a and b here are periods, not rays or full
 	if a.HasIn(b.start) && a.HasIn(b.end) {
-		return 2, newPeriod(a.start, b.start), newPeriod(b.end, a.end)
+		return 2, [2]Period{newPeriod(a.start, b.start), newPeriod(b.end, a.end)}
 	}
 	if a.HasIn(b.end) {
-		return 1, newPeriod(b.end, a.end), EmptyPeriod
+		return 1, [2]Period{newPeriod(b.end, a.end), EmptyPeriod}
 	}
 	if a.HasIn(b.start) {
-		return 1, newPeriod(a.start, b.start), EmptyPeriod
+		return 1, [2]Period{newPeriod(a.start, b.start), EmptyPeriod}
 	}
 	if b.Has(a.start){
-		return 0, EmptyPeriod, EmptyPeriod
+		return 0, [2]Period{EmptyPeriod, EmptyPeriod}
 	}
-	return 1, a, EmptyPeriod
+	return 1, [2]Period{a, EmptyPeriod}
 }
 
-func (a Period) Split(b Period) (n int, r1, r2, r3 Period) {
-	intersectN, i1, i2 := a.Intersect(b)
-	SubN, s1, s2 := a.Sub(b)
+func (a Period) Split(b Period) (n int, periods[3] Period) {
+	intersectN, is := a.Intersect(b)
+	SubN, ss := a.Sub(b)
 	n = intersectN + SubN
-
-	if n == 1 {
-		return 1, a, EmptyPeriod, EmptyPeriod
+	for i:=0;i<intersectN;i++{
+		periods[i]=is[i]
 	}
-
-	if intersectN == 1 {
-		return n, i1, s1, s2
-	} else {
-		return n, i1, i2, s1
+	for i:=0;i<SubN;i++{
+		periods[intersectN+i] = ss[i]
 	}
+	return n,periods
 }
 
 //put angle in degs in [0;360) range

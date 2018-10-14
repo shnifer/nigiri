@@ -7,7 +7,6 @@ import (
 	"github.com/hajimehoshi/ebiten"
 	"golang.org/x/image/colornames"
 	"github.com/shnifer/nigiri/samples/ew"
-	"github.com/shnifer/nigiri/vec2/angle"
 )
 
 type SolidObject struct {
@@ -34,6 +33,10 @@ type Cloud struct{
 	ew.Circle
 	Density float64
 	*nigiri.Sprite
+}
+
+func (c *Cloud) Types() (isObstacle, isTarget, isBlocker bool) {
+	return true, false, false
 }
 
 func (c *Cloud) HorizonCircle() ew.Circle {
@@ -82,7 +85,7 @@ func NewLight() *Light{
 
 func (l *Light) SetPosition(pos vec2.V2){
 	l.LightEmitter.Center = pos
-	l.Horizon.SetPointZoneDist(pos, angle.FullPeriod, 0)
+	l.Horizon.Point = pos
 }
 
 
@@ -90,7 +93,7 @@ type ViewSectorDrawer struct {
 	*nigiri.TriDrawer
 	Color color.Color
 	Point vec2.V2
-	Target ew.HorizonObjectPart
+	Target ew.ObjectData
 }
 
 func NewViewSectorDrawer(layer nigiri.Layer, vTransformer nigiri.VTransformer) *ViewSectorDrawer{
@@ -105,7 +108,7 @@ func (d *ViewSectorDrawer) GetVerticesIndices() ([]ebiten.Vertex, []uint16) {
 	i:=make([]uint16,0)
 	v = append(v, nigiri.VertexColor(d.Point, alpha(color.White, 0.7)))
 	for i:=0;i<3;i++{
-		dir:= d.Target.Angles.MedPart(float64(i)/2)
+		dir:= d.Target.Area.Period.MedPart(float64(i)/2)
 		pt:= d.Point.Add(vec2.InDir(dir).Mul(d.Target.Dist))
 		var clr color.Color
 		clr = color.White

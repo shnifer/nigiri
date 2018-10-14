@@ -31,6 +31,8 @@ func runCalc(b *testing.B, count int, objectSize, areaRadius, zoneHeight float64
 	for i:=0;i<b.N; i++{
 		horizon.Point = ang[i%100]
 		horizon.CalculateTargets(HorizonObjects, HorizonObjects, nil)
+		res:=horizon.GetResults(HorizonObjects,nil, nil)
+		_=res
 	}
 }
 

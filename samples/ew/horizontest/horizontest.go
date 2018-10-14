@@ -31,8 +31,14 @@ func mainLoopUpdate(dt float64){
 	for _, v := range SolidObjects {
 		v.Update(dt)
 	}
+	speed:=0.0
+	if ebiten.IsKeyPressed(ebiten.Key1) {
+		speed+= 30
+	} else if ebiten.IsKeyPressed(ebiten.Key2){
+		speed-= 30
+	}
 	for _, l:=range Lights{
-		l.SetPosition(l.Center.Rotate(10*dt))
+		l.SetPosition(l.Center.Rotate(speed*dt))
 	}
 }
 
@@ -55,7 +61,8 @@ func mainLoop(win *ebiten.Image, dt float64) error {
 		Q.Add(v)
 	}
 	for _,light:=range Lights {
-		hRes := light.Calculate(HorizonSolid, nil, HorizonSolid, nil)
+		light.CalculateTargets(HorizonSolid, HorizonSolid, nil)
+		hRes := light.GetResults(HorizonSolid, HorizonObstacles, nil)
 		for _, rec := range hRes {
 			ViewSector.Point = light.Center
 			ViewSector.Target = rec.Target
@@ -108,7 +115,7 @@ func main() {
 	colornames.Cyan, colornames.Blue, colornames.Purple}
 	ViewSector = NewViewSectorDrawer(-1,C)
 	lightCount := len(colors)
-//	lightCount = 3
+	lightCount = 3
 	for i:=0;i<lightCount;i++ {
 		light := NewLight()
 		light.Color = colors[i]
