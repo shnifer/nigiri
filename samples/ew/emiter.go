@@ -2,6 +2,7 @@ package ew
 
 import (
 	"github.com/shnifer/nigiri/vec2/angle"
+	"github.com/shnifer/nigiri/samples/ew/vista"
 )
 
 type EmiType int
@@ -20,18 +21,13 @@ type EmitData struct {
 	Signature string
 }
 
-type HorizonObject interface {
-	HorizonCircle() Circle
-	Types() (isObstacle, isTarget, isBlocker bool)
-}
-
 type Emitter interface {
-	HorizonObject
+	vista.Object
 	Emits(dir float64) []EmitData
 }
 
 type LightEmitter struct {
-	Circle
+	vista.Circle
 	Signature string
 	MaxPower  float64
 	Dir       float64
@@ -48,7 +44,7 @@ func NewLightEmitter(maxPower float64, powerK [EmiDirCount]float64, signature st
 	return res
 }
 
-func (l *LightEmitter) HorizonCircle() Circle {
+func (l *LightEmitter) HorizonCircle() vista.Circle {
 	return l.Circle
 }
 

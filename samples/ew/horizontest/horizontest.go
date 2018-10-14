@@ -12,7 +12,7 @@ import (
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"fmt"
 	"log"
-	"github.com/shnifer/nigiri/samples/ew"
+	"github.com/shnifer/nigiri/samples/ew/vista"
 )
 
 var Q *nigiri.Queue
@@ -23,7 +23,7 @@ var ViewSector *ViewSectorDrawer
 var Lights []*Light
 var SolidObjects []*SolidObject
 var Clouds []*Cloud
-var HorizonObjects []ew.HorizonObject
+var HorizonObjects []vista.Object
 
 func mainLoopUpdate(dt float64){
 	C.Update(dt)
@@ -91,16 +91,16 @@ func main() {
 
 
 	for i:=0; i<20; i++{
-		circle:=ew.Circle{Center: vec2.RandomInCircle(800), Radius: rand.Float64()*50+10}
+		circle:=vista.Circle{Center: vec2.RandomInCircle(800), Radius: rand.Float64()*50+10}
 		SolidObjects = append(SolidObjects, NewSolidObject(circle))
 	}
 
 	for i:=0; i<0; i++{
-		circle:=ew.Circle{Center: vec2.RandomInCircle(800), Radius: rand.Float64()*50+10}
+		circle:=vista.Circle{Center: vec2.RandomInCircle(800), Radius: rand.Float64()*50+10}
 		Clouds = append(Clouds, NewCloud(circle, 1))
 	}
 
-	HorizonObjects = make([]ew.HorizonObject, 0)
+	HorizonObjects = make([]vista.Object, 0)
 	for i := 0; i < len(SolidObjects); i++ {
 		HorizonObjects = append(HorizonObjects, SolidObjects[i])
 	}
@@ -112,7 +112,7 @@ func main() {
 	colornames.Cyan, colornames.Blue, colornames.Purple}
 	ViewSector = NewViewSectorDrawer(-1,C)
 	lightCount := len(colors)
-	lightCount = 3
+	lightCount = 7
 	for i:=0;i<lightCount;i++ {
 		light := NewLight()
 		light.Color = colors[i]

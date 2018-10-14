@@ -1,26 +1,28 @@
 package ew
 
+import "github.com/shnifer/nigiri/samples/ew/vista"
+
 type Diffuser interface {
-	HorizonObject
+	vista.Object
 	DiffuserAlbedo(t EmiType) float64
 }
 
 type Shadower interface {
-	HorizonObject
+	vista.Object
 	ShadowDensity(t EmiType) (density float64)
 	ShadowBlock() bool
 }
 
 type DiffShadowBody struct {
-	Circle
+	vista.Circle
 	Albedo float64
 }
 
-func (d DiffShadowBody) Types() (isObstacle, isTarget, isBlocker bool) {
+func (d DiffShadowBody) VistaTypes() (isObstacle, isTarget, isBlocker bool) {
 	return false, true, true
 }
 
-func (d DiffShadowBody) HorizonCircle() Circle {
+func (d DiffShadowBody) VistaCircle() vista.Circle {
 	return d.Circle
 }
 func (d DiffShadowBody) ShadowDensity(t EmiType) (density float64) {

@@ -7,6 +7,7 @@ import (
 	"github.com/hajimehoshi/ebiten"
 	"golang.org/x/image/colornames"
 	"github.com/shnifer/nigiri/samples/ew"
+	"github.com/shnifer/nigiri/samples/ew/vista"
 )
 
 type SolidObject struct {
@@ -14,7 +15,7 @@ type SolidObject struct {
 	*nigiri.Sprite
 }
 
-func NewSolidObject(circle ew.Circle) *SolidObject {
+func NewSolidObject(circle vista.Circle) *SolidObject {
 	Sprite := nigiri.NewSprite(nigiri.CircleTex(), 0, C.Phys())
 	Sprite.Pivot = vec2.Center
 	Sprite.SetSmooth(false)
@@ -30,16 +31,16 @@ func NewSolidObject(circle ew.Circle) *SolidObject {
 }
 
 type Cloud struct{
-	ew.Circle
+	vista.Circle
 	Density float64
 	*nigiri.Sprite
 }
 
-func (c *Cloud) Types() (isObstacle, isTarget, isBlocker bool) {
+func (c *Cloud) VistaTypes() (isObstacle, isTarget, isBlocker bool) {
 	return true, false, false
 }
 
-func (c *Cloud) HorizonCircle() ew.Circle {
+func (c *Cloud) VistaCircle() vista.Circle {
 	return c.Circle
 }
 
@@ -51,7 +52,7 @@ func (c *Cloud) ShadowBlock() bool {
 	return false
 }
 
-func NewCloud(circle ew.Circle, density float64) *Cloud{
+func NewCloud(circle vista.Circle, density float64) *Cloud{
 	sprite := nigiri.NewSprite(nigiri.CircleTex(), 0, C.Phys())
 	sprite.Pivot = vec2.Center
 	sprite.SetSmooth(false)
@@ -68,7 +69,7 @@ func NewCloud(circle ew.Circle, density float64) *Cloud{
 
 type Light struct{
 	*ew.LightEmitter
-	*ew.Horizon
+	*vista.Vista
 	Color color.Color
 }
 func NewLight() *Light{
@@ -78,14 +79,14 @@ func NewLight() *Light{
 	}
 	res := &Light{
 		LightEmitter: ew.NewLightEmitter(1, k, ""),
-		Horizon: ew.NewHorizon(),
+		Vista: vista.New(),
 	}
 	return res
 }
 
 func (l *Light) SetPosition(pos vec2.V2){
 	l.LightEmitter.Center = pos
-	l.Horizon.Point = pos
+	l.Vista.Point = pos
 }
 
 
@@ -93,7 +94,7 @@ type ViewSectorDrawer struct {
 	*nigiri.TriDrawer
 	Color color.Color
 	Point vec2.V2
-	Target ew.ObjectData
+	Target vista.ObjectData
 }
 
 func NewViewSectorDrawer(layer nigiri.Layer, vTransformer nigiri.VTransformer) *ViewSectorDrawer{
