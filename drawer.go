@@ -105,6 +105,9 @@ func (id *Drawer) DrawReqs(Q *Queue) {
 	}
 
 	srcRect, uid := id.Src.GetSrcRectUID()
+	if srcRect == nil{
+		return
+	}
 	w, h := float64(srcRect.Dx()), float64(srcRect.Dy())
 	id.r = id.calcRect(srcRect)
 	if id.skipClipped(id.r) {

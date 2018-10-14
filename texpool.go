@@ -145,6 +145,10 @@ func (pool *texPool) GetPoolTex(w, h int) Tex {
 }
 
 func (pool *texPool) PutPoolTex(tex Tex) {
+	if tex.image == nil{
+		return
+	}
+
 	pool.Lock()
 	defer pool.Unlock()
 
@@ -193,11 +197,13 @@ func (pool *texPool) checkShrink() {
 	toShrink := l - used + pool.shrinkReserve
 	for i := len(pool.p) - 1; i >= 0 && toShrink > 0; i-- {
 		if !pool.p[i].usedInCycle {
+			log.Println("temp pool shrinking [1]...")
 			pool.removeElement(i)
 			toShrink--
 		}
 	}
 	for ; len(pool.p) > 0 && toShrink > 0; toShrink-- {
+		log.Println("temp pool shrinking [2]...")
 		pool.removeElement(0)
 	}
 	//@@@

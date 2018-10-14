@@ -13,12 +13,13 @@ import (
 	"fmt"
 	"log"
 	"github.com/shnifer/nigiri/samples/ew/vista"
+	"github.com/shnifer/nigiri/samples/ew/vista/vistautils"
 )
 
 var Q *nigiri.Queue
 var C MyCam
 var L nigiri.Line
-var ViewSector *ViewSectorDrawer
+var ViewSector *vistautils.ViewSectorDrawer
 
 var Lights []*Light
 var SolidObjects []*SolidObject
@@ -110,7 +111,7 @@ func main() {
 
 	colors:=[...]color.Color{colornames.Red, colornames.Orange, colornames.Yellow, colornames.Green,
 	colornames.Cyan, colornames.Blue, colornames.Purple}
-	ViewSector = NewViewSectorDrawer(-1,C)
+	ViewSector = vistautils.NewViewSectorDrawer(-1,C)
 	lightCount := len(colors)
 	lightCount = 7
 	for i:=0;i<lightCount;i++ {

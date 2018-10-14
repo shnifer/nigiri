@@ -139,9 +139,8 @@ func (ts *TextSrc) recalc() {
 	*ts.rect = ts.rect.Sub(ts.rect.Min)
 
 	if ts.permanentTex {
-		if ts.permTex.image != nil {
-			PutPoolTex(ts.permTex)
-		}
+		PutPoolTex(ts.permTex)
+
 		w, h := ts.rect.Dx(), ts.rect.Dy()
 		if w == 0 || h == 0 {
 			ts.permTex = Tex{}
