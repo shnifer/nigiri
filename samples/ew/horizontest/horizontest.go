@@ -22,9 +22,8 @@ var ViewSector *ViewSectorDrawer
 
 var Lights []*Light
 var SolidObjects []*SolidObject
-var HorizonSolid []ew.HorizonObject
 var Clouds []*Cloud
-var HorizonObstacles []ew.HorizonObject
+var HorizonObjects []ew.HorizonObject
 
 func mainLoopUpdate(dt float64){
 	C.Update(dt)
@@ -61,8 +60,7 @@ func mainLoop(win *ebiten.Image, dt float64) error {
 		Q.Add(v)
 	}
 	for _,light:=range Lights {
-		light.CalculateTargets(HorizonSolid, HorizonSolid, nil)
-		hRes := light.GetResults(HorizonSolid, HorizonObstacles, nil)
+		hRes := light.Calculate(HorizonObjects, nil)
 		for _, rec := range hRes {
 			ViewSector.Point = light.Center
 			ViewSector.Target = rec.Target
@@ -102,13 +100,12 @@ func main() {
 		Clouds = append(Clouds, NewCloud(circle, 1))
 	}
 
-	HorizonSolid = make([]ew.HorizonObject, len(SolidObjects))
+	HorizonObjects = make([]ew.HorizonObject, 0)
 	for i := 0; i < len(SolidObjects); i++ {
-		HorizonSolid[i] = SolidObjects[i]
+		HorizonObjects = append(HorizonObjects, SolidObjects[i])
 	}
-	HorizonObstacles = make([]ew.HorizonObject, len(Clouds))
 	for i := 0; i < len(Clouds); i++ {
-		HorizonObstacles[i] = Clouds[i]
+		HorizonObjects = append(HorizonObjects, Clouds[i])
 	}
 
 	colors:=[...]color.Color{colornames.Red, colornames.Orange, colornames.Yellow, colornames.Green,
