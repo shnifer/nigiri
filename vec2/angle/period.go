@@ -35,6 +35,9 @@ func (a Period) Start() float64 {
 	return a.start
 }
 func (a Period) End() float64 {
+	if a.isFull{
+		return 360
+	}
 	return a.end
 }
 func (a Period) Wide() float64 {

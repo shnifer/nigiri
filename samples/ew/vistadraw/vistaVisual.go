@@ -9,6 +9,7 @@ import (
 	"image/color"
 	"math"
 	"github.com/shnifer/nigiri/vec2"
+	"github.com/shnifer/nigiri/samples/ew/vista/vistautils"
 )
 
 type VistaResultsSprite struct{
@@ -30,17 +31,31 @@ func NewVistaResultsSprite(scaleW, scaleH, maxH float64, layer nigiri.Layer, cam
 }
 
 func (v *VistaResultsSprite) Take(res []vista.Result){
+	var (
+		colorTarget = colornames.White
+		colorBlock = colornames.Black
+		colorObstacle = vistautils.Alpha(colornames.Yellow,0.5)
+	)
+
 	image:=v.Tex.GetSrcImage()
 	image.Fill(colornames.Gray)
+	Q:=nigiri.NewQueue()
 
 	for _,rec:=range res{
-		v.drawArea(image, rec.Target.Area, colornames.White)
+		v.drawArea(image, rec.Target.Area, colorTarget)
+	}
+	for _,rec:=range res {
+		for _, obs := range rec.Obstacles {
+			v.drawArea(image, obs.Area, colorObstacle)
+		}
 	}
 	for _,rec:=range res {
 		for _, block := range rec.Blockers {
-			v.drawArea(image, block.Area, colornames.Black)
+			v.drawArea(image, block.Area, colorBlock)
 		}
 	}
+
+	Q.Run(image)
 }
 
 func (v *VistaResultsSprite) drawArea(image *ebiten.Image, a area.Area, clr color.Color) {

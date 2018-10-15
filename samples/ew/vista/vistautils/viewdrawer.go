@@ -25,7 +25,7 @@ func NewViewSectorDrawer(layer nigiri.Layer, vTransformer nigiri.VTransformer) *
 func (d *ViewSectorDrawer) GetVerticesIndices() ([]ebiten.Vertex, []uint16) {
 	v:=make([]ebiten.Vertex,0)
 	i:=make([]uint16,0)
-	v = append(v, nigiri.VertexColor(d.Point, alpha(color.White, 0.7)))
+	v = append(v, nigiri.VertexColor(d.Point, Alpha(color.White, 0.7)))
 	for i:=0;i<3;i++{
 		dir:= d.Target.Area.Period.MedPart(float64(i)/2)
 		pt:= d.Point.Add(vec2.InDir(dir).Mul(d.Target.Dist))
@@ -33,8 +33,10 @@ func (d *ViewSectorDrawer) GetVerticesIndices() ([]ebiten.Vertex, []uint16) {
 		clr = color.White
 		if i==1 && d.Color!=nil{
 			clr = d.Color
+			clr = Alpha(clr, 0.7)
+		} else {
+			clr = Alpha(clr, 0.4)
 		}
-		clr = alpha(clr, 0.4)
 		v = append(v, nigiri.VertexColor(pt, clr))
 	}
 	for m := 1; m+1 < len(v); m++ {
@@ -43,7 +45,7 @@ func (d *ViewSectorDrawer) GetVerticesIndices() ([]ebiten.Vertex, []uint16) {
 	return v, i
 }
 
-func alpha(clr color.Color, alpha float64) color.Color{
+func Alpha(clr color.Color, alpha float64) color.Color{
 	r,g,b,a:=clr.RGBA()
 	return color.RGBA64{
 		R:uint16(float64(r)*alpha),
