@@ -1,4 +1,4 @@
-package area
+package vista
 
 import "github.com/shnifer/nigiri/vec2/angle"
 
@@ -10,7 +10,7 @@ type Area struct {
 	Height float64
 }
 
-func New(period angle.Period, height float64) Area{
+func NewArea(period angle.Period, height float64) Area{
 	if height>180{
 		height = 180
 	} else if height<0{

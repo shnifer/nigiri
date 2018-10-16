@@ -78,14 +78,14 @@ func NewLight() *Light{
 	}
 	res := &Light{
 		LightEmitter: ew.NewLightEmitter(1, k, ""),
-		Vista: vista.New(),
+		Vista: vista.NewArea(),
 	}
 	return res
 }
 
 func (l *Light) SetPosition(pos vec2.V2){
 	l.LightEmitter.Center = pos
-	l.Vista.Point = pos
+	l.Vista.Position = pos
 }
 
 

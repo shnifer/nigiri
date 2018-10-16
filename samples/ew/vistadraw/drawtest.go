@@ -26,8 +26,8 @@ func mainLoop(win *ebiten.Image, dt float64) error {
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		x, y := ebiten.CursorPosition()
 		point := C.UnApplyPoint(vec2.V(float64(x), float64(y)))
-		Vista.Point = point
-		ViewDrawer.Point = Vista.Point
+		Vista.Position = point
+		ViewDrawer.Point = Vista.Position
 	}
 
 	if ebiten.IsRunningSlowly() {
@@ -59,9 +59,8 @@ func main() {
 	ViewDrawer = vistautils.NewViewSectorDrawer(-1,C)
 	ViewDrawer.Color = colornames.Yellow
 
-	ResSprite = NewVistaResultsSprite(2,10, 20, 2, C)
-	ResSprite.Pivot = vec2.BotLeft
-	ResSprite.Position = vec2.V(40,760)
+	ResSprite = NewVistaResultsSprite(2,2, 20, 2, C)
+	ResSprite.Position = vec2.V(40,40)
 	ResSprite.SetAlpha(0.8)
 
 	SolidObjects = make([]*SolidObject,0)

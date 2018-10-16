@@ -1,7 +1,6 @@
 package vista
 
 import (
-	"github.com/shnifer/nigiri/samples/ew/area"
 	"github.com/shnifer/nigiri/vec2"
 	"github.com/shnifer/nigiri/vec2/angle"
 	"sort"
@@ -15,7 +14,7 @@ type Object interface {
 type ObjectData struct {
 	Object Object
 	Dist   float64
-	Area   area.Area
+	Area   Area
 }
 
 type Result struct {
@@ -25,11 +24,15 @@ type Result struct {
 	MainPeriod angle.Period
 }
 
+type SightCone struct{
+	Position vec2.V2
+	Zone Area
+	MaxDist float64
+}
+
 type Vista struct {
 	//current source position
-	Point   vec2.V2
-	Zone    area.Area
-	MaxDist float64
+	SightCone
 
 	//temporary arrays
 	circleData []circleDat
@@ -49,7 +52,9 @@ type circleDat struct {
 
 func New() *Vista {
 	return &Vista{
-		Zone:           area.New(angle.FullPeriod, 180),
+		SightCone: SightCone{
+			Zone: NewArea(angle.FullPeriod, 180),
+		},
 		blockAreas:     make([]ObjectData, 0),
 		targetAreas:    make([]ObjectData, 0),
 		blocksOnTarget: make([][]ObjectData, 0),
@@ -81,7 +86,7 @@ func (h *Vista) Calculate(objects []Object, ignoreSelf Object) []Result {
 		if h.circleData[ind].dist != 0 {
 			dist, angles = h.circleData[ind].dist, h.circleData[ind].period
 		} else {
-			dist, angles = circle.FromPoint(h.Point)
+			dist, angles = circle.FromPoint(h.Position)
 			h.circleData[ind].dist = dist
 			h.circleData[ind].period = angles
 		}
@@ -106,7 +111,7 @@ func (h *Vista) Calculate(objects []Object, ignoreSelf Object) []Result {
 			height = h.Zone.Height
 		}
 		if h.Zone.IsIntersect(angles) {
-			addObjIntoArr(&h.blockAreas, blocker, dist, area.New(angles, height))
+			addObjIntoArr(&h.blockAreas, blocker, dist, NewArea(angles, height))
 		}
 	}
 	sort.Sort(byDist(h.blockAreas))
@@ -115,7 +120,7 @@ func (h *Vista) Calculate(objects []Object, ignoreSelf Object) []Result {
 	h.targetAreas = h.targetAreas[:0]
 	h.blocksOnTarget = h.blocksOnTarget[:0]
 	blocksOver := make([]ObjectData, 0, 20)
-	parts := make([]area.Area, 0)
+	parts := make([]Area, 0)
 	mainLoop:
 	for ind, target := range objects {
 		if !h.circleData[ind].target {
@@ -137,7 +142,7 @@ func (h *Vista) Calculate(objects []Object, ignoreSelf Object) []Result {
 		if !h.Zone.IsIntersect(angles) {
 			continue
 		}
-		targetArea := area.New(angles, height)
+		targetArea := NewArea(angles, height)
 		blocksOver = blocksOver[:0]
 		for i := range h.blockAreas {
 			if h.blockAreas[i].Dist >= dist {
@@ -217,7 +222,7 @@ func (h *Vista) Calculate(objects []Object, ignoreSelf Object) []Result {
 			height = h.Zone.Height
 		}
 		if h.Zone.IsIntersect(angles) {
-			addObjIntoArr(&h.obstacleAreas, obstacle, dist, area.New(angles, height))
+			addObjIntoArr(&h.obstacleAreas, obstacle, dist, NewArea(angles, height))
 		}
 	}
 	sort.Sort(byDist(h.obstacleAreas))
@@ -271,7 +276,7 @@ func (h *Vista) sortBlockAreas(i, j int) bool {
 	return h.blockAreas[i].Dist < h.blockAreas[j].Dist
 }
 
-func addObjIntoArr(arr *[]ObjectData, obj Object, dist float64, area area.Area) {
+func addObjIntoArr(arr *[]ObjectData, obj Object, dist float64, area Area) {
 	*arr = append(*arr, ObjectData{
 		Object: obj,
 		Dist:   dist,

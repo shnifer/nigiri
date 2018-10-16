@@ -4,7 +4,6 @@ import (
 	"github.com/shnifer/nigiri"
 	"github.com/shnifer/nigiri/samples/ew/vista"
 	"golang.org/x/image/colornames"
-	"github.com/shnifer/nigiri/samples/ew/area"
 	"github.com/hajimehoshi/ebiten"
 	"image/color"
 	"math"
@@ -58,7 +57,7 @@ func (v *VistaResultsSprite) Take(res []vista.Result){
 	Q.Run(image)
 }
 
-func (v *VistaResultsSprite) drawArea(image *ebiten.Image, a area.Area, clr color.Color) {
+func (v *VistaResultsSprite) drawArea(image *ebiten.Image, a vista.Area, clr color.Color) {
 	height:=math.Min(a.Height, v.maxH) * v.scaleH
 	drawRect:=func(a1,a2 float64) {
 		w:=(a2-a1)*v.scaleW
