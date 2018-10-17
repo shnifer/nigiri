@@ -27,7 +27,7 @@ func NewWorld() *World{
 		objects: make([]Object,0),
 		emitters: make([]Emitter,0),
 		watchers: make([]Watcher,0),
-		vistas: make([]Vista,0),
+		vistas: make([]*Vista,0),
 		exists: make(map[interface{}]struct{}),
 	}
 }
