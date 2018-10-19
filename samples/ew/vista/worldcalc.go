@@ -22,7 +22,7 @@ func (w *World) Calculate(){
 	wg:=&sync.WaitGroup{}
 	for i:=0; i<vInd; i++{
 		wg.Add(1)
-		func (i int) {
+		go func (i int) {
 			defer wg.Done()
 			w.vistas[i].Calculate(w.objects)
 		}(i)

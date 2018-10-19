@@ -74,8 +74,7 @@ func (h *Vista) Calculate(objects []Object) {
 		rec          Result
 	)
 
-	h.ClearTempSlices()
-
+	h.ClearTempSlices(true)
 	h.circleData = h.circleData[:0]
 	for i := range objects {
 		o, t, b := objects[i].VistaTypes()
@@ -268,6 +267,7 @@ partLoop:
 		}
 		h.result = append(h.result, rec)
 	}
+	h.ClearTempSlices(false)
 }
 
 func (h *Vista) Result()[]Result{
@@ -297,7 +297,7 @@ func (o byDist) Swap(i, j int) {
 func (o byDist) Less(i, j int) bool {
 	return o[i].Dist < o[j].Dist
 }
-func (h *Vista) ClearTempSlices(){
+func (h *Vista) ClearTempSlices(resultsToo bool){
 	for i:=0; i<len(h.blockAreas); i++{
 		h.blockAreas[i].Object = nil
 	}
@@ -310,14 +310,17 @@ func (h *Vista) ClearTempSlices(){
 	for i:=0; i<len(h.obstacleAreas); i++{
 		h.obstacleAreas[i].Object = nil
 	}
-	for i:=0; i<len(h.result); i++{
-		h.result[i].Target.Object = nil
-		h.result[i].Obstacles = nil
-		h.result[i].Blockers = nil
-	}
 	h.blockAreas = h.blockAreas[:0]
 	h.targetAreas = h.targetAreas[:0]
 	h.blocksOnTarget = h.blocksOnTarget[:0]
 	h.obstacleAreas = h.obstacleAreas[:0]
-	h.result = h.result[:0]
+
+	if resultsToo {
+		for i:=0; i<len(h.result); i++{
+			h.result[i].Target.Object = nil
+			h.result[i].Obstacles = nil
+			h.result[i].Blockers = nil
+		}
+		h.result = h.result[:0]
+	}
 }

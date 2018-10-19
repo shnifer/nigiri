@@ -93,7 +93,8 @@ func (w *World) delEmitter(emi Emitter){
 			w.emitters = w.emitters[:l-1]
 		}
 	}
-	w.vistas[len(w.vistas)-1].ClearTempSlices()
+	w.vistas[len(w.vistas)-1].ClearTempSlices(true)
+	w.vistas[len(w.vistas)-1].IgnoreSelf = nil
 	w.vistas = w.vistas[:l-1]
 }
 
@@ -110,7 +111,8 @@ func (w *World) delWatcher(wch Watcher){
 			w.watchers = w.watchers[:l-1]
 		}
 	}
-	w.vistas[len(w.vistas)-1].ClearTempSlices()
+	w.vistas[len(w.vistas)-1].ClearTempSlices(true)
+	w.vistas[len(w.vistas)-1].IgnoreSelf = nil
 	w.vistas = w.vistas[:l-1]
 }
 
