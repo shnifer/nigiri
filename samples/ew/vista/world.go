@@ -82,6 +82,7 @@ func (w *World) delObject(obj Object){
 
 func (w*World) addEmitter(emi Emitter){
 	w.emitters = append(w.emitters, emi)
+	w.vistas = append(w.vistas, New())
 }
 
 func (w *World) delEmitter(emi Emitter){
@@ -92,6 +93,8 @@ func (w *World) delEmitter(emi Emitter){
 			w.emitters = w.emitters[:l-1]
 		}
 	}
+	w.vistas[len(w.vistas)-1].ClearTempSlices()
+	w.vistas = w.vistas[:l-1]
 }
 
 func (w*World) addWatcher(wch Watcher){
@@ -107,5 +110,13 @@ func (w *World) delWatcher(wch Watcher){
 			w.watchers = w.watchers[:l-1]
 		}
 	}
+	w.vistas[len(w.vistas)-1].ClearTempSlices()
 	w.vistas = w.vistas[:l-1]
 }
+
+func (w *World) isObjEmitter(obj Object) bool{
+	_,ok:=obj.(Emitter)
+	return ok
+}
+
+//todo: better vistasCount and clear management

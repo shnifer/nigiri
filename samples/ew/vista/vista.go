@@ -33,6 +33,7 @@ type SightCone struct{
 type Vista struct {
 	//current source position
 	SightCone
+	IgnoreSelf Object
 
 	//temporary arrays
 	circleData []circleDat
@@ -65,13 +66,16 @@ func New() *Vista {
 	}
 }
 
-func (h *Vista) Calculate(objects []Object, ignoreSelf Object) {
+func (h *Vista) Calculate(objects []Object) {
 	var (
 		circle       Circle
 		height, dist float64
 		angles       angle.Period
 		rec          Result
 	)
+
+	h.ClearTempSlices()
+
 	h.circleData = h.circleData[:0]
 	for i := range objects {
 		o, t, b := objects[i].VistaTypes()
@@ -92,15 +96,14 @@ func (h *Vista) Calculate(objects []Object, ignoreSelf Object) {
 		}
 	}
 
-	h.clearTempSlices()
-
 	for ind, blocker := range objects {
 		if !h.circleData[ind].block {
 			continue
 		}
-		if blocker == ignoreSelf {
+		if blocker == h.IgnoreSelf{
 			continue
 		}
+
 		circle = blocker.VistaCircle()
 		getCircleData(ind)
 
@@ -125,7 +128,7 @@ mainLoop:
 		if !h.circleData[ind].target {
 			continue
 		}
-		if target == ignoreSelf {
+		if target == h.IgnoreSelf {
 			continue
 		}
 		circle = target.VistaCircle()
@@ -206,7 +209,7 @@ mainLoop:
 		if !h.circleData[ind].obstacle {
 			continue
 		}
-		if obstacle == ignoreSelf {
+		if obstacle == h.IgnoreSelf {
 			continue
 		}
 		circle = obstacle.VistaCircle()
@@ -294,7 +297,7 @@ func (o byDist) Swap(i, j int) {
 func (o byDist) Less(i, j int) bool {
 	return o[i].Dist < o[j].Dist
 }
-func (h *Vista) clearTempSlices(){
+func (h *Vista) ClearTempSlices(){
 	for i:=0; i<len(h.blockAreas); i++{
 		h.blockAreas[i].Object = nil
 	}

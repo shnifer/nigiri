@@ -57,7 +57,7 @@ func runCalc(b *testing.B, count int, objectSize, areaRadius, zoneHeight float64
 	b.ResetTimer()
 	for i:=0;i<b.N; i++{
 		horizon.Position = ang[i%100]
-		horizon.Calculate(HorizonObjects,  nil)
+		horizon.Calculate(HorizonObjects)
 		res := horizon.Result()
 		_=res
 	}
