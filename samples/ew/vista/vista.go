@@ -65,7 +65,7 @@ func New() *Vista {
 	}
 }
 
-func (h *Vista) Calculate(objects []Object, ignoreSelf Object) []Result {
+func (h *Vista) Calculate(objects []Object, ignoreSelf Object) {
 	var (
 		circle       Circle
 		height, dist float64
@@ -82,7 +82,7 @@ func (h *Vista) Calculate(objects []Object, ignoreSelf Object) []Result {
 		})
 	}
 
-	getCircleData:=func(ind int){
+	getCircleData := func(ind int) {
 		if h.circleData[ind].dist != 0 {
 			dist, angles = h.circleData[ind].dist, h.circleData[ind].period
 		} else {
@@ -92,7 +92,8 @@ func (h *Vista) Calculate(objects []Object, ignoreSelf Object) []Result {
 		}
 	}
 
-	h.blockAreas = h.blockAreas[:0]
+	h.clearTempSlices()
+
 	for ind, blocker := range objects {
 		if !h.circleData[ind].block {
 			continue
@@ -116,12 +117,10 @@ func (h *Vista) Calculate(objects []Object, ignoreSelf Object) []Result {
 	}
 	sort.Sort(byDist(h.blockAreas))
 
-	h.targetMainPeriods=h.targetMainPeriods[:0]
-	h.targetAreas = h.targetAreas[:0]
-	h.blocksOnTarget = h.blocksOnTarget[:0]
+	h.targetMainPeriods = h.targetMainPeriods[:0]
 	blocksOver := make([]ObjectData, 0, 20)
 	parts := make([]Area, 0)
-	mainLoop:
+mainLoop:
 	for ind, target := range objects {
 		if !h.circleData[ind].target {
 			continue
@@ -203,7 +202,6 @@ func (h *Vista) Calculate(objects []Object, ignoreSelf Object) []Result {
 		}
 	}
 
-	h.obstacleAreas = h.obstacleAreas[:0]
 	for ind, obstacle := range objects {
 		if !h.circleData[ind].obstacle {
 			continue
@@ -227,14 +225,13 @@ func (h *Vista) Calculate(objects []Object, ignoreSelf Object) []Result {
 	}
 	sort.Sort(byDist(h.obstacleAreas))
 
-	h.result = h.result[:0]
-	partLoop:
+partLoop:
 	for ind, targetData := range h.targetAreas {
 		blockers := h.blocksOnTarget[ind]
 		partArea := targetData.Area
 
 		var blocksOver []ObjectData
-		for _,block := range blockers {
+		for _, block := range blockers {
 			if block.Area.IsIntersect(partArea.Period) {
 				if block.Area.Contains(partArea) {
 					continue partLoop
@@ -244,7 +241,7 @@ func (h *Vista) Calculate(objects []Object, ignoreSelf Object) []Result {
 		}
 
 		var obsOver []ObjectData
-		obsLoop:
+	obsLoop:
 		for i := range h.obstacleAreas {
 			if h.obstacleAreas[i].Dist >= targetData.Dist {
 				break
@@ -268,7 +265,9 @@ func (h *Vista) Calculate(objects []Object, ignoreSelf Object) []Result {
 		}
 		h.result = append(h.result, rec)
 	}
+}
 
+func (h *Vista) Result()[]Result{
 	return h.result
 }
 
@@ -294,4 +293,28 @@ func (o byDist) Swap(i, j int) {
 }
 func (o byDist) Less(i, j int) bool {
 	return o[i].Dist < o[j].Dist
+}
+func (h *Vista) clearTempSlices(){
+	for i:=0; i<len(h.blockAreas); i++{
+		h.blockAreas[i].Object = nil
+	}
+	for i:=0; i<len(h.targetAreas); i++{
+		h.targetAreas[i].Object = nil
+	}
+	for i:=0; i<len(h.blocksOnTarget); i++{
+		h.blocksOnTarget[i] = nil
+	}
+	for i:=0; i<len(h.obstacleAreas); i++{
+		h.obstacleAreas[i].Object = nil
+	}
+	for i:=0; i<len(h.result); i++{
+		h.result[i].Target.Object = nil
+		h.result[i].Obstacles = nil
+		h.result[i].Blockers = nil
+	}
+	h.blockAreas = h.blockAreas[:0]
+	h.targetAreas = h.targetAreas[:0]
+	h.blocksOnTarget = h.blocksOnTarget[:0]
+	h.obstacleAreas = h.obstacleAreas[:0]
+	h.result = h.result[:0]
 }

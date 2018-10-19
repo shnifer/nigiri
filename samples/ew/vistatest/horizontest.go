@@ -61,7 +61,8 @@ func mainLoop(win *ebiten.Image, dt float64) error {
 		Q.Add(v)
 	}
 	for _,light:=range Lights {
-		hRes := light.Calculate(HorizonObjects, nil)
+		light.Calculate(HorizonObjects, nil)
+		hRes := light.Result()
 		for _, rec := range hRes {
 			ViewSector.Point = light.Center
 			ViewSector.Target = rec.Target

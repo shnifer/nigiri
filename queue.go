@@ -52,6 +52,9 @@ func (Q *Queue) Run(dest *ebiten.Image) {
 }
 
 func (Q *Queue) Clear() {
+	for i:=0;i<len(Q.reqs);i++{
+		Q.reqs[i].f = nil
+	}
 	Q.reqs = Q.reqs[:0]
 }
 

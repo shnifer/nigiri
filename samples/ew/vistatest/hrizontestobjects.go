@@ -78,7 +78,7 @@ func NewLight() *Light{
 	}
 	res := &Light{
 		LightEmitter: ew.NewLightEmitter(1, k, ""),
-		Vista: vista.NewArea(),
+		Vista: vista.New(),
 	}
 	return res
 }
