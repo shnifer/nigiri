@@ -10,6 +10,7 @@ import (
 	"golang.org/x/image/font"
 	"image"
 	"strconv"
+	"github.com/shnifer/prof"
 )
 
 var TD *nigiri.TextDrawer
@@ -66,8 +67,8 @@ func mainLoop(win *ebiten.Image, dt float64) error {
 }
 
 func main() {
-	nigiri.StartProfile("text")
-	defer nigiri.StopProfile("text")
+	prof.StartProfile("text")
+	defer prof.StopProfile("text")
 
 	Q = nigiri.NewQueue()
 

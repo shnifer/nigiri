@@ -8,6 +8,7 @@ import (
 	"github.com/shnifer/nigiri/vec2"
 	"golang.org/x/image/colornames"
 	"image"
+	"github.com/shnifer/prof"
 )
 
 var C *nigiri.Camera
@@ -69,8 +70,8 @@ func mainLoop(win *ebiten.Image, dt float64) error {
 }
 
 func main() {
-	nigiri.StartProfile("cam")
-	defer nigiri.StopProfile("cam")
+	prof.StartProfile("cam")
+	defer prof.StopProfile("cam")
 
 	Q = nigiri.NewQueue()
 	nigiri.SetTexLoader(nigiri.FileTexLoader("samples"))

@@ -9,6 +9,7 @@ import (
 	"golang.org/x/image/colornames"
 	"image"
 	"log"
+	"github.com/shnifer/prof"
 )
 
 var C MyCam
@@ -54,8 +55,8 @@ func mainLoop(win *ebiten.Image, dt float64) error {
 }
 
 func main() {
-	nigiri.StartProfile("gos")
-	defer nigiri.StopProfile("gos")
+	prof.StartProfile("gos")
+	defer prof.StopProfile("gos")
 
 	Q = nigiri.NewQueue()
 	nigiri.SetTexLoader(nigiri.FileTexLoader("samples"))

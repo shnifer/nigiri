@@ -8,12 +8,13 @@ import (
 	"github.com/shnifer/nigiri/vec2"
 	"golang.org/x/image/colornames"
 	"image"
+	"github.com/shnifer/prof"
 )
 
 var Q *nigiri.Queue
 var C *nigiri.Camera
 var Sector *nigiri.Sector
-var ClipRect nigiri.Sprite
+var ClipRect *nigiri.Sprite
 
 func mainLoop(win *ebiten.Image, dt float64) error {
 	if ebiten.IsKeyPressed(ebiten.KeyA) {
@@ -69,8 +70,8 @@ func mainLoop(win *ebiten.Image, dt float64) error {
 }
 
 func main() {
-	nigiri.StartProfile("sector")
-	defer nigiri.StopProfile("sector")
+	prof.StartProfile("sector")
+	defer prof.StopProfile("sector")
 
 	Q = nigiri.NewQueue()
 	C = nigiri.NewCamera()

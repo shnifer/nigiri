@@ -33,7 +33,7 @@ func mainLoop(win *ebiten.Image, dt float64) error {
 	if ebiten.IsRunningSlowly() {
 		return nil
 	}
-	Vista.Calculate(Objects, nil)
+	Vista.Calculate(Objects)
 	res:=Vista.Result()
 	ResSprite.Take(res)
 	Q.Clear()

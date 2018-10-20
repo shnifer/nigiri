@@ -14,6 +14,7 @@ import (
 	"log"
 	"github.com/shnifer/nigiri/samples/ew/vista"
 	"github.com/shnifer/nigiri/samples/ew/vista/vistautils"
+	"github.com/shnifer/prof"
 )
 
 var Q *nigiri.Queue
@@ -76,8 +77,8 @@ func mainLoop(win *ebiten.Image, dt float64) error {
 }
 
 func main() {
-	nigiri.StartProfile("ew")
-	defer nigiri.StopProfile("ew")
+	prof.StartProfile("ew")
+	defer prof.StopProfile("ew")
 
 	rand.Seed(3)
 	Q = nigiri.NewQueue()
