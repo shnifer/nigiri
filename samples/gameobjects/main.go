@@ -10,6 +10,8 @@ import (
 	"image"
 	"log"
 	"github.com/shnifer/prof"
+	"github.com/gobuffalo/packr"
+	"github.com/shnifer/nigiri/nigiriutil"
 )
 
 var C MyCam
@@ -59,8 +61,14 @@ func main() {
 	defer prof.StopProfile("gos")
 
 	Q = nigiri.NewQueue()
-	nigiri.SetTexLoader(nigiri.FileTexLoader("samples"))
-	nigiri.SetFaceLoader(nigiri.FileFaceLoader("samples"))
+	if !nigiri.IsJS {
+		nigiri.SetTexLoader(nigiri.FileTexLoader("samples"))
+		nigiri.SetFaceLoader(nigiri.FileFaceLoader("samples"))
+	} else {
+		box := packr.NewBox("res/")
+		nigiri.SetTexLoader(nigiriutil.PackrTexLoader(box, ""))
+		nigiri.SetFaceLoader(nigiriutil.PackrFaceLoader(box, ""))
+	}
 
 	C = MyCam{nigiri.NewCamera()}
 	C.SetCenter(vec2.V2{X: 500, Y: 350})

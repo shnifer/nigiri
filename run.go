@@ -12,6 +12,8 @@ type afterLooper interface {
 
 var afterLoopSubs []afterLooper
 
+var winW, winH int
+
 func Run(mainLoop func(win *ebiten.Image, dt float64) error, width, height int, scale float64, title string) error{
 	var last time.Time
 	var dt float64
@@ -34,7 +36,13 @@ func Run(mainLoop func(win *ebiten.Image, dt float64) error, width, height int, 
 	dt = 1.0 / 60
 	afterLoopSubs = append(afterLoopSubs, ttPool)
 
+	winW, winH = width, height
+
 	return ebiten.Run(nigiriLoop, width, height, scale, title)
+}
+
+func ScreenSize() (w,h int){
+	return winW, winH
 }
 
 func AddAfterLoopSub(sub afterLooper) error {
