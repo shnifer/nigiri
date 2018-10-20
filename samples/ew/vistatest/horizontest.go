@@ -123,6 +123,7 @@ func main() {
 		Lights = append(Lights, light)
 	}
 	ebiten.SetVsyncEnabled(false)
+	ebiten.SetFullscreen(true)
 	err:=nigiri.Run(mainLoop, 800, 800, 1, "TEST")
 	if err!=nil{
 		log.Println("ERROR: ",err)
