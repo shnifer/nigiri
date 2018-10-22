@@ -5,11 +5,22 @@ type World struct{
 	emitters []Emitter
 	watchers []Watcher
 	vistas []*Vista
+	results map[Watcher]WatchResult
 
 	exists map[interface{}]struct{}
 }
 
-type Spectre = string
+type WatchResult []WatchRec
+
+type WatchRec struct{
+
+}
+
+type Spectre string
+
+func (watch Spectre) Wants(emi Spectre) bool{
+	return true
+}
 
 type Emitter interface {
 	EmitterCone() SightCone

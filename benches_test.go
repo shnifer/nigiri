@@ -173,7 +173,7 @@ func BenchmarkSampleQueue(b *testing.B) {
 			S.Angle += 1
 			Q.Add(I2)
 		}
-		//	Q.Add(TD)
+		//	Q.Run(TD)
 		Q.Run(dest)
 	}
 }

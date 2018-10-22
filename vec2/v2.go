@@ -104,7 +104,7 @@ func ApplyOnTransform(V, pos V2, angle float64) V2 {
 	return Add(pos, Rotate(V, angle))
 }
 
-//Add returns vector equal to sum a+b
+//Run returns vector equal to sum a+b
 func Add(a, b V2) V2 {
 	return V2{a.X + b.X, a.Y + b.Y}
 }

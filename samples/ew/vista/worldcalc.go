@@ -1,8 +1,42 @@
 package vista
 
-import "sync"
+import (
+	"runtime"
+	"sync"
+)
+
+var defWorkerPoolSize = runtime.NumCPU()
+type WorkerPool struct{
+	workers chan struct{}
+	wg *sync.WaitGroup
+}
+func NewWorkerPool()WorkerPool{
+	return WorkerPool{
+		workers: make(chan struct{}, defWorkerPoolSize),
+		wg: &sync.WaitGroup{},
+	}
+}
+func (wp WorkerPool) Run(f func()){
+	wp.workers <- struct{}{}
+	wp.wg.Add(1)
+	go func(){
+		defer func(){<-wp.workers
+		wp.wg.Done()}()
+
+		f()
+	}()
+}
+func (wp WorkerPool) Wait(){
+	wp.wg.Wait()
+}
+func (wp WorkerPool) WaitClose(){
+	wp.wg.Wait()
+	close (wp.workers)
+}
 
 func (w *World) Calculate(){
+	w.results = make(map[Watcher]WatchResult, len(w.watchers))
+
 	vInd:=0
 	for i:=range w.emitters{
 		cone:=w.emitters[i].EmitterCone()
@@ -19,15 +53,17 @@ func (w *World) Calculate(){
 		vInd++
 	}
 
-	wg:=&sync.WaitGroup{}
+	wp:=NewWorkerPool()
 	for i:=0; i<vInd; i++{
-		wg.Add(1)
-		go func (i int) {
-			defer wg.Done()
-			w.vistas[i].Calculate(w.objects)
-		}(i)
+		vista:=w.vistas[i]
+		wp.Run(func(){
+			vista.Calculate(w.objects)
+		})
 	}
-	wg.Wait()
+	wp.Wait()
 
 
+	//todo: WORK HERE
+
+	wp.Wait()
 }
