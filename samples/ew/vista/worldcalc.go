@@ -63,7 +63,7 @@ func (w *World) Calculate(){
 	wp.Wait()
 
 
-	//todo: WORK HERE
+	//todo: CONTINUE WORK HERE
 
 	wp.Wait()
 }
